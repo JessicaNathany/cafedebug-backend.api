@@ -12,7 +12,7 @@
 </p>
 
  <h4 align="center"> 
-	🚧  Project 🚀 under construction...  🚧
+	🚧  Projeto 🚀 em construção...  🚧
  </h4>
  
  Este é o repositório do projeto API Café Debug. Essa API tem como objetivo manter o backend separado do frontend<br/>
