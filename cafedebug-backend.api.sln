@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cafedebug-backend.api", "src\cafedebug-backend.api\cafedebug-backend.api.csproj", "{5A17416F-D0D8-4308-912F-863541510C61}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5A17416F-D0D8-4308-912F-863541510C61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A17416F-D0D8-4308-912F-863541510C61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A17416F-D0D8-4308-912F-863541510C61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A17416F-D0D8-4308-912F-863541510C61}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EFD7D8E8-3696-4364-9B9A-14808639B620}
+	EndGlobalSection
+EndGlobal
