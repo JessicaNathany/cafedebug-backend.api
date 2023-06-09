@@ -11,7 +11,11 @@
     <Folder Include="Data\Repository\" />
     <Folder Include="DbContext\" />
     <Folder Include="Mapping\" />
-    <Folder Include="Services\" />
+    <Folder Include="Repository\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\cafedebug-backend.domain\cafedebug-backend.domain.csproj" />
   </ItemGroup>
 
 </Project>
