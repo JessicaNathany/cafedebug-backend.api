@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cafedebug-backend.api", "src\cafedebug-backend.api\cafedebug-backend.api.csproj", "{5A17416F-D0D8-4308-912F-863541510C61}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cafedebug-backend.api", "src\cafedebug-backend.api\cafedebug-backend.api.csproj", "{5A17416F-D0D8-4308-912F-863541510C61}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api", "Api", "{34EDDAB2-97BA-4073-96C5-4B5ADA10CB14}"
 EndProject
@@ -11,9 +11,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{A81CFB
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{214E084E-20ED-4C92-BF94-3BA09A51BD88}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cafedebug-backend.domain", "src\cafedebug-backend.domain\cafedebug-backend.domain.csproj", "{B4800ACB-4241-475E-B42B-F70E9B4CEE14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cafedebug-backend.domain", "src\cafedebug-backend.domain\cafedebug-backend.domain.csproj", "{B4800ACB-4241-475E-B42B-F70E9B4CEE14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cafedebug-backend.infrastructure", "cafedebug-backend.infrastructure\cafedebug-backend.infrastructure.csproj", "{CB22F7F3-F3E5-45C0-9182-0514A29BC1F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cafedebug-backend.infrastructure", "cafedebug-backend.infrastructure\cafedebug-backend.infrastructure.csproj", "{CB22F7F3-F3E5-45C0-9182-0514A29BC1F9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F3701FE9-0C98-4C96-8866-B61476A21B14}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cafedebug.backend.api.test", "tests\cafedebug.backend.api.test\cafedebug.backend.api.test.csproj", "{116770D9-C062-44DB-AAAA-07FB30E0EC04}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,10 @@ Global
 		{CB22F7F3-F3E5-45C0-9182-0514A29BC1F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CB22F7F3-F3E5-45C0-9182-0514A29BC1F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CB22F7F3-F3E5-45C0-9182-0514A29BC1F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{116770D9-C062-44DB-AAAA-07FB30E0EC04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{116770D9-C062-44DB-AAAA-07FB30E0EC04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{116770D9-C062-44DB-AAAA-07FB30E0EC04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{116770D9-C062-44DB-AAAA-07FB30E0EC04}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -41,6 +49,7 @@ Global
 		{5A17416F-D0D8-4308-912F-863541510C61} = {34EDDAB2-97BA-4073-96C5-4B5ADA10CB14}
 		{B4800ACB-4241-475E-B42B-F70E9B4CEE14} = {A81CFB0C-34FE-4261-9AD3-0701CC09680E}
 		{CB22F7F3-F3E5-45C0-9182-0514A29BC1F9} = {214E084E-20ED-4C92-BF94-3BA09A51BD88}
+		{116770D9-C062-44DB-AAAA-07FB30E0EC04} = {F3701FE9-0C98-4C96-8866-B61476A21B14}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EFD7D8E8-3696-4364-9B9A-14808639B620}

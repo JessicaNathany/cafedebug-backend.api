@@ -10,6 +10,7 @@
   <ItemGroup>
     <Folder Include="Data\Repository\" />
     <Folder Include="DbContext\" />
+    <Folder Include="Mapping\" />
     <Folder Include="Services\" />
   </ItemGroup>
 

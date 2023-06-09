@@ -21,7 +21,6 @@
     <Folder Include="Areas\Model\" />
     <Folder Include="Areas\ViewModel\" />
     <Folder Include="Configurations\" />
-    <Folder Include="Models\" />
     <Folder Include="DependencyInjection\" />
     <Folder Include="ViewModels\" />
   </ItemGroup>

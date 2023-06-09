@@ -1,6 +1,6 @@
 ﻿namespace cafedebug_backend.domain.Entities
 {
-    public class Team
+    public class Team : Entity
     {
         public string Name { get; set; }
         public string UrlGitHub { get; set; }
