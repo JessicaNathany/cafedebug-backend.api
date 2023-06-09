@@ -5,6 +5,16 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cafedebug-backend.api", "src\cafedebug-backend.api\cafedebug-backend.api.csproj", "{5A17416F-D0D8-4308-912F-863541510C61}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api", "Api", "{34EDDAB2-97BA-4073-96C5-4B5ADA10CB14}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{A81CFB0C-34FE-4261-9AD3-0701CC09680E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{214E084E-20ED-4C92-BF94-3BA09A51BD88}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cafedebug-backend.domain", "src\cafedebug-backend.domain\cafedebug-backend.domain.csproj", "{B4800ACB-4241-475E-B42B-F70E9B4CEE14}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cafedebug-backend.infrastructure", "cafedebug-backend.infrastructure\cafedebug-backend.infrastructure.csproj", "{CB22F7F3-F3E5-45C0-9182-0514A29BC1F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,9 +25,22 @@ Global
 		{5A17416F-D0D8-4308-912F-863541510C61}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A17416F-D0D8-4308-912F-863541510C61}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A17416F-D0D8-4308-912F-863541510C61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4800ACB-4241-475E-B42B-F70E9B4CEE14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4800ACB-4241-475E-B42B-F70E9B4CEE14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4800ACB-4241-475E-B42B-F70E9B4CEE14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4800ACB-4241-475E-B42B-F70E9B4CEE14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB22F7F3-F3E5-45C0-9182-0514A29BC1F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB22F7F3-F3E5-45C0-9182-0514A29BC1F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB22F7F3-F3E5-45C0-9182-0514A29BC1F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB22F7F3-F3E5-45C0-9182-0514A29BC1F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5A17416F-D0D8-4308-912F-863541510C61} = {34EDDAB2-97BA-4073-96C5-4B5ADA10CB14}
+		{B4800ACB-4241-475E-B42B-F70E9B4CEE14} = {A81CFB0C-34FE-4261-9AD3-0701CC09680E}
+		{CB22F7F3-F3E5-45C0-9182-0514A29BC1F9} = {214E084E-20ED-4C92-BF94-3BA09A51BD88}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EFD7D8E8-3696-4364-9B9A-14808639B620}
