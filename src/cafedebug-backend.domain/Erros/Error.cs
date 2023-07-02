@@ -1,11 +1,12 @@
 using cafedebug_backend.domain.Enums;
+using Microsoft.Extensions.Localization;
 
 namespace cafedebug_backend.domain.Errors;
 
 public class Error : IEquatable<Error>
 {
     public static readonly Error None = new(ErrorType.None, string.Empty);
-    public static readonly Error NullValue = new(ErrorType.NullValue, "The specified result value is null.");
+    public static Error NullValue(IStringLocalizer localizer) => new(ErrorType.ExistingRegister, localizer["NullValue"]);
 
     public Error(ErrorType code, string message)
     {
