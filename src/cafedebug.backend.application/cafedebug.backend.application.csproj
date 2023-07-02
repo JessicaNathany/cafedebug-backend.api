@@ -6,4 +6,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Mappings\" />
+    <Folder Include="Validations\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\cafedebug-backend.api\cafedebug-backend.api.csproj" />
+    <ProjectReference Include="..\cafedebug-backend.domain\cafedebug-backend.domain.csproj" />
+  </ItemGroup>
+
 </Project>

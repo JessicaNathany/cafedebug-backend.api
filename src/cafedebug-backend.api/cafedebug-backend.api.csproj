@@ -21,8 +21,12 @@
     <Folder Include="Areas\Model\" />
     <Folder Include="Areas\ViewModel\" />
     <Folder Include="Configurations\" />
-    <Folder Include="DependencyInjection\" />
     <Folder Include="ViewModels\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\cafedebug-backend.infrastructure\cafedebug-backend.infrastructure.csproj" />
+    <ProjectReference Include="..\cafedebug-backend.domain\cafedebug-backend.domain.csproj" />
   </ItemGroup>
 
 </Project>
