@@ -1,8 +1,10 @@
+using cafedebug_backend.infrastructure.Context;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Adicione os serviços de localização
+// add localization service
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
 var supportedCultures = new[] { "en-US", "pt-BR" };
@@ -18,10 +20,16 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.SupportedUICultures = localizationOptions.SupportedUICultures;
 });
 
-// Add services to the container.
 
+builder.Services.AddDbContextPool<CafedebugContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("CafedebugConnectionStringMySQL");
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), options =>
+    options.EnableRetryOnFailure(maxRetryCount: 10, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null));
+});
+
+//swagger configuration
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

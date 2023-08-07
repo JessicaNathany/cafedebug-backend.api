@@ -7,7 +7,7 @@ namespace cafedebug_backend.domain.Interfaces.Respositories
     {
         Task<TEntity> SaveAsync(TEntity entity);
 
-        Task UpdateAsyn(TEntity entity);
+        Task UpdateAsync(TEntity entity);
 
         Task DeleteAsync(Guid code);
 
@@ -22,5 +22,7 @@ namespace cafedebug_backend.domain.Interfaces.Respositories
         Task<int> CountAsync();
 
         Task<int> SaveChangesAsync();
+
+        Task<IEnumerable<Banner>> GetPagedAsync(int pageIndex = 0, int pageSize = 10);
     }
 }

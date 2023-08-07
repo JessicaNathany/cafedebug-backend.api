@@ -51,6 +51,11 @@ namespace cafedebug_backend.infrastructure.Data.Repository
             throw new NotImplementedException();
         }
 
+        public Task<IEnumerable<Banner>> GetPagedAsync(int pageIndex = 0, int pageSize = 10)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<TEntity> SaveAsync(TEntity entity)
         {
             throw new NotImplementedException();
@@ -61,7 +66,7 @@ namespace cafedebug_backend.infrastructure.Data.Repository
             throw new NotImplementedException();
         }
 
-        public Task UpdateAsyn(TEntity entity)
+        public Task UpdateAsync(TEntity entity)
         {
             throw new NotImplementedException();
         }
