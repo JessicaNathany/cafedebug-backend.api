@@ -2,73 +2,74 @@
 using cafedebug_backend.domain.Interfaces.Respositories;
 using cafedebug_backend.infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace cafedebug_backend.infrastructure.Data.Repository
 {
-    public abstract class Repository<TEntity> : IBaseRepository<TEntity> where TEntity : Entity, new()
+    public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : Entity, new()
     {
-        protected readonly CafedebugContext _db;
+        protected readonly CafedebugContext _context;
         protected readonly DbSet<TEntity> _dbSet;
 
-        public Repository(CafedebugContext db)
+        public BaseRepository(CafedebugContext context)
         {
-            _db = db;
-            _dbSet = _db.Set<TEntity>();
+            _context = context;
+            _dbSet = _context.Set<TEntity>();
         }
-        public Task<int> CountAsync()
+        public async Task<int> CountAsync()
         {
-            throw new NotImplementedException();
+            return await _dbSet.CountAsync();
         }
 
-        public Task DeleteAsync(Guid code)
+        public async Task DeleteAsync(Guid code)
         {
-            throw new NotImplementedException();
+            var entity = await _dbSet.FirstOrDefaultAsync(x => x.Code == code);
+
+            _dbSet.Remove(entity);
+            await SaveChangesAsync();
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            _context.Dispose();
         }
 
-        public Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate)
+        public virtual async Task<IEnumerable<TEntity>> GetAllAsync(bool asNoTracking = false)
         {
-            throw new NotImplementedException();
+            var query = _context.Set<TEntity>();
+
+            if (asNoTracking)
+               return await query.AsNoTracking().ToListAsync();
+
+            return await query.ToListAsync();
         }
 
-        public Task<IEnumerable<TEntity>> GetAllAsync()
+        public async Task<TEntity> GetByCodeAsync(Guid code)
         {
-            throw new NotImplementedException();
+            return await _dbSet.FirstOrDefaultAsync(x => x.Code == code);
         }
 
-        public Task<TEntity> GetByCodeAsync(Guid code)
+        public virtual async Task<TEntity> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _dbSet.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public Task<TEntity> GetByIdAsync(int id)
+        public async Task<TEntity> SaveAsync(TEntity entity)
         {
-            throw new NotImplementedException();
+            _dbSet.Add(entity);
+            await SaveChangesAsync();
+
+            return entity;
         }
 
-        public Task<IEnumerable<Banner>> GetPagedAsync(int pageIndex = 0, int pageSize = 10)
+        public async Task<int> SaveChangesAsync()
         {
-            throw new NotImplementedException();
+            return await _context.SaveChangesAsync();
         }
 
-        public Task<TEntity> SaveAsync(TEntity entity)
+        public async Task UpdateAsync(TEntity entity)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<int> SaveChangesAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateAsync(TEntity entity)
-        {
-            throw new NotImplementedException();
+            _context.Entry(entity).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
     }
 }

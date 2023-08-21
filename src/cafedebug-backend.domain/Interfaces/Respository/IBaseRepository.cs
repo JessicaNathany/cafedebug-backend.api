@@ -11,9 +11,7 @@ namespace cafedebug_backend.domain.Interfaces.Respositories
 
         Task DeleteAsync(Guid code);
 
-        Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate);
-
-        Task<IEnumerable<TEntity>> GetAllAsync();
+        Task<IEnumerable<TEntity>> GetAllAsync(bool asNoTracking = false);
 
         Task<TEntity> GetByIdAsync(int id);
 
@@ -22,7 +20,5 @@ namespace cafedebug_backend.domain.Interfaces.Respositories
         Task<int> CountAsync();
 
         Task<int> SaveChangesAsync();
-
-        Task<IEnumerable<Banner>> GetPagedAsync(int pageIndex = 0, int pageSize = 10);
     }
 }

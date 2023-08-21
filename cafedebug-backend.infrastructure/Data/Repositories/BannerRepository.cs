@@ -5,31 +5,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace cafedebug_backend.infrastructure.Data.Repository
 {
-    public class BannerRepository : Repository<Banner>, IBannerRepository
+    public class BannerRepository : BaseRepository<Banner>, IBannerRepository
     {
-        private readonly CafedebugContext _context;
-
         public BannerRepository(CafedebugContext context) : base(context)
         {
-            _context = context;
         }
-
 
         public async Task<IEnumerable<Banner>> GetPagedAsync(int pageIndex = 0, int pageSize = 10)
         {
-            var query = _context.Banners.Where(banner => banner.Active
-                                               && banner.StartDate.Date <= DateTime.Now.Date
-                                               && banner.EndDate.Date >= DateTime.Now.Date)
-                                              .Skip(pageIndex * pageSize)
-                                              .Take(pageSize);
+            var query = _context.Banners
+                .AsNoTracking()
+                .Where(banner => banner.Active && banner.StartDate.Date <= DateTime.Now.Date && banner.EndDate.Date >= DateTime.Now.Date)
+                .Skip(pageIndex * pageSize)
+                .Take(pageSize);
+
             return await query.ToListAsync();
         }
 
-        public async Task<IEnumerable<Banner>> Get()
+        public async Task<IEnumerable<Banner>> GetAsync()
         {
-            return await _context.Banners.Where(banner => banner.Active 
-                                          && banner.StartDate.Date <= DateTime.Now.Date 
-                                          && banner.EndDate.Date >= DateTime.Now.Date).ToListAsync();
+            return await _context.Set<Banner>()
+                                 .Where(banner => banner.Active
+                                 && banner.StartDate.Date <= DateTime.Now.Date
+                                 && banner.EndDate.Date >= DateTime.Now.Date).ToListAsync();
         }
     }
 }
