@@ -21,5 +21,14 @@ namespace cafedebug_backend.infrastructure.Data.Repository
 
             return await query.ToListAsync();
         }
+
+        //public async Task<IPagedList<Episode>> SearchByEpisodeName(string name, PageRequest page)
+        //{
+        //    var episodies = _context.Episodes.AsQueryable()
+        //        .Where(c => c.Title.Contains(name) && c.Active).OrderByDescending(x => x.Number);
+
+        //    return await episodies.ToPagedListAsync(page.Page, page.PageSize);
+        //}
+
     }
 }
