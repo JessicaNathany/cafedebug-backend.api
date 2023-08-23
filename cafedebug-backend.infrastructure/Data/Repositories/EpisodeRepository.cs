@@ -14,21 +14,41 @@ namespace cafedebug_backend.infrastructure.Data.Repository
         public async Task<IEnumerable<Episode>> GetPagedAsync(string searchParam, int pageIndex = 0, int pageSize = 10)
         {
             var query = _context.Set<Episode>()
-                .AsNoTracking()
-                .Where(category => category.Title.Contains(searchParam))
-                .Skip(pageIndex * pageSize)
-                .Take(pageSize);
+            .AsNoTracking()
+            .Where(category => category.Title.Contains(searchParam))
+            .Skip(pageIndex * pageSize)
+            .Take(pageSize);
 
             return await query.ToListAsync();
         }
 
-        //public async Task<IPagedList<Episode>> SearchByEpisodeName(string name, PageRequest page)
-        //{
-        //    var episodies = _context.Episodes.AsQueryable()
-        //        .Where(c => c.Title.Contains(name) && c.Active).OrderByDescending(x => x.Number);
+        public async Task<IEnumerable<Episode>> SearchByEpisodeName(string searchParam, int pageIndex = 0, int pageSize = 10)
+        {
+            var query = _context.Set<Episode>()
+            .AsNoTracking()
+            .Where(episode => episode.Title.Contains(searchParam, StringComparison.OrdinalIgnoreCase) && episode.Active)
+            .OrderByDescending(episode => episode.Number)
+            .Skip(pageIndex * pageSize)
+            .Take(pageSize);
 
-        //    return await episodies.ToPagedListAsync(page.Page, page.PageSize);
-        //}
+            return await query.ToListAsync();
+        }
 
+        public async Task<IEnumerable<Episode>> GetEpisodesPagination(string searchParam, int pageIndex = 0, int pageSize = 10)
+        {
+            IQueryable<Episode> episodiesQuery = _context.Episodes.AsNoTracking().OrderByDescending(x => x.Number);
+
+            if (!string.IsNullOrEmpty(searchParam))
+                episodiesQuery = episodiesQuery.Where(c => c.Title.Contains(searchParam));
+
+            episodiesQuery = episodiesQuery.Skip(pageIndex * pageSize).Take(pageSize);
+
+            return await episodiesQuery.ToListAsync();
+        }
+
+        public async Task<IEnumerable<Episode>> GetLastThreeEpisodes()
+        {
+            return await _context.Episodes.OrderByDescending(x => x.Number).Take(3).ToListAsync();
+        }
     }
 }

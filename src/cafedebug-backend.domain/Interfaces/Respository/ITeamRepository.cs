@@ -5,8 +5,7 @@ namespace cafedebug_backend.domain.Interfaces.Respository
 {
     public interface ITeamRepository : IBaseRepository<Team>
     {
-        //implementar método de paginação
-        //Task<PageResult<Team>> GetPaged(PageRequest page);
+        Task<IEnumerable<Team>> GetPagedAsync(string searchParam, int pageIndex = 0, int pageSize = 10);
 
         Task<List<Team>> GetTeamsPage();
     }
