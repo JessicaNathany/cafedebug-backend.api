@@ -7,13 +7,11 @@ namespace cafedebug_backend.domain.Interfaces.Respositories
     {
         Task<TEntity> SaveAsync(TEntity entity);
 
-        Task UpdateAsyn(TEntity entity);
+        Task UpdateAsync(TEntity entity);
 
         Task DeleteAsync(Guid code);
 
-        Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate);
-
-        Task<IEnumerable<TEntity>> GetAllAsync();
+        Task<IEnumerable<TEntity>> GetAllAsync(bool asNoTracking = false);
 
         Task<TEntity> GetByIdAsync(int id);
 
