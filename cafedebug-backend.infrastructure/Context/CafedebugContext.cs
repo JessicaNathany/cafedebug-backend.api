@@ -15,6 +15,8 @@ namespace cafedebug_backend.infrastructure.Context
         public DbSet<Tag> Tags { get; set; }
         public DbSet<EpisodeTag> TagsEpisode { get; set; }
 
+        public DbSet<Advertisement> Advertisements { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(CafedebugContext).Assembly);
