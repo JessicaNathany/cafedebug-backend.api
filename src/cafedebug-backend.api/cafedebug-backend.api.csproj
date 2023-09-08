@@ -19,9 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Controller\" />
-    <Folder Include="Areas\Model\" />
-    <Folder Include="Areas\ViewModel\" />
+    <Folder Include="Administrator\Model\" />
+    <Folder Include="Administrator\ViewModel\" />
     <Folder Include="Configurations\" />
     <Folder Include="ViewModels\" />
   </ItemGroup>
