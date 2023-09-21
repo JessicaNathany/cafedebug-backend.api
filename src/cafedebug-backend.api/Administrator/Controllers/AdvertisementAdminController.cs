@@ -4,25 +4,26 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace cafedebug_backend.api.Administrator.Controllers
 {
-    public class TeamAdminController : BaseAdminController
+    public class AdvertisementAdminController : BaseAdminController
     {
-        public TeamAdminController()
+        public AdvertisementAdminController()
         {
 
         }
+
         public IActionResult Index()
         {
             return View();
         }
 
-        [Route("listar-debugers")]
+        [Route("listar-anuncios")]
         [HttpGet]
         public async Task<IActionResult> Get()
         {
             throw new NotImplementedException();
         }
 
-        [Route("listar-debugers/{id}")]
+        [Route("listar-anuncios/{id}")]
         [HttpGet]
         public async Task<IActionResult> GetById()
         {
@@ -30,15 +31,15 @@ namespace cafedebug_backend.api.Administrator.Controllers
         }
 
         [Authorize]
-        [Route("novo-debugers")]
+        [Route("novo-anuncios")]
         [HttpPost]
-        public async Task<IActionResult> Create(TeamViewModel model)
+        public async Task<IActionResult> Create(AdvertisementViewModel model)
         {
             throw new NotImplementedException();
         }
 
         [Authorize]
-        [Route("editar-debuger/{id}")]
+        [Route("editar-anuncios/{id}")]
         [HttpPut]
         public async Task<ActionResult> Update(Guid code)
         {
@@ -46,7 +47,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
         }
 
         [Authorize]
-        [Route("delete-debuger")]
+        [Route("delete-anuncios")]
         [HttpPost]
         public async Task<IActionResult> Delete(Guid code)
         {

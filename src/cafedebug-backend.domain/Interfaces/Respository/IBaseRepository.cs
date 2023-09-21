@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace cafedebug_backend.domain.Interfaces.Respositories
 {
-    public interface IBaseRepository<TEntity> : IDisposable where TEntity : Entity
+    public interface IBaseRepository<TEntity> where TEntity : Entity
     {
         Task<TEntity> SaveAsync(TEntity entity);
 
