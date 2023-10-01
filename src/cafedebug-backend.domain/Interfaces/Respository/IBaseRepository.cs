@@ -1,5 +1,4 @@
 ﻿using cafedebug_backend.domain.Entities;
-using System.Linq.Expressions;
 
 namespace cafedebug_backend.domain.Interfaces.Respositories
 {

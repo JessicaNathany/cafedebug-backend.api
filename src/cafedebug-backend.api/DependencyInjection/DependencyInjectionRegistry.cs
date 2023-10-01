@@ -1,4 +1,6 @@
-﻿using cafedebug_backend.domain.Interfaces.Respositories;
+﻿using cafedebug.backend.application.Service;
+using cafedebug_backend.domain.Interfaces.JWT;
+using cafedebug_backend.domain.Interfaces.Respositories;
 using cafedebug_backend.infrastructure.Data.Repository;
 
 namespace cafedebug_backend.api.DependencyInjection
@@ -9,6 +11,7 @@ namespace cafedebug_backend.api.DependencyInjection
         {
             service.AddScoped<IBannerRepository, BannerRepository>();
             service.AddScoped<IEpisodeRepository, EpisodeRepository>();
+            service.AddScoped<IJWTService, JWTService>();
         }
     }
 }

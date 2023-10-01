@@ -13,7 +13,7 @@ namespace cafedebug_backend.infrastructure.Data.Repositories
         }
         public async Task<IEnumerable<Tag>> GetByEpisodeId(int id)
         {
-            return _context.TagsEpisode
+            return _context.TagsEpisodes
                .Include(t => t.Tag)
                .Where(x => x.EpisodeId == id)
                .Select(t => new Tag { Name = t.Tag.Name, Id = t.TagId })
