@@ -11,6 +11,9 @@ namespace cafedebug_backend.api.DependencyInjection
         {
             service.AddScoped<IBannerRepository, BannerRepository>();
             service.AddScoped<IEpisodeRepository, EpisodeRepository>();
+            service.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+
+
             service.AddScoped<IJWTService, JWTService>();
         }
     }
