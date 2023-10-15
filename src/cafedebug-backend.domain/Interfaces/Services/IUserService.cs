@@ -4,6 +4,6 @@ namespace cafedebug_backend.domain.Interfaces.Services
 {
     public interface IUserService
     {
-        Task<User> GetByLoginAndPasswordAsync(string login, string Password);
+        Task<UserAdmin> GetByLoginAndPasswordAsync(string email, string password, CancellationToken cancellationToken);
     }
 }

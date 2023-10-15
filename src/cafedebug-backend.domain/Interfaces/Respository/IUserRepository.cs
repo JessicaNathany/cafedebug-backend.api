@@ -3,8 +3,8 @@ using cafedebug_backend.domain.Interfaces.Respositories;
 
 namespace cafedebug_backend.domain.Interfaces.Respository
 {
-    public interface IUserRepository : IBaseRepository<User>
+    public interface IUserRepository : IBaseRepository<UserAdmin>
     {
-        Task<User> GetByLoginAndPassword(string login, string senha);
+        Task<UserAdmin> GetByEmailAsync(string email, CancellationToken cancellationToken);
     }
 }

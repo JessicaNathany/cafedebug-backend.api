@@ -2,6 +2,6 @@
 {
     public interface IJWTService
     {
-        Task<string> GenerateTokenAsync(string userName, string email);
+        string GenerateTokenAsync(string userName, string email);
     }
 }

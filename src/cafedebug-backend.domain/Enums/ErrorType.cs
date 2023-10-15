@@ -9,5 +9,6 @@ public enum ErrorType
     ValidationCustomMessage,
     ValidationError,
     ExistingRegister,
-    ErrorWhenExecuting
+    ErrorWhenExecuting,
+    EmailOrPasswordInvalid
 }

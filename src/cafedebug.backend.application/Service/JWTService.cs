@@ -20,10 +20,10 @@ namespace cafedebug.backend.application.Service
             _audience = audience;
         }
 
-        public async Task<string> GenerateTokenAsync(string userName, string email)
+        public string GenerateTokenAsync(string userName, string email)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(JWTConstants.JWTSecret);
+            var key = Encoding.ASCII.GetBytes(_secretKey);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {

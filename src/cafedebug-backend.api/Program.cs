@@ -1,6 +1,7 @@
 using cafedebug_backend.api.DependencyInjection;
 using cafedebug_backend.application.Constants;
 using cafedebug_backend.infrastructure.Context;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Localization;
@@ -69,6 +70,19 @@ builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Loggin Configuration
+builder.Logging.AddConsole(); 
+builder.Logging.AddDebug();  
+builder.Logging.SetMinimumLevel(LogLevel.Information);
+
+// FluentValidation
+builder.Services.AddControllers().AddFluentValidation(fluentValidation =>
+{
+    fluentValidation.RegisterValidatorsFromAssemblyContaining<Program>();
+});
+
+
 
 var app = builder.Build();
 
