@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using cafedebug.backend.application.Admin;
+using Microsoft.AspNetCore.Mvc;
 
 namespace cafedebug_backend.api.Administrator.Controllers
 {
@@ -20,7 +21,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
 
         [Route("novo-episodio")]
         [HttpPost]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(EpisodeViewModel model)
         {
             throw new NotImplementedException();
         }

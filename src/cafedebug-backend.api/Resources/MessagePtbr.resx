@@ -117,16 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Em" xml:space="preserve">
+    <value />
+  </data>
+  <data name="EmailOuSenhaInvalido" xml:space="preserve">
+    <value>Email ou senha inválidos.</value>
+  </data>
   <data name="EpisodeNotFoundError" xml:space="preserve">
-    <value>Episode not found</value>
+    <value>Episódio não encontrado.</value>
   </data>
   <data name="ErrorWhenRegister" xml:space="preserve">
-    <value>Error when trying register episode</value>
+    <value>Erro ao cadastrar um episódio.</value>
   </data>
   <data name="ExistingRegister" xml:space="preserve">
-    <value>Episode already exists</value>
-  </data>
-  <data name="NullValue" xml:space="preserve">
-    <value>The specified result value is null.</value>
+    <value>Episódio já existe.</value>
   </data>
 </root>

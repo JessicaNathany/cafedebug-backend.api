@@ -25,12 +25,7 @@ namespace cafedebug_backend.infrastructure.Data.Repository
             var entity = await _dbSet.FirstOrDefaultAsync(x => x.Code == code);
 
             _dbSet.Remove(entity);
-            await SaveChangesAsync();
-        }
-
-        public void Dispose()
-        {
-            _context.Dispose();
+            await SaveAsync(entity);
         }
 
         public virtual async Task<IEnumerable<TEntity>> GetAllAsync(bool asNoTracking = false)
@@ -69,7 +64,7 @@ namespace cafedebug_backend.infrastructure.Data.Repository
         public async Task UpdateAsync(TEntity entity)
         {
             _context.Entry(entity).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            await SaveAsync(entity);
         }
     }
 }

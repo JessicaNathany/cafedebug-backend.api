@@ -25,7 +25,7 @@ namespace cafedebug_backend.infrastructure.Data.Repositories
 
         public async Task<List<Team>> GetTeamsPage()
         {
-            return _context.Team.OrderBy(x => x.Name).ToList();
+            return _context.Teams.OrderBy(x => x.Name).ToList();
         }
     }
 }
