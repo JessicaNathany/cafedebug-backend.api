@@ -2,7 +2,6 @@ using cafedebug_backend.api.DependencyInjection;
 using cafedebug_backend.application.Constants;
 using cafedebug_backend.infrastructure.Context;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +23,7 @@ var localizationOptions = new RequestLocalizationOptions()
     .SetDefaultCulture(supportedCultures[0])
     .AddSupportedCultures(supportedCultures)
     .AddSupportedUICultures(supportedCultures);
+
 
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
@@ -82,9 +82,10 @@ builder.Services.AddControllers().AddFluentValidation(fluentValidation =>
     fluentValidation.RegisterValidatorsFromAssemblyContaining<Program>();
 });
 
-
-
 var app = builder.Build();
+
+// Use localization Resx
+app.UseRequestLocalization(localizationOptions);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

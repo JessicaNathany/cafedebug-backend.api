@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace cafedebug_backend.api.Validation
 {
-    public class EmailValidator : AbstractValidator<UserViewModel>
+    public class EmailValidator : AbstractValidator<UserModel>
     {
         public EmailValidator() 
         {

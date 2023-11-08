@@ -1,6 +1,6 @@
 ﻿namespace cafedebug_backend.api.ViewModels
 {
-    public class UserViewModel
+    public class UserModel
     {
         public string Password { get; set; }
 

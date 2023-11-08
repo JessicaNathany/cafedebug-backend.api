@@ -24,7 +24,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
 
         [HttpPost]
         [Route("login")]
-        public async Task<IActionResult> AuthenticationAsync([FromBody] UserViewModel model)
+        public async Task<IActionResult> AuthenticationAsync([FromBody] UserModel model, CancellationToken cancellationToken)
         {
             var validator = new EmailValidator();
             var validationResult = validator.Validate(model);
@@ -35,7 +35,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
                 return BadRequest(validationResult.Errors);
             }
 
-            var existUser = await _userService.GetByLoginAndPasswordAsync(model.Email, model.Password);
+            var existUser = await _userService.GetByLoginAndPasswordAsync(model.Email, model.Password, cancellationToken);
 
             if (existUser is null)
             {
