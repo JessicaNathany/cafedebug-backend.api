@@ -1,8 +1,6 @@
 ﻿using cafedebug_backend.domain.Enums;
 using cafedebug_backend.domain.Errors;
-using cafedebug_backend.domain.Resources;
 using Microsoft.Extensions.Localization;
-using System.Resources;
 
 namespace cafedebug_backend.domain.Erros
 {

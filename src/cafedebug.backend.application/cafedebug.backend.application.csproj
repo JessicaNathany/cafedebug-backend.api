@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Mappings\" />
-    <Folder Include="Validations\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,5 +1,5 @@
-﻿using cafedebug_backend.domain.Entities;
-using cafedebug_backend.domain.Erros;
+﻿using cafedebug.backend.application.Validations;
+using cafedebug_backend.domain.Entities;
 using cafedebug_backend.domain.Interfaces.Respository;
 using cafedebug_backend.domain.Interfaces.Services;
 using cafedebug_backend.domain.Shared;
@@ -15,8 +15,7 @@ namespace cafedebug.backend.application.Service
         private readonly ILogger<UserService> _logger;
         private readonly IPasswordHasher<UserAdmin> _passwordHasher;
         private readonly IStringLocalizer _localizer;
-        public UserService(
-            IUserRepository userRepository, 
+        public UserService(IUserRepository userRepository, 
             IPasswordHasher<UserAdmin> passwordHasher,
             ILogger<UserService> logger,
             IStringLocalizer localizer)
@@ -43,25 +42,66 @@ namespace cafedebug.backend.application.Service
             if (verificationResult != PasswordVerificationResult.Success)
             {
                 _logger.LogError($"Password verification failed for user  {email}");
-                 return Result<UserAdmin>.Failure($"Password verification failed for user.{email}");
+                return Result<UserAdmin>.Failure($"Password verification failed for user.{email}");
             }
 
-            return Result<UserAdmin>.Success(user);
-        }
-
-        public async Task<Result<UserAdmin>> CreateUserAsync(string email, string password)
-        {
-            if(String.IsNullOrEmpty(email) || String.IsNullOrEmpty(password))
+            try
             {
-                _logger.LogInformation($"User or password cannot be null!");
-                return Result<UserAdmin>.Failure("User not found.");
+                return Result<UserAdmin>.Success(user);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"An unexpected error occurred. {exception}");
+                return Result<UserAdmin>.Failure("An unexpected error occurred.");
+            }
+        }
+
+        public async Task<Result<UserAdmin>> CreateAsync(string email, string password, CancellationToken cancellationToken)
+        {
+            if (String.IsNullOrEmpty(email))
+            {
+                _logger.LogInformation($"Email cannot be null or empty.");
+                return Result<UserAdmin>.Failure("Email cannot be null or empty.");
             }
 
-            var hashedPassword = _passwordHasher.HashPassword(null, password);
+            var emailValidator = new EmailValidation();
+            var emailValidationResult = emailValidator.Validate(email);
 
-            var user = new UserAdmin { Email = email, HashedPassword = hashedPassword };
+            if (!emailValidationResult.IsValid)
+            {
+                _logger.LogInformation($"Email invalid or null.");
+                return Result<UserAdmin>.Failure(emailValidationResult.Errors[0].ErrorMessage);
+            }
 
-            return Result<UserAdmin>.Success(user);
+            if (password is null)
+            {
+                _logger.LogInformation($"Password cannot be null.");
+                return Result<UserAdmin>.Failure("Password cannot be null.");
+            }
+
+            try
+            {
+                var hashedPassword = _passwordHasher.HashPassword(null, password);
+
+                var user = new UserAdmin
+                {
+                    Email = email,
+                    HashedPassword = hashedPassword,
+                    Code = new Guid()
+                };
+
+                await _userRepository.SaveAsync(user, cancellationToken);
+                _logger.LogInformation($"User saved with success.");
+
+                return Result<UserAdmin>.Success(user);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"An unexpected error occurred. {exception}");
+                return Result<UserAdmin>.Failure("An unexpected error occurred.");
+            }
         }
+
+        // criar métodos delete e update
     }
 }

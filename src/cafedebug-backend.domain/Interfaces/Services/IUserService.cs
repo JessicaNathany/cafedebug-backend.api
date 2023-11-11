@@ -7,6 +7,6 @@ namespace cafedebug_backend.domain.Interfaces.Services
     {
         Task<Result<UserAdmin>> GetByLoginAndPasswordAsync(string email, string password, CancellationToken cancellationToken);
 
-        Task<Result<UserAdmin>> CreateUserAsync(string email, string password);
+        Task<Result<UserAdmin>> CreateAsync(string email, string password, CancellationToken cancellationToken);
     }
 }

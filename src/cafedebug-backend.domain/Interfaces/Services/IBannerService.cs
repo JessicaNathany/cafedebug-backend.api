@@ -1,11 +1,12 @@
 ﻿using cafedebug_backend.domain.Entities;
+using cafedebug_backend.domain.Shared;
 
 namespace cafedebug_backend.domain.Interfaces.Services
 {
-    public interface IBannerService : IDisposable
+    public interface IBannerService 
     {
-        Task Save(Banner banner);
-        Task Update(Banner banner);
-        Task Delete(Guid code);
+        Task<Result> CreateAsync(Banner banner, CancellationToken cancellationToken);
+        Task<Result> UpdateAsync(Banner banner , CancellationToken cancellationToken);
+        Task<Result> DeleteAsync(int id, CancellationToken cancellationToken);
     }
 }
