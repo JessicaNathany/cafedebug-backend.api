@@ -6,6 +6,7 @@ using cafedebug_backend.domain.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace cafedebug.backend.application.Service
 {
@@ -32,7 +33,7 @@ namespace cafedebug.backend.application.Service
 
             if (user is null)
             {
-                _logger.LogInformation($"User with {email} not found!");
+                _logger.LogWarning($"User with {email} not found!");
                 return Result<UserAdmin>.Failure("User not found.");
                 //return Result<UserAdmin>.Failure(EpisodeError.NotFound(_localizer));  TODO: ajustar isso aqui para pegar do Resource
             }
@@ -41,7 +42,7 @@ namespace cafedebug.backend.application.Service
 
             if (verificationResult != PasswordVerificationResult.Success)
             {
-                _logger.LogError($"Password verification failed for user  {email}");
+                _logger.LogWarning($"Password verification failed for user  {email}");
                 return Result<UserAdmin>.Failure($"Password verification failed for user.{email}");
             }
 
@@ -69,13 +70,13 @@ namespace cafedebug.backend.application.Service
 
             if (!emailValidationResult.IsValid)
             {
-                _logger.LogInformation($"Email invalid or null.");
+                _logger.LogWarning($"Email invalid or null.");
                 return Result<UserAdmin>.Failure(emailValidationResult.Errors[0].ErrorMessage);
             }
 
             if (password is null)
             {
-                _logger.LogInformation($"Password cannot be null.");
+                _logger.LogWarning($"Password cannot be null.");
                 return Result<UserAdmin>.Failure("Password cannot be null.");
             }
 
@@ -102,6 +103,56 @@ namespace cafedebug.backend.application.Service
             }
         }
 
-        // criar métodos delete e update
+        public async Task<Result<UserAdmin>> UpdateAsync(UserAdmin userAdmin, CancellationToken cancellationToken)
+        {
+            try
+            {
+                if(userAdmin is null)
+                {
+                    _logger.LogWarning($"User admin cannot be null.");
+                    return Result<UserAdmin>.Failure("User admin cannot be null.");
+                }
+
+                var userRepository = await _userRepository.GetByIdAsync(userAdmin.Id, cancellationToken);
+
+                if(userRepository is null)
+                {
+                    _logger.LogWarning($"User admin not found.");
+                    return Result<UserAdmin>.Failure("User admin not found.");
+                }
+
+                await _userRepository.UpdateAsync(userAdmin, cancellationToken);
+                _logger.LogInformation($"User updated with success.");
+
+                return Result<UserAdmin>.Success(userAdmin);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An unexpected error occurred. {ex}");
+                return Result<UserAdmin>.Failure("An unexpected error occurred.");
+            }
+        }
+
+        public async Task<Result<UserAdmin>> GetByIdAsync(int id, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var user = await _userRepository.GetByIdAsync(id, cancellationToken);
+
+                if (user is null)
+                {
+                    _logger.LogWarning($"User admin not found.");
+                    return Result<UserAdmin>.Failure("User admin not found.");
+                }
+
+                return Result<UserAdmin>.Success(user);
+
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"An unexpected error occurred. {exception}");
+                return Result<UserAdmin>.Failure("An unexpected error occurred.");
+            }
+        }
     }
 }

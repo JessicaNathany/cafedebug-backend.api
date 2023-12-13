@@ -116,7 +116,7 @@ namespace cafedebug.backend.api.test.Services
         }
 
         [Fact]
-        public async Task Create_CreateUserAsync_ShouldBe_EmailNull()
+        public async Task Create_CreateAsync_ShouldBe_EmailNull()
         {
             var password = "123456";
 
@@ -135,7 +135,7 @@ namespace cafedebug.backend.api.test.Services
         }
 
         [Fact]
-        public async Task Create_CreateUserAsync_ShouldBe_EmailInvalid()
+        public async Task Create_CreateAsync_ShouldBe_EmailInvalid()
         {
             var email = "cafedevteste.com";
             var password = "123456";
@@ -166,7 +166,7 @@ namespace cafedebug.backend.api.test.Services
         }
 
         [Fact]
-        public async Task Create_CreateUserAsync_ShouldBe_PasswordNull()
+        public async Task Create_CreateAsync_ShouldBe_PasswordNull()
         {
             var email = "cafede@teste.com";
 
@@ -190,6 +190,93 @@ namespace cafedebug.backend.api.test.Services
             Assert.False(result.IsSuccess);
             Assert.Null(result.Value);
             Assert.Equal("Password cannot be null.", result.Error);
+        }
+
+        [Fact]
+        public async Task Update_UpdateAsync_ShouldBe_Success()
+        {
+            var userAdmin = new UserAdmin
+            {
+                Code = Guid.NewGuid(),
+                Name = "café debug",
+                Email = "cafede@teste.com",
+                HashedPassword = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"
+            };
+
+            var looggerMock = Mock.Of<ILogger<UserService>>();
+            var stringLocalizerMock = Mock.Of<IStringLocalizer<UserService>>();
+
+            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock, stringLocalizerMock);
+
+            // Act
+            var result = await userService.UpdateAsync(userAdmin, CancellationToken.None);
+
+            // Assert
+            Assert.True(result.IsSuccess);
+            Assert.NotNull(result.Value);
+        }
+
+        [Fact]
+        public async Task Update_UpdateAsync_ShouldBe_Error_UserNotFound()
+        {
+            var userAdmin = new UserAdmin
+            {
+                Code = Guid.NewGuid(),
+                Name = "café debug",
+                Email = "cafede@teste.com",
+                HashedPassword = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"
+            };
+
+            var looggerMock = Mock.Of<ILogger<UserService>>();
+            var stringLocalizerMock = Mock.Of<IStringLocalizer<UserService>>();
+
+            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock, stringLocalizerMock);
+
+            var userMock = new Mock<IUserRepository>();
+            userMock.Setup(x => x.GetByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                    .Returns(Task.FromResult<UserAdmin>(null));
+
+            // Act
+            var result = await userService.UpdateAsync(userAdmin, CancellationToken.None);
+
+            // Assert
+            Assert.False(result.IsSuccess);
+            Assert.Null(result.Value);
+            Assert.Equal("User admin not found.", result.Error);
+        }
+
+        [Fact]
+        public async Task Update_UpdateAsync_ShouldBe_Error_UserNull()
+        {
+            var looggerMock = Mock.Of<ILogger<UserService>>();
+            var stringLocalizerMock = Mock.Of<IStringLocalizer<UserService>>();
+
+            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock, stringLocalizerMock);
+
+            // Act
+            var result = await userService.UpdateAsync(null, CancellationToken.None);
+
+            // Assert
+            Assert.False(result.IsSuccess);
+            Assert.Null(result.Value);
+            Assert.Equal("User admin cannot be null.", result.Error);
+        }
+
+        [Fact]
+        public async Task Update_GetByIUdAsync_ShouldBe_Error_UserNotFound()
+        {
+            var looggerMock = Mock.Of<ILogger<UserService>>();
+            var stringLocalizerMock = Mock.Of<IStringLocalizer<UserService>>();
+
+            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock, stringLocalizerMock);
+
+            // Act
+            var result = await userService.GetByIdAsync(1, CancellationToken.None);
+
+            // Assert
+            Assert.False(result.IsSuccess);
+            Assert.Null(result.Value);
+            Assert.Equal("User admin not found.", result.Error);
         }
 
         [Fact]

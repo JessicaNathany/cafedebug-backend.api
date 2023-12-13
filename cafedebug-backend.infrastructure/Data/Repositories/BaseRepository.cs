@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace cafedebug_backend.infrastructure.Data.Repository
 {
-    public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : Entity, new()
+    public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : Entity
     {
         protected readonly CafedebugContext _context;
         protected readonly DbSet<TEntity> _dbSet;

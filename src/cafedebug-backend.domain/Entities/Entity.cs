@@ -4,6 +4,6 @@
     {
         public int Id { get; set; }
 
-        public Guid Code { get; set; }
+        public Guid Code = Guid.NewGuid();
     }
 }

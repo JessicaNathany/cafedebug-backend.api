@@ -11,6 +11,14 @@ namespace cafedebug_backend.infrastructure.Data.Repository
         {
         }
 
+        public async Task<Banner> GetByNameAsync(string bannerName, CancellationToken cancellationToken)
+        {
+            return await _context.Banners
+                .AsNoTracking()
+                .Where(banner => banner.Name.Contains(bannerName, StringComparison.InvariantCultureIgnoreCase))
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
         public async Task<IEnumerable<Banner>> GetPagedAsync(int pageIndex = 0, int pageSize = 10)
         {
             var query = _context.Banners
@@ -19,15 +27,7 @@ namespace cafedebug_backend.infrastructure.Data.Repository
                 .Skip(pageIndex * pageSize)
                 .Take(pageSize);
 
-            return await query.ToListAsync();
-        }
-
-        public async Task<IEnumerable<Banner>> GetAsync()
-        {
-            return await _context.Set<Banner>()
-                                 .Where(banner => banner.Active
-                                 && banner.StartDate.Date <= DateTime.Now.Date
-                                 && banner.EndDate.Date >= DateTime.Now.Date).ToListAsync();
+            return (IEnumerable<Banner>)await query.ToListAsync();
         }
     }
 }

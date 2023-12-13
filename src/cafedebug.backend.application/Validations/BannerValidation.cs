@@ -1,9 +1,10 @@
 ﻿using cafedebug_backend.domain.Entities;
+using cafedebug_backend.domain.Request;
 using FluentValidation;
 
 namespace cafedebug.backend.application.Validations
 {
-    public class BannerValidation : AbstractValidator<Banner>
+    public class BannerValidation : AbstractValidator<BannerRequest>
     {
         public BannerValidation()
         {
