@@ -5,7 +5,6 @@ using cafedebug_backend.domain.Interfaces.Services;
 using cafedebug_backend.domain.Request;
 using cafedebug_backend.domain.Response;
 using cafedebug_backend.domain.Shared;
-using FluentValidation;
 using Microsoft.Extensions.Logging;
 
 namespace cafedebug.backend.application.Service
@@ -122,8 +121,8 @@ namespace cafedebug.backend.application.Service
 
             if(banner is null)
             {
-                _logger.LogWarning($"Banner not found.{id}");
-                return Result.Failure($"Banner not found {id}.");
+                _logger.LogWarning($"Banner not found - banner id: {id}.");
+                return Result.Failure($"Banner not found - banner id: {id}.");
             }
 
             try

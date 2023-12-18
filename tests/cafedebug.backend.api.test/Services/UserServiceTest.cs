@@ -1,5 +1,6 @@
 ﻿using cafedebug.backend.application.Service;
 using cafedebug_backend.domain.Entities;
+using cafedebug_backend.domain.Interfaces.Respositories;
 using cafedebug_backend.domain.Interfaces.Respository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
@@ -205,6 +206,8 @@ namespace cafedebug.backend.api.test.Services
 
             var looggerMock = Mock.Of<ILogger<UserService>>();
             var stringLocalizerMock = Mock.Of<IStringLocalizer<UserService>>();
+
+            _userRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(userAdmin));
 
             var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock, stringLocalizerMock);
 

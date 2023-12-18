@@ -113,9 +113,9 @@ namespace cafedebug.backend.application.Service
                     return Result<UserAdmin>.Failure("User admin cannot be null.");
                 }
 
-                var userRepository = await _userRepository.GetByIdAsync(userAdmin.Id, cancellationToken);
+                var userAdminRepository = await _userRepository.GetByIdAsync(userAdmin.Id, cancellationToken);
 
-                if(userRepository is null)
+                if(userAdminRepository is null)
                 {
                     _logger.LogWarning($"User admin not found.");
                     return Result<UserAdmin>.Failure("User admin not found.");
