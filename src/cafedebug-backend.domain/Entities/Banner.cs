@@ -2,7 +2,6 @@
 {
     public class Banner : Entity
     {
-        protected Banner() { }
         public string Name { get; private set; }
 
         public string UrlImage { get; private set; }
