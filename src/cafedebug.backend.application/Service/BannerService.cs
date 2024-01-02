@@ -92,18 +92,19 @@ namespace cafedebug.backend.application.Service
                 if(banner is null)
                     return Result<BannerResponse>.Failure($"Banner not found {bannerRequest.Id}.");
 
-                var bannerUpdate = new Banner(
-                    bannerRequest.Name,
-                    bannerRequest.UrlImage,
+                banner.Update(
+                    bannerRequest.Name, 
+                    bannerRequest.UrlImage, 
                     bannerRequest.Url,
                     bannerRequest.StartDate,
                     bannerRequest.EndDate,
+                    bannerRequest.DateUpdate,
                     bannerRequest.Active);
 
-                await _bannerRepository.UpdateAsync(bannerUpdate, cancellationToken);
+                await _bannerRepository.UpdateAsync(banner, cancellationToken);
                 _logger.LogInformation($"Banner updated with success.");
 
-                var bannerResponse = MapperBannerResponse(bannerUpdate);
+                var bannerResponse = MapperBannerResponse(banner);
 
                 return Result<BannerResponse>.Success(bannerResponse);
             }

@@ -28,6 +28,17 @@
             Disable(endDate);
         }
        
+        public void Update(string name, string urlImage, string url, DateTime startDate, DateTime endDate, DateTime? updateDate, bool active)
+        {
+            Name = name;
+            UrlImage = urlImage;
+            Url = url;
+            StartDate = startDate;
+            EndDate = endDate;
+            UpdateDate = updateDate;
+            Active = active;
+            Disable(endDate);
+        }   
         public void Disable(DateTime endDate)
         {
             if(endDate == DateTime.Now.AddDays(-1))
