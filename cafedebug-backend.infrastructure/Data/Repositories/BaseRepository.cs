@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace cafedebug_backend.infrastructure.Data.Repository
 {
-    public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : Entity, new()
+    public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : Entity
     {
         protected readonly CafedebugContext _context;
         protected readonly DbSet<TEntity> _dbSet;
@@ -20,12 +20,12 @@ namespace cafedebug_backend.infrastructure.Data.Repository
             return await _dbSet.CountAsync();
         }
 
-        public async Task DeleteAsync(Guid code)
+        public async Task DeleteAsync(int id, CancellationToken cancellationToken)
         {
-            var entity = await _dbSet.FirstOrDefaultAsync(x => x.Code == code);
+            var entity = await _dbSet.FirstOrDefaultAsync(x => x.Id == id);
 
             _dbSet.Remove(entity);
-            await SaveAsync(entity);
+            await SaveAsync(entity, cancellationToken);
         }
 
         public virtual async Task<IEnumerable<TEntity>> GetAllAsync(bool asNoTracking = false)
@@ -38,33 +38,33 @@ namespace cafedebug_backend.infrastructure.Data.Repository
             return await query.ToListAsync();
         }
 
-        public async Task<TEntity> GetByCodeAsync(Guid code)
+        public async Task<TEntity> GetByCodeAsync(Guid code, CancellationToken cancellationToken)
         {
             return await _dbSet.FirstOrDefaultAsync(x => x.Code == code);
         }
 
-        public virtual async Task<TEntity> GetByIdAsync(int id)
+        public virtual async Task<TEntity> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
             return await _dbSet.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<TEntity> SaveAsync(TEntity entity)
+        public async Task<TEntity> SaveAsync(TEntity entity, CancellationToken cancellationToken)
         {
             _dbSet.Add(entity);
-            await SaveChangesAsync();
+            await SaveChangesAsync(cancellationToken);
 
             return entity;
         }
 
-        public async Task<int> SaveChangesAsync()
+        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
         {
             return await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(TEntity entity)
+        public async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken)
         {
             _context.Entry(entity).State = EntityState.Modified;
-            await SaveAsync(entity);
+            await SaveAsync(entity, cancellationToken);
         }
     }
 }

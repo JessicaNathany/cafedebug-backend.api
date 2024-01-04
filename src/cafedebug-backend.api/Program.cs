@@ -2,7 +2,6 @@ using cafedebug_backend.api.DependencyInjection;
 using cafedebug_backend.application.Constants;
 using cafedebug_backend.infrastructure.Context;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
@@ -14,23 +13,24 @@ var builder = WebApplication.CreateBuilder(args);
 // Register Depndencies
 builder.Services.ResolveDependencies();
 
-// add localization service
-builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+//// add localization service
+//builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
-// configure support culture 
-var supportedCultures = new[] { "en-US", "pt-BR" };
+//// configure support culture 
+//var supportedCultures = new[] { "en-US", "pt-BR" };
 
-var localizationOptions = new RequestLocalizationOptions()
-    .SetDefaultCulture(supportedCultures[0])
-    .AddSupportedCultures(supportedCultures)
-    .AddSupportedUICultures(supportedCultures);
+//var localizationOptions = new RequestLocalizationOptions()
+//    .SetDefaultCulture(supportedCultures[0])
+//    .AddSupportedCultures(supportedCultures)
+//    .AddSupportedUICultures(supportedCultures);
 
-builder.Services.Configure<RequestLocalizationOptions>(options =>
-{
-    options.DefaultRequestCulture = new RequestCulture(supportedCultures[0]);
-    options.SupportedCultures = localizationOptions.SupportedCultures;
-    options.SupportedUICultures = localizationOptions.SupportedUICultures;
-});
+
+//builder.Services.Configure<RequestLocalizationOptions>(options =>
+//{
+//    options.DefaultRequestCulture = new RequestCulture(supportedCultures[0]);
+//    options.SupportedCultures = localizationOptions.SupportedCultures;
+//    options.SupportedUICultures = localizationOptions.SupportedUICultures;
+//});
 
 
 // configure Dbcontext class
@@ -82,9 +82,10 @@ builder.Services.AddControllers().AddFluentValidation(fluentValidation =>
     fluentValidation.RegisterValidatorsFromAssemblyContaining<Program>();
 });
 
-
-
 var app = builder.Build();
+
+// Use localization Resx
+//app.UseRequestLocalization(localizationOptions);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
