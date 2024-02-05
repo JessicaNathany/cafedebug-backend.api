@@ -30,7 +30,8 @@ namespace cafedebug_backend.infrastructure.Data.Repository
 
         public virtual async Task<IEnumerable<TEntity>> GetAllAsync(bool asNoTracking = false)
         {
-            var query = _context.Set<TEntity>();
+            // entity 8 migrar  _dbSet.Where(c => x.Id == id).ExecuteDelete() 
+            var query = _context.Set<TEntity>(); 
 
             if (asNoTracking)
                return await query.AsNoTracking().ToListAsync();

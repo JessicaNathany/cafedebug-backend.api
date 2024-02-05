@@ -12,7 +12,7 @@
 
         public DateTime EndDate { get; private set; }
 
-        public DateTime? UpdateDate { get; set; }
+        public DateTime? UpdateDate { get; private set; }
 
         public bool Active { get; private set; }
 

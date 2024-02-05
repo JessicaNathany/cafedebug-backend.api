@@ -1,13 +1,18 @@
 ﻿using cafedebug_backend.domain.Entities;
+using cafedebug_backend.domain.Shared;
 
 namespace cafedebug_backend.domain.Interfaces.Services
 {
-    public interface IEpisodeService : IDisposable
+    public interface IEpisodeService 
     {
-        Task Save(Episode episode);
+        Task<Result<Episode>> CreateAsync(Episode episodeRequest, CancellationToken cancellationToken);
 
-        Task Update(Episode episode);
+        Task<Result<Episode>> UpdateAsync(Episode episodeRequest, CancellationToken cancellationToken);
 
-        Task Delete(Guid code);
+        Task DeleteAsync(int id, CancellationToken cancellationToken);
+
+        Task<Result<Episode>> GetById(int id, CancellationToken cancellationToken);
+
+        Task<Result<List<Episode>>> GetAll();
     }
 }

@@ -1,7 +1,7 @@
 ﻿using cafedebug_backend.domain.Enums;
 using Newtonsoft.Json;
 
-namespace cafedebug_backend.domain.Response
+namespace cafedebug_backend.application.Response
 {
     public class ValidationResponse
     {

@@ -1,4 +1,4 @@
-﻿using cafedebug.backend.application.Admin;
+﻿using cafedebug.backend.application.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
 namespace cafedebug_backend.api.Administrator.Controllers

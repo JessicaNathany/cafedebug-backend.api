@@ -1,9 +1,7 @@
 ﻿using Newtonsoft.Json;
-using System.Text.Json.Serialization;
 
-namespace cafedebug_backend.domain.Request
+namespace cafedebug_backend.application.Request
 {
-    //[JsonProperty("banner")]
     public class BannerRequest
     {
         public int Id { get; set; }

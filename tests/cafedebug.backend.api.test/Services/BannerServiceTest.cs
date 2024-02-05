@@ -1,7 +1,7 @@
 ﻿using cafedebug.backend.application.Service;
+using cafedebug_backend.application.Request;
 using cafedebug_backend.domain.Entities;
 using cafedebug_backend.domain.Interfaces.Respositories;
-using cafedebug_backend.domain.Request;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -45,7 +45,6 @@ namespace cafedebug.backend.api.test.Services
         {
             var bannerRequest = new BannerRequest
             {
-                Id = 1,  
                 Name = "Banner Café Youtube",
                 StartDate = DateTime.Now.AddDays(10),
                 EndDate = DateTime.Now.AddDays(7),
@@ -54,11 +53,19 @@ namespace cafedebug.backend.api.test.Services
                 Active = true,
             };
 
+            var banner = new Banner(
+                bannerRequest.Name,
+                bannerRequest.UrlImage,
+                bannerRequest.Url,
+                bannerRequest.StartDate,
+                bannerRequest.EndDate,
+                bannerRequest.Active);
+
             var service = _autoMocker.CreateInstance<BannerService>();
-            await service.CreateAsync(bannerRequest, CancellationToken.None);
+            await service.CreateAsync(banner, CancellationToken.None);
 
             // Act
-            var result = await service.CreateAsync(bannerRequest, CancellationToken.None);
+            var result = await service.CreateAsync(banner, CancellationToken.None);
 
             // Assert
             Assert.False(result.IsSuccess);
@@ -80,20 +87,20 @@ namespace cafedebug.backend.api.test.Services
                 Active = true,
             };
 
-            _bannerRepositoryMock.Setup(x => x.SaveAsync(It.IsAny<Banner>(), CancellationToken.None)).Verifiable();
-
-            var service = _autoMocker.CreateInstance<BannerService>();
-            await service.CreateAsync(bannerRequest, CancellationToken.None);
-
             var banner = new Banner(
                 bannerRequest.Name,
-                bannerRequest.UrlImage, 
-                bannerRequest.Url, 
+                bannerRequest.UrlImage,
+                bannerRequest.Url,
                 bannerRequest.StartDate,
                 bannerRequest.EndDate,
                 bannerRequest.Active);
 
-            var result = await service.CreateAsync(bannerRequest, CancellationToken.None);
+            _bannerRepositoryMock.Setup(x => x.SaveAsync(It.IsAny<Banner>(), CancellationToken.None)).Verifiable();
+
+            var service = _autoMocker.CreateInstance<BannerService>();
+            await service.CreateAsync(banner, CancellationToken.None);
+
+            var result = await service.CreateAsync(banner, CancellationToken.None);
 
             // Assert
             Assert.True(result.IsSuccess);
@@ -132,9 +139,9 @@ namespace cafedebug.backend.api.test.Services
                 .Returns(Task.FromResult(bannerExist));
 
             var service = new BannerService(_bannerRepositoryMock.Object, looggerMock);
-            await service.CreateAsync(bannerRequest, CancellationToken.None);
+            await service.CreateAsync(It.IsAny<Banner>(), CancellationToken.None);
 
-            var result = await service.CreateAsync(bannerRequest, CancellationToken.None);
+            var result = await service.CreateAsync(bannerExist, CancellationToken.None);
 
             // Assert
             Assert.False(result.IsSuccess);
@@ -156,11 +163,19 @@ namespace cafedebug.backend.api.test.Services
                 Active = true,
             };
 
+            var banner = new Banner(
+               bannerRequest.Name,
+               bannerRequest.UrlImage,
+               bannerRequest.Url,
+               bannerRequest.StartDate,
+               bannerRequest.EndDate,
+               bannerRequest.Active);
+
             var service = _autoMocker.CreateInstance<BannerService>();
-            await service.UpdateAsync(bannerRequest, CancellationToken.None);
+            await service.UpdateAsync(banner, CancellationToken.None);
 
             // Act
-            var result = await service.CreateAsync(bannerRequest, CancellationToken.None);
+            var result = await service.UpdateAsync(banner, CancellationToken.None);
 
             // Assert
             Assert.False(result.IsSuccess);
@@ -199,7 +214,7 @@ namespace cafedebug.backend.api.test.Services
 
             //Act
             var service = new BannerService(_bannerRepositoryMock.Object, looggerMock);
-            var result = await service.UpdateAsync(bannerRequest, CancellationToken.None);
+            var result = await service.UpdateAsync(bannerExist, CancellationToken.None);
 
             // Assert
             Assert.True(result.IsSuccess);

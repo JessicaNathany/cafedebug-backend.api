@@ -6,10 +6,12 @@ using cafedebug_backend.domain.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using System;
 
 namespace cafedebug.backend.application.Service
 {
+    /// <summary>
+    /// User admin service: class responsible for the business rules of the user admin to access admin area.
+    /// </summary>
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
