@@ -54,33 +54,123 @@ namespace cafedebug.backend.application.Service
             {
                 _logger.LogError($"An unexpected error occurred. {exception}");
                 return Result<Episode>.Failure($"An unexpected error occurred. Erro: {exception.Message}");
-                throw;
             }
         }
 
-        public Task<Result<Episode>> UpdateAsync(Episode episodeRequest)
+        public async Task<Result<Episode>> UpdateAsync(Episode episode, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (episode is null)
+            {
+                _logger.LogWarning($"Object Episode is cannot be null.");
+                return Result<Episode>.Failure("Episode cannot be null.");
+            }
+
+            var episodeValidator = new EpisodeValidation();
+            var validationResult = episodeValidator.Validate(episode);
+
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+                _logger.LogWarning($"Episode is invalid. {errors}");
+                return Result<Episode>.Failure(validationResult.Errors[0].ErrorMessage);
+            }
+            try
+            {
+                var episodeRepository = await _episodeRepository.GetByIdAsync(episode.Id, cancellationToken);
+
+                if (episodeRepository is null)
+                    return Result<Episode>.Failure($"Episode not found {episodeRepository.Id}.");
+
+                episode.Update(
+                    episode.Title,
+                    episode.Description,
+                    episode.ResumeDescription,
+                    episode.Url,
+                    episode.ImageUrl,
+                    episode.PublicationDate,
+                    episode.Active,
+                    episode.Number,
+                    episode.CategoryId,
+                    episode.View,
+                    episode.Like);
+
+                await _episodeRepository.UpdateAsync(episode, cancellationToken);
+                _logger.LogInformation($"Banner updated with success.");
+
+                return Result<Episode>.Success(episode);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"An unexpected error occurred. {exception}");
+                return Result<Episode>.Failure($"An unexpected error occurred. Erro: {exception.Message}");
+            }
         }
 
-        public Task DeleteAsync(int id, CancellationToken cancellationToken)
+        public async Task<Result> DeleteAsync(int id, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var episode = await _episodeRepository.GetByIdAsync(id, cancellationToken);
+
+            if (episode is null)
+            {
+                _logger.LogWarning($"Episode not found - banner id: {id}.");
+                return Result.Failure($"Episode not found - banner id: {id}.");
+            }
+
+            try
+            {
+                await _episodeRepository.DeleteAsync(id, cancellationToken);
+                _logger.LogInformation($"Episode deleted with success.");
+
+                return Result.Success();
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"An unexpected error occurred {exception}.");
+                return Result.Failure($"An unexpected error occurred. Erro: {exception.Message}");
+            }
         }
 
-        public Task<Result<List<Episode>>> GetAll()
+        public async Task<Result<List<Episode>>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            try
+            {
+                var banners = await _episodeRepository.GetAllAsync();
+
+                if (banners is null)
+                {
+                    _logger.LogWarning($"Episode not found - banner");
+                    return Result<List<Episode>>.Failure($"Episode not found - banner.");
+                }
+
+                return Result<List<Episode>>.Success(banners.ToList());
+
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"An unexpected error occurred {exception}.");
+                return Result<List<Episode>>.Failure($"An unexpected error occurred. Erro: {exception.Message}");
+            }
         }
 
-        public Task<Result<Episode>> GetById(int id, CancellationToken cancellationToken)
+        public async Task<Result<Episode>> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
-        }
+            try
+            {
+                var episode = await _episodeRepository.GetByIdAsync(id, cancellationToken);
 
-        public Task<Result<Episode>> UpdateAsync(Episode episodeRequest, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
+                if (episode is null)
+                {
+                    _logger.LogWarning($"Banner not found - banner id: {id}.");
+                    return Result<Episode>.Failure($"Episode not found - banner id: {id}.");
+                }
+
+                return Result<Episode>.Success(episode);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"An unexpected error occurred {exception}.");
+                return Result<Episode>.Failure($"An unexpected error occurred. Erro: {exception.Message}");
+            }
         }
     }
 }

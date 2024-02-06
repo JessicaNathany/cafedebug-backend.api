@@ -9,10 +9,10 @@ namespace cafedebug_backend.domain.Interfaces.Services
 
         Task<Result<Episode>> UpdateAsync(Episode episodeRequest, CancellationToken cancellationToken);
 
-        Task DeleteAsync(int id, CancellationToken cancellationToken);
+        Task<Result> DeleteAsync(int id, CancellationToken cancellationToken);
 
-        Task<Result<Episode>> GetById(int id, CancellationToken cancellationToken);
+        Task<Result<Episode>> GetByIdAsync(int id, CancellationToken cancellationToken);
 
-        Task<Result<List<Episode>>> GetAll();
+        Task<Result<List<Episode>>> GetAllAsync();
     }
 }

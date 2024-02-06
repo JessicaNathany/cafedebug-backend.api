@@ -54,7 +54,6 @@ namespace cafedebug.backend.application.Service
             {
                 _logger.LogError($"An unexpected error occurred. {exception}");
                 return Result<Banner>.Failure($"An unexpected error occurred. Erro: {exception.Message}");
-                throw;
             }
         }
 
@@ -80,7 +79,7 @@ namespace cafedebug.backend.application.Service
             {
                 var bannerRepository = await _bannerRepository.GetByIdAsync(banner.Id, cancellationToken);
 
-                if(banner is null)
+                if(bannerRepository is null)
                     return Result<Banner>.Failure($"Banner not found {bannerRepository.Id}.");
 
                 banner.Update(
@@ -101,7 +100,6 @@ namespace cafedebug.backend.application.Service
             {
                 _logger.LogError($"An unexpected error occurred. {exception}");
                 return Result<Banner>.Failure($"An unexpected error occurred. Erro: {exception.Message}");
-                throw;
             }
         }
 
@@ -126,7 +124,6 @@ namespace cafedebug.backend.application.Service
             {
                 _logger.LogError($"An unexpected error occurred {exception}.");
                 return Result.Failure($"An unexpected error occurred. Erro: {exception.Message}");
-                throw;
             }
         }
 
@@ -148,7 +145,6 @@ namespace cafedebug.backend.application.Service
             {
                 _logger.LogError($"An unexpected error occurred {exception}.");
                 return Result<Banner>.Failure($"An unexpected error occurred. Erro: {exception.Message}");
-                throw;
             }
         }
 
@@ -171,7 +167,6 @@ namespace cafedebug.backend.application.Service
             {
                 _logger.LogError($"An unexpected error occurred {exception}.");
                 return Result<List<Banner>>.Failure($"An unexpected error occurred. Erro: {exception.Message}");
-                throw;
             }
         }
     }

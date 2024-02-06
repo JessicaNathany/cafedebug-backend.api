@@ -25,7 +25,7 @@
             StartDate = startDate;
             EndDate = endDate;
             Active = active;
-            Disable(endDate);
+            EndDateVerify(endDate);
         }
        
         public void Update(string name, string urlImage, string url, DateTime startDate, DateTime endDate, DateTime? updateDate, bool active)
@@ -37,9 +37,9 @@
             EndDate = endDate;
             UpdateDate = updateDate;
             Active = active;
-            Disable(endDate);
+            EndDateVerify(endDate);
         }   
-        public void Disable(DateTime endDate)
+        public void EndDateVerify(DateTime endDate)
         {
             if(endDate == DateTime.Now.AddDays(-1))
             Active = false;
