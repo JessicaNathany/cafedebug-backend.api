@@ -16,7 +16,7 @@
 
         public bool Active { get; private set; }
 
-        public Banner(string name, string urlImage, string url, DateTime startDate, DateTime endDate, bool active) 
+        public Banner(string name, string urlImage, string url, DateTime startDate, DateTime endDate, bool active)
         {
             Code = Guid.NewGuid();
             Name = name;
@@ -27,7 +27,7 @@
             Active = active;
             EndDateVerify(endDate);
         }
-       
+
         public void Update(string name, string urlImage, string url, DateTime startDate, DateTime endDate, DateTime? updateDate, bool active)
         {
             Name = name;
@@ -38,11 +38,11 @@
             UpdateDate = updateDate;
             Active = active;
             EndDateVerify(endDate);
-        }   
+        }
         public void EndDateVerify(DateTime endDate)
         {
-            if(endDate == DateTime.Now.AddDays(-1))
-            Active = false;
+            if (endDate == DateTime.Now.AddDays(-1))
+                Active = false;
         }
     }
 }

@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Xml.Linq;
 
 namespace cafedebug_backend.domain.Entities
 {
@@ -11,7 +9,7 @@ namespace cafedebug_backend.domain.Entities
         public string ResumeDescription { get; private set; }
         public string Url { get; private set; }
         public string ImageUrl { get; private set; }
-       
+
         public IFormFile ImageUpload { get; private set; }
         public IList<EpisodeTag> EpisodiesTags { get; private set; }
         public DateTime PublicationDate { get; private set; }

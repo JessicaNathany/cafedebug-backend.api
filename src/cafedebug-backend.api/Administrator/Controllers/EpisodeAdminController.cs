@@ -5,12 +5,8 @@ namespace cafedebug_backend.api.Administrator.Controllers
 {
     [Area(nameof(Administrator))]
     [Route("administrador/episodios")]
-    public class EpisodeAdminController : BaseAdminController
+    public class EpisodesAdminController : ControllerBase
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
 
         [Route("listar-episodios")]
         [HttpGet]

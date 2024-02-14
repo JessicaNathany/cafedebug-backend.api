@@ -3,7 +3,7 @@ using cafedebug_backend.domain.Shared;
 
 namespace cafedebug_backend.domain.Interfaces.Services
 {
-    public interface IEpisodeService 
+    public interface IEpisodeService
     {
         Task<Result<Episode>> CreateAsync(Episode episodeRequest, CancellationToken cancellationToken);
 

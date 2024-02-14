@@ -1,6 +1,6 @@
 ﻿using cafedebug.backend.application.Service;
 using cafedebug_backend.domain.Entities;
-using cafedebug_backend.domain.Interfaces.Respository;
+using cafedebug_backend.domain.Interfaces.Respositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -43,10 +43,10 @@ namespace cafedebug.backend.api.test.Services
             var result = await service.GetByLoginAndPasswordAsync(email, password, It.IsAny<CancellationToken>());
 
             // Assert
-            Assert.False(result.IsSuccess); 
+            Assert.False(result.IsSuccess);
             Assert.NotNull(result.Error);
             Assert.Null(result.Value);
-            Assert.Equal("User not found.", result.Error); 
+            Assert.Equal("User not found.", result.Error);
         }
 
         [Fact]
@@ -70,9 +70,8 @@ namespace cafedebug.backend.api.test.Services
                                .Returns(PasswordVerificationResult.Success);
 
             var looggerMock = Mock.Of<ILogger<UserService>>();
-            var stringLocalizerMock = Mock.Of<IStringLocalizer<UserService>>();
 
-            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock, stringLocalizerMock);
+            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
 
             // Act
             var result = await userService.GetByLoginAndPasswordAsync(email, password, CancellationToken.None);
@@ -102,9 +101,8 @@ namespace cafedebug.backend.api.test.Services
                                .Returns(PasswordVerificationResult.Failed);
 
             var looggerMock = Mock.Of<ILogger<UserService>>();
-            var stringLocalizerMock = Mock.Of<IStringLocalizer<UserService>>();
 
-            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock, stringLocalizerMock);
+            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
 
             // Act
             var result = await userService.GetByLoginAndPasswordAsync(email, password, CancellationToken.None);
@@ -121,9 +119,7 @@ namespace cafedebug.backend.api.test.Services
             var password = "123456";
 
             var looggerMock = Mock.Of<ILogger<UserService>>();
-            var stringLocalizerMock = Mock.Of<IStringLocalizer<UserService>>();
-
-            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock, stringLocalizerMock);
+            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
 
             // Act
             var result = await userService.CreateAsync(null, password, CancellationToken.None);
@@ -152,10 +148,8 @@ namespace cafedebug.backend.api.test.Services
                                .Returns(userAdmin.HashedPassword);
 
             var looggerMock = Mock.Of<ILogger<UserService>>();
-            var stringLocalizerMock = Mock.Of<IStringLocalizer<UserService>>();
+            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
 
-            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock, stringLocalizerMock);
-            
             // Act
             var result = await userService.CreateAsync(email, password, CancellationToken.None);
 
@@ -179,9 +173,7 @@ namespace cafedebug.backend.api.test.Services
             };
 
             var looggerMock = Mock.Of<ILogger<UserService>>();
-            var stringLocalizerMock = Mock.Of<IStringLocalizer<UserService>>();
-
-            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock, stringLocalizerMock);
+            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
 
             // Act
             var result = await userService.CreateAsync(email, null, CancellationToken.None);
@@ -204,11 +196,9 @@ namespace cafedebug.backend.api.test.Services
             };
 
             var looggerMock = Mock.Of<ILogger<UserService>>();
-            var stringLocalizerMock = Mock.Of<IStringLocalizer<UserService>>();
-
             _userRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(userAdmin));
 
-            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock, stringLocalizerMock);
+            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
 
             // Act
             var result = await userService.UpdateAsync(userAdmin, CancellationToken.None);
@@ -230,9 +220,7 @@ namespace cafedebug.backend.api.test.Services
             };
 
             var looggerMock = Mock.Of<ILogger<UserService>>();
-            var stringLocalizerMock = Mock.Of<IStringLocalizer<UserService>>();
-
-            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock, stringLocalizerMock);
+            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
 
             var userMock = new Mock<IUserRepository>();
             userMock.Setup(x => x.GetByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -251,9 +239,7 @@ namespace cafedebug.backend.api.test.Services
         public async Task Update_UpdateAsync_ShouldBe_Error_UserNull()
         {
             var looggerMock = Mock.Of<ILogger<UserService>>();
-            var stringLocalizerMock = Mock.Of<IStringLocalizer<UserService>>();
-
-            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock, stringLocalizerMock);
+            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
 
             // Act
             var result = await userService.UpdateAsync(null, CancellationToken.None);
@@ -268,9 +254,7 @@ namespace cafedebug.backend.api.test.Services
         public async Task Update_GetByIUdAsync_ShouldBe_Error_UserNotFound()
         {
             var looggerMock = Mock.Of<ILogger<UserService>>();
-            var stringLocalizerMock = Mock.Of<IStringLocalizer<UserService>>();
-
-            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock, stringLocalizerMock);
+            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
 
             // Act
             var result = await userService.GetByIdAsync(1, CancellationToken.None);
@@ -299,9 +283,7 @@ namespace cafedebug.backend.api.test.Services
                                .Returns(userAdmin.HashedPassword);
 
             var looggerMock = Mock.Of<ILogger<UserService>>();
-            var stringLocalizerMock = Mock.Of<IStringLocalizer<UserService>>();
-
-            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock, stringLocalizerMock);
+            var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
 
             // Act
             var result = await userService.CreateAsync(email, password, CancellationToken.None);

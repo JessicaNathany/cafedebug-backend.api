@@ -2,7 +2,7 @@
 
 namespace cafedebug_backend.domain.Interfaces.Services
 {
-    public interface IContactService : IDisposable
+    public interface IContactService 
     {
         Task Save(Contact contact);
     }

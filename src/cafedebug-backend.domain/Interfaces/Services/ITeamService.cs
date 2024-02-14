@@ -2,7 +2,7 @@
 
 namespace cafedebug_backend.domain.Interfaces.Services
 {
-    public interface ITeamService : IDisposable
+    public interface ITeamService 
     {
         Task Save(Team team);
         Task Update(Team team);

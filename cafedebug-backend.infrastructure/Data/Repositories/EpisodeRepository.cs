@@ -2,9 +2,8 @@
 using cafedebug_backend.domain.Interfaces.Respositories;
 using cafedebug_backend.infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
-using System.Threading;
 
-namespace cafedebug_backend.infrastructure.Data.Repository
+namespace cafedebug_backend.infrastructure.Data.Repositories
 {
     public class EpisodeRepository : BaseRepository<Episode>, IEpisodeRepository
     {

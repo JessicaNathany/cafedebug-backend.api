@@ -10,7 +10,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : BaseAdminController
+    public class AuthController : ControllerBase
     {
         private readonly IJWTService _jwtService;
         private readonly IUserService _userService;

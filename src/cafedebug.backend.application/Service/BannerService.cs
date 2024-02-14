@@ -79,12 +79,12 @@ namespace cafedebug.backend.application.Service
             {
                 var bannerRepository = await _bannerRepository.GetByIdAsync(banner.Id, cancellationToken);
 
-                if(bannerRepository is null)
+                if (bannerRepository is null)
                     return Result<Banner>.Failure($"Banner not found {bannerRepository.Id}.");
 
                 banner.Update(
-                    bannerRepository.Name, 
-                    bannerRepository.UrlImage, 
+                    bannerRepository.Name,
+                    bannerRepository.UrlImage,
                     bannerRepository.Url,
                     bannerRepository.StartDate,
                     bannerRepository.EndDate,
@@ -107,7 +107,7 @@ namespace cafedebug.backend.application.Service
         {
             var banner = await _bannerRepository.GetByIdAsync(id, cancellationToken);
 
-            if(banner is null)
+            if (banner is null)
             {
                 _logger.LogWarning($"Banner not found - banner id: {id}.");
                 return Result.Failure($"Banner not found - banner id: {id}.");
@@ -127,7 +127,7 @@ namespace cafedebug.backend.application.Service
             }
         }
 
-        public async Task<Result<Banner>> GetById(int id, CancellationToken cancellationToken)
+        public async Task<Result<Banner>> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
             try
             {
@@ -148,7 +148,7 @@ namespace cafedebug.backend.application.Service
             }
         }
 
-        public async Task<Result<List<Banner>>> GetAll()
+        public async Task<Result<List<Banner>>> GetAllAsync()
         {
             try
             {

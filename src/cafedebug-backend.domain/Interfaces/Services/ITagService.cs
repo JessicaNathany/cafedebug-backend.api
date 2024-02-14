@@ -2,7 +2,7 @@
 
 namespace cafedebug_backend.domain.Interfaces.Services
 {
-    public interface ITagService : IDisposable
+    public interface ITagService 
     {
         Task Save(Tag category);
 

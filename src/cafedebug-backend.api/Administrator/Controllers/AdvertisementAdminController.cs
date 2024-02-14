@@ -4,17 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace cafedebug_backend.api.Administrator.Controllers
 {
-    public class AdvertisementAdminController : BaseAdminController
+    public class AdvertisementsAdminController : ControllerBase
     {
-        public AdvertisementAdminController()
+        public AdvertisementsAdminController()
         {
 
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
 
         [Route("listar-anuncios")]
         [HttpGet]

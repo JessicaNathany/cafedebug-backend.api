@@ -2,7 +2,7 @@
 
 namespace cafedebug_backend.domain.Interfaces.Services
 {
-    public interface ICategoryService : IDisposable
+    public interface ICategoryService
     {
         Task Save(Category category);
 

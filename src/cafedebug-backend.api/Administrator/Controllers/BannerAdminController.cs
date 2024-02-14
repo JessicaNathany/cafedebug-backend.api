@@ -9,20 +9,20 @@ using Microsoft.AspNetCore.Mvc;
 namespace cafedebug_backend.api.Administrator.Controllers
 {
     [ApiController]
-    [Authorize]
     [Produces("application/json")]
     [Route("api/banner-admin")]
-    public class BannerAdminController : BaseAdminController
+    public class BannersAdminController : ControllerBase
     {
         private readonly IBannerService _bannerService;
         private readonly IMapper _mapper;
-        public BannerAdminController(IBannerService bannerService, IMapper mapper)
+        public BannersAdminController(IBannerService bannerService, IMapper mapper)
         {
             _bannerService = bannerService;
             _mapper = mapper;
         }
 
         [HttpPost]
+        [Authorize]
         [Route("novo-banner")]
         [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -59,6 +59,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         [Route("editar-banner")]
         [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -95,15 +96,15 @@ namespace cafedebug_backend.api.Administrator.Controllers
         }
 
         [HttpGet]
-        [Route("buscar-banners")]
+        [Route("banners")]
         [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+        public async Task<IActionResult> GetAll()
         {
             try
             {
-                var episodes = await _bannerService.GetAll();
+                var episodes = await _bannerService.GetAllAsync();
 
                 if (!episodes.IsSuccess)
                     return BadRequest(episodes.Error);
@@ -124,11 +125,14 @@ namespace cafedebug_backend.api.Administrator.Controllers
 
         [HttpGet]
         [Route("buscar-banner/{id}")]
+        [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
         {
             try
             {
-                var episode = await _bannerService.GetById(id, cancellationToken);
+                var episode = await _bannerService.GetByIdAsync(id, cancellationToken);
 
                 if (!episode.IsSuccess)
                     return BadRequest(episode.Error);
@@ -148,13 +152,36 @@ namespace cafedebug_backend.api.Administrator.Controllers
         }
 
         [HttpDelete]
+        [Authorize]
         [Route("deletar-banner/{id}")]
         [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public ActionResult Delete(int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest("BannerRequest can be not valid.");
+
+                if (id is 0)
+                    return BadRequest("Banner Id can be not null.");
+
+                var result = await _bannerService.DeleteAsync(id, cancellationToken);
+
+                if (!result.IsSuccess)
+                    return BadRequest(result.Error);
+
+                return Ok();
+            }
+            catch (NullReferenceException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }
