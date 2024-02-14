@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace cafedebug_backend.domain.Response
+namespace cafedebug_backend.application.Response
 {
     public class ObjectResponse
     {

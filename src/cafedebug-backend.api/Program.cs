@@ -13,6 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Register Depndencies
 builder.Services.ResolveDependencies();
 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 //// add localization service
 //builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 

@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Mappings\" />
+    <Compile Remove="Mappings\**" />
+    <EmbeddedResource Remove="Mappings\**" />
+    <None Remove="Mappings\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,7 +19,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.15.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.3.1" />
   </ItemGroup>
 
   <ItemGroup>

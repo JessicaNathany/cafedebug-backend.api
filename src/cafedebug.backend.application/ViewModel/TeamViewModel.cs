@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace cafedebug.backend.application.Admin
+namespace cafedebug.backend.application.ViewModel
 {
     public class TeamViewModel
     {
@@ -19,7 +19,7 @@ namespace cafedebug.backend.application.Admin
         [JsonProperty("urlImagem")]
         public string UrlImage { get; set; }
 
-        [JsonProperty("profissao")] 
+        [JsonProperty("profissao")]
         public string Job { get; set; }
     }
 }

@@ -3,7 +3,7 @@ using cafedebug_backend.domain.Interfaces.Respositories;
 using cafedebug_backend.infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 
-namespace cafedebug_backend.infrastructure.Data.Repository
+namespace cafedebug_backend.infrastructure.Data.Repositories
 {
     public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : Entity
     {
@@ -30,10 +30,11 @@ namespace cafedebug_backend.infrastructure.Data.Repository
 
         public virtual async Task<IEnumerable<TEntity>> GetAllAsync(bool asNoTracking = false)
         {
+            // entity 8 migrar  _dbSet.Where(c => x.Id == id).ExecuteDelete() 
             var query = _context.Set<TEntity>();
 
             if (asNoTracking)
-               return await query.AsNoTracking().ToListAsync();
+                return await query.AsNoTracking().ToListAsync();
 
             return await query.ToListAsync();
         }

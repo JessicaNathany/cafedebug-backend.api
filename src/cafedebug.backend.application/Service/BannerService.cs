@@ -2,13 +2,14 @@
 using cafedebug_backend.domain.Entities;
 using cafedebug_backend.domain.Interfaces.Respositories;
 using cafedebug_backend.domain.Interfaces.Services;
-using cafedebug_backend.domain.Request;
-using cafedebug_backend.domain.Response;
 using cafedebug_backend.domain.Shared;
 using Microsoft.Extensions.Logging;
 
 namespace cafedebug.backend.application.Service
 {
+    /// <summary>
+    /// Class responsible for the business rules of the banner frontend
+    /// </summary>
     public class BannerService : IBannerService
     {
         private readonly IBannerRepository _bannerRepository;
@@ -19,100 +20,86 @@ namespace cafedebug.backend.application.Service
             _logger = logger;
         }
 
-        public async Task<Result<BannerResponse>> CreateAsync(BannerRequest bannerRequest, CancellationToken cancellationToken)
+        public async Task<Result<Banner>> CreateAsync(Banner banner, CancellationToken cancellationToken)
         {
-            if (bannerRequest is null)
+            if (banner is null)
             {
                 _logger.LogWarning($"Banner cannot be null.");
-                return Result<BannerResponse>.Failure("Banner cannot be null.");
+                return Result<Banner>.Failure("Banner cannot be null.");
             }
 
             var bannerValidator = new BannerValidation();
-            var validationResult = bannerValidator.Validate(bannerRequest);
+            var validationResult = bannerValidator.Validate(banner);
 
             if (!validationResult.IsValid)
             {
                 var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
                 _logger.LogWarning($"Banner is invalid. {errors}");
-                return Result<BannerResponse>.Failure(validationResult.Errors[0].ErrorMessage);
+                return Result<Banner>.Failure(validationResult.Errors[0].ErrorMessage);
             }
 
             try
             {
-                var banner = await _bannerRepository.GetByNameAsync(bannerRequest.Name, cancellationToken);
+                var bannerExist = await _bannerRepository.GetByNameAsync(banner.Name, cancellationToken);
 
-                if (banner != null)
-                    return Result<BannerResponse>.Failure($"Banner already exists {bannerRequest.Name}.");
+                if (bannerExist != null)
+                    return Result<Banner>.Failure($"Banner already exists {bannerExist.Name}.");
 
-                var newBanner = new Banner(
-                    bannerRequest.Name,
-                    bannerRequest.UrlImage,
-                    bannerRequest.Url,
-                    bannerRequest.StartDate,
-                    bannerRequest.EndDate,
-                    bannerRequest.Active);
-
-                await _bannerRepository.SaveAsync(newBanner, cancellationToken);
+                await _bannerRepository.SaveAsync(banner, cancellationToken);
                 _logger.LogInformation($"Banner saved with success.");
 
-                var bannerResponse = MapperBannerResponse(newBanner);
-
-                return Result<BannerResponse>.Success(bannerResponse);
+                return Result<Banner>.Success(banner);
             }
             catch (Exception exception)
             {
                 _logger.LogError($"An unexpected error occurred. {exception}");
-                return Result<BannerResponse>.Failure($"An unexpected error occurred. Erro: {exception.Message}");
-                throw;
+                return Result<Banner>.Failure($"An unexpected error occurred. Erro: {exception.Message}");
             }
         }
 
-        public async Task<Result<BannerResponse>> UpdateAsync(BannerRequest bannerRequest, CancellationToken cancellationToken)
+        public async Task<Result<Banner>> UpdateAsync(Banner banner, CancellationToken cancellationToken)
         {
-            if (bannerRequest is null)
+            if (banner is null)
             {
                 _logger.LogWarning($"Object Banner is cannot be null.");
-                return Result<BannerResponse>.Failure("Banner cannot be null.");
+                return Result<Banner>.Failure("Banner cannot be null.");
             }
 
             var bannerValidator = new BannerValidation();
-            var validationResult = bannerValidator.Validate(bannerRequest);
+            var validationResult = bannerValidator.Validate(banner);
 
             if (!validationResult.IsValid)
             {
                 var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
                 _logger.LogWarning($"Banner is invalid. {errors}");
-                return Result<BannerResponse>.Failure(validationResult.Errors[0].ErrorMessage);
+                return Result<Banner>.Failure(validationResult.Errors[0].ErrorMessage);
             }
 
             try
             {
-                var banner = await _bannerRepository.GetByIdAsync(bannerRequest.Id, cancellationToken);
+                var bannerRepository = await _bannerRepository.GetByIdAsync(banner.Id, cancellationToken);
 
-                if(banner is null)
-                    return Result<BannerResponse>.Failure($"Banner not found {bannerRequest.Id}.");
+                if (bannerRepository is null)
+                    return Result<Banner>.Failure($"Banner not found {bannerRepository.Id}.");
 
                 banner.Update(
-                    bannerRequest.Name, 
-                    bannerRequest.UrlImage, 
-                    bannerRequest.Url,
-                    bannerRequest.StartDate,
-                    bannerRequest.EndDate,
-                    bannerRequest.DateUpdate,
-                    bannerRequest.Active);
+                    bannerRepository.Name,
+                    bannerRepository.UrlImage,
+                    bannerRepository.Url,
+                    bannerRepository.StartDate,
+                    bannerRepository.EndDate,
+                    bannerRepository.UpdateDate,
+                    bannerRepository.Active);
 
                 await _bannerRepository.UpdateAsync(banner, cancellationToken);
                 _logger.LogInformation($"Banner updated with success.");
 
-                var bannerResponse = MapperBannerResponse(banner);
-
-                return Result<BannerResponse>.Success(bannerResponse);
+                return Result<Banner>.Success(banner);
             }
             catch (Exception exception)
             {
                 _logger.LogError($"An unexpected error occurred. {exception}");
-                return Result<BannerResponse>.Failure($"An unexpected error occurred. Erro: {exception.Message}");
-                throw;
+                return Result<Banner>.Failure($"An unexpected error occurred. Erro: {exception.Message}");
             }
         }
 
@@ -120,7 +107,7 @@ namespace cafedebug.backend.application.Service
         {
             var banner = await _bannerRepository.GetByIdAsync(id, cancellationToken);
 
-            if(banner is null)
+            if (banner is null)
             {
                 _logger.LogWarning($"Banner not found - banner id: {id}.");
                 return Result.Failure($"Banner not found - banner id: {id}.");
@@ -137,24 +124,50 @@ namespace cafedebug.backend.application.Service
             {
                 _logger.LogError($"An unexpected error occurred {exception}.");
                 return Result.Failure($"An unexpected error occurred. Erro: {exception.Message}");
-                throw;
             }
         }
 
-        private static BannerResponse MapperBannerResponse(Banner? banner)
+        public async Task<Result<Banner>> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
-            return new BannerResponse
+            try
             {
-                Id = banner.Id,
-                Code = banner.Code,
-                Name = banner.Name,
-                Active = banner.Active,
-                StartDate = banner.StartDate,
-                EndDate = banner.EndDate,
-                UpdateDate = banner.UpdateDate,
-                Url = banner.Url,
-                UrlImage = banner.UrlImage
-            };
+                var banner = await _bannerRepository.GetByIdAsync(id, cancellationToken);
+
+                if (banner is null)
+                {
+                    _logger.LogWarning($"Banner not found - banner id: {id}.");
+                    return Result<Banner>.Failure($"Banner not found - banner id: {id}.");
+                }
+
+                return Result<Banner>.Success(banner);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"An unexpected error occurred {exception}.");
+                return Result<Banner>.Failure($"An unexpected error occurred. Erro: {exception.Message}");
+            }
+        }
+
+        public async Task<Result<List<Banner>>> GetAllAsync()
+        {
+            try
+            {
+                var banners = await _bannerRepository.GetAllAsync();
+
+                if (banners is null)
+                {
+                    _logger.LogWarning($"Banner not found - banner");
+                    return Result<List<Banner>>.Failure($"Banner not found - banner.");
+                }
+
+                return Result<List<Banner>>.Success(banners.ToList());
+
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"An unexpected error occurred {exception}.");
+                return Result<List<Banner>>.Failure($"An unexpected error occurred. Erro: {exception.Message}");
+            }
         }
     }
 }

@@ -3,7 +3,7 @@ using cafedebug_backend.domain.Interfaces.Respositories;
 using cafedebug_backend.infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 
-namespace cafedebug_backend.infrastructure.Data.Repository
+namespace cafedebug_backend.infrastructure.Data.Repositories
 {
     public class BannerRepository : BaseRepository<Banner>, IBannerRepository
     {

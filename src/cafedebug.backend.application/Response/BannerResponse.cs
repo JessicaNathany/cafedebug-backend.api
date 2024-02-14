@@ -1,4 +1,4 @@
-﻿namespace cafedebug_backend.domain.Response
+﻿namespace cafedebug_backend.application.Response
 {
     public class BannerResponse
     {
@@ -11,12 +11,12 @@
 
         public string Url { get; set; }
 
-        public DateTime StartDate { get; set; }
+        public string StartDate { get; set; }
 
-        public DateTime EndDate { get; set; }
+        public string EndDate { get; set; }
 
-        public DateTime? UpdateDate { get; set; }
+        public string UpdateDate { get; set; }
 
-        public bool Active { get; set; }
+        public string Active { get; set; }
     }
 }

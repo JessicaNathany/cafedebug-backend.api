@@ -12,11 +12,11 @@
 
         public DateTime EndDate { get; private set; }
 
-        public DateTime? UpdateDate { get; set; }
+        public DateTime? UpdateDate { get; private set; }
 
         public bool Active { get; private set; }
 
-        public Banner(string name, string urlImage, string url, DateTime startDate, DateTime endDate, bool active) 
+        public Banner(string name, string urlImage, string url, DateTime startDate, DateTime endDate, bool active)
         {
             Code = Guid.NewGuid();
             Name = name;
@@ -25,9 +25,9 @@
             StartDate = startDate;
             EndDate = endDate;
             Active = active;
-            Disable(endDate);
+            EndDateVerify(endDate);
         }
-       
+
         public void Update(string name, string urlImage, string url, DateTime startDate, DateTime endDate, DateTime? updateDate, bool active)
         {
             Name = name;
@@ -37,12 +37,12 @@
             EndDate = endDate;
             UpdateDate = updateDate;
             Active = active;
-            Disable(endDate);
-        }   
-        public void Disable(DateTime endDate)
+            EndDateVerify(endDate);
+        }
+        public void EndDateVerify(DateTime endDate)
         {
-            if(endDate == DateTime.Now.AddDays(-1))
-            Active = false;
+            if (endDate == DateTime.Now.AddDays(-1))
+                Active = false;
         }
     }
 }

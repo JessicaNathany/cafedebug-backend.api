@@ -1,18 +1,14 @@
-﻿using cafedebug.backend.application.Admin;
+﻿using cafedebug.backend.application.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace cafedebug_backend.api.Administrator.Controllers
 {
-    public class TeamAdminController : BaseAdminController
+    public class TeamsAdminController : ControllerBase
     {
-        public TeamAdminController()
+        public TeamsAdminController()
         {
 
-        }
-        public IActionResult Index()
-        {
-            return View();
         }
 
         [Route("listar-debugers")]

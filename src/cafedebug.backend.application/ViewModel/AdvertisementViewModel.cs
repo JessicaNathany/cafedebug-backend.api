@@ -1,7 +1,7 @@
 ﻿using cafedebug_backend.domain.Enums;
 using Newtonsoft.Json;
 
-namespace cafedebug.backend.application.Admin
+namespace cafedebug.backend.application.ViewModel
 {
     public class AdvertisementViewModel
     {

@@ -3,7 +3,7 @@ using cafedebug_backend.domain.Interfaces.Respositories;
 using cafedebug_backend.infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 
-namespace cafedebug_backend.infrastructure.Data.Repository
+namespace cafedebug_backend.infrastructure.Data.Repositories
 {
     public class EpisodeRepository : BaseRepository<Episode>, IEpisodeRepository
     {
@@ -49,6 +49,14 @@ namespace cafedebug_backend.infrastructure.Data.Repository
         public async Task<IEnumerable<Episode>> GetLastThreeEpisodes()
         {
             return await _context.Episodes.OrderByDescending(x => x.Number).Take(3).ToListAsync();
+        }
+
+        public async Task<Episode> GetByTitle(string title, CancellationToken cancellationToken)
+        {
+            return await _context.Episodes
+               .AsNoTracking()
+               .Where(banner => banner.Title.Contains(title, StringComparison.InvariantCultureIgnoreCase))
+               .FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

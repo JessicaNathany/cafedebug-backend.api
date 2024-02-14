@@ -1,20 +1,16 @@
-﻿using cafedebug.backend.application.Admin;
+﻿using cafedebug.backend.application.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace cafedebug_backend.api.Administrator.Controllers
 {
-    public class AdvertisementAdminController : BaseAdminController
+    public class AdvertisementsAdminController : ControllerBase
     {
-        public AdvertisementAdminController()
+        public AdvertisementsAdminController()
         {
 
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
 
         [Route("listar-anuncios")]
         [HttpGet]
