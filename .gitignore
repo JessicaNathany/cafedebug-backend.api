@@ -36,3 +36,5 @@ appsettings.json
 /dataSources/
 /dataSources.local.xml
 /src/cafedebug-backend.api/appsettings.Development.json
+/src/cafedebug-backend.api/appsettings.Development.json
+/src/cafedebug-backend.api/appsettings.json
