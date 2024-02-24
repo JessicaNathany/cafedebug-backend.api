@@ -15,8 +15,6 @@ namespace cafedebug_backend.infrastructure.Context
         public DbSet<Team> Teams { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Contact> Contacts { get; set; }
-        public DbSet<Tag> Tags { get; set; }
-        public DbSet<EpisodeTag> TagsEpisodes { get; set; }
         public DbSet<UserAdmin> Users { get; set; }
 
         public DbSet<Advertisement> Advertisements { get; set; }

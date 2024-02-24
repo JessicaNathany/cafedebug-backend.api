@@ -11,7 +11,6 @@ namespace cafedebug_backend.domain.Entities
         public string ImageUrl { get; private set; }
 
         public IFormFile ImageUpload { get; private set; }
-        public IList<EpisodeTag> EpisodiesTags { get; private set; }
         public DateTime PublicationDate { get; private set; }
 
         public DateTime? UpdateDate { get; private set; }
