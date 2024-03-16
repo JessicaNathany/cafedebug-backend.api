@@ -20,7 +20,6 @@ namespace cafedebug_backend.api.DependencyInjection
             service.AddScoped<IContactRepository, ContactRepository>();
             service.AddScoped<ITeamRepository, TeamRepository>();
             service.AddScoped<IUserRepository, UserRepository>();
-            service.AddScoped<ITagRepository, TagRepository>();
             service.AddScoped<IAdvertisementRepository, AdvertisementRepository>();
 
             #endregion
@@ -34,7 +33,6 @@ namespace cafedebug_backend.api.DependencyInjection
             service.AddScoped<IContactService, ContactService>();
             service.AddScoped<ITeamService, TeamService>();
             service.AddScoped<IUserService, UserService>();
-            service.AddScoped<ITagService, TagService>();
             service.AddScoped<IAdvertisementService, AdvertisementService>();
 
             #endregion

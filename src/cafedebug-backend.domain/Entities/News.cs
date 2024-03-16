@@ -8,7 +8,7 @@
 
         public int ImageId { get; set; }
 
-        public Image Image { get; set; }
+        public string UrlImage { get; set; }
 
         public string NewsLink { get; set; }
 
