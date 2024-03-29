@@ -16,7 +16,6 @@ namespace cafedebug_backend.infrastructure.Context
         public DbSet<Category> Categories { get; set; }
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<UserAdmin> Users { get; set; }
-
         public DbSet<Advertisement> Advertisements { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace cafedebug_backend.api.Administrator.Controllers
 {
     [Area(nameof(Administrator))]
-    [Route("administrador/episodios")]
+    [Route("api/episodio-admin")]
     public class EpisodesAdminController : ControllerBase
     {
 
@@ -22,16 +22,16 @@ namespace cafedebug_backend.api.Administrator.Controllers
             throw new NotImplementedException();
         }
 
-        [Route("editar-episódio/{code:guid}")]
+        [Route("editar-episodio/{id}")]
         [HttpPut]
-        public async Task<ActionResult> Update(Guid code)
+        public async Task<ActionResult> Update(int id) 
         {
             throw new NotImplementedException();
         }
 
-        [Route("delete-episódio")]
+        [Route("delete-episodio/{id}")]
         [HttpPost]
-        public async Task<IActionResult> Delete(Guid code)
+        public async Task<IActionResult> Delete(int id)
         {
             throw new NotImplementedException();
         }

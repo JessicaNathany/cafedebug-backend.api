@@ -10,7 +10,7 @@ namespace cafedebug_backend.domain.Entities
         public string Url { get; private set; }
         public string ImageUrl { get; private set; }
 
-        public IFormFile ImageUpload { get; private set; }
+        //public IFormFile ImageUpload { get; private set; }
         public DateTime PublicationDate { get; private set; }
 
         public DateTime? UpdateDate { get; private set; }

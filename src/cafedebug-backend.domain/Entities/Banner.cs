@@ -6,7 +6,7 @@
 
         public string UrlImage { get; private set; }
 
-        public string Url { get; private set; }
+        public string? Url { get; private set; }
 
         public DateTime StartDate { get; private set; }
 

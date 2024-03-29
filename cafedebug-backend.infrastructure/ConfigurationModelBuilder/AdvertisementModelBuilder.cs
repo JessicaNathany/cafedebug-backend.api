@@ -19,7 +19,10 @@ namespace cafedebug_backend.infrastructure.ConfigurationModelBuilder
                 .IsRequired();
 
             builder.Property(a => a.Url)
-                .HasColumnType("varchar(500)");
+                .HasColumnType("varchar(250)");
+
+            builder.Property(a => a.ImageUrl)
+                .HasColumnType("varchar(250)");
 
             builder.Property(a => a.StartDate)
                 .IsRequired()
@@ -33,9 +36,9 @@ namespace cafedebug_backend.infrastructure.ConfigurationModelBuilder
                 .HasColumnType("bit");
 
             builder.Property(a => a.AdvertisementType)
-                .HasColumnType("int");
+                .HasColumnType("bit");
 
-            builder.ToTable("Banner");
+            builder.ToTable("Advertisement");
         }
     }
 }

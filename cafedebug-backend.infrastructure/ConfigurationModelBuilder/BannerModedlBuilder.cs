@@ -29,6 +29,9 @@ namespace cafedebug_backend.infrastructure.Mapping
                 .IsRequired()
                 .HasColumnType("datetime");
 
+            builder.Property(b => b.UpdateDate)
+                .HasColumnType("datetime");
+
             builder.Property(b => b.Active)
                 .HasColumnType("bit");
 
