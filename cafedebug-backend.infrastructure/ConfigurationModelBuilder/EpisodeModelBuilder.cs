@@ -27,9 +27,17 @@ namespace cafedebug_backend.infrastructure.ConfigurationModelBuilder
                 .HasColumnType("varchar(250)");
 
             builder.Property(e => e.ImageUrl)
-                .IsRequired();
+                .IsRequired()
+                .HasColumnType("varchar(250)");
+
+            builder.Property(e => e.ResumeDescription)
+                .HasColumnType("varchar(65535)");
 
             builder.Property(e => e.PublicationDate)
+                .IsRequired()
+                .HasColumnType("datetime");
+
+            builder.Property(e => e.UpdateDate)
                 .IsRequired()
                 .HasColumnType("datetime");
 

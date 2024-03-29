@@ -19,6 +19,8 @@ namespace cafedebug_backend.domain.Entities
 
         public string Url { get; set; }
 
+        public string ImageUrl { get; set; }
+
         public bool Active { get; set; }
     }
 }

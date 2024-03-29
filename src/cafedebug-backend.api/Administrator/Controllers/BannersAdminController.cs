@@ -10,7 +10,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
 {
     [ApiController]
     [Produces("application/json")]
-    [Route("api/banner-admin")]
+    [Route("api/v1/banner-admin")]
     public class BannersAdminController : ControllerBase
     {
         private readonly IBannerService _bannerService;
@@ -99,19 +99,19 @@ namespace cafedebug_backend.api.Administrator.Controllers
         [Route("banners")]
         [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAll()
         {
             try
             {
-                var episodes = await _bannerService.GetAllAsync();
+                var banners = await _bannerService.GetAllAsync();
 
-                if (!episodes.IsSuccess)
-                    return BadRequest(episodes.Error);
+                if (!banners.IsSuccess)
+                    return BadRequest(banners.Error);
 
-                var bannerResponse = _mapper.Map<BannerResponse>(episodes.Value);
+                var bannersResponse = _mapper.Map<List<BannerResponse>>(banners.Value);
 
-                return Ok(bannerResponse);
+                return Ok(bannersResponse);
             }
             catch (NullReferenceException)
             {
@@ -132,12 +132,12 @@ namespace cafedebug_backend.api.Administrator.Controllers
         {
             try
             {
-                var episode = await _bannerService.GetByIdAsync(id, cancellationToken);
+                var banner = await _bannerService.GetByIdAsync(id, cancellationToken);
 
-                if (!episode.IsSuccess)
-                    return BadRequest(episode.Error);
+                if (!banner.IsSuccess)
+                    return BadRequest(banner.Error);
 
-                var bannerResponse = _mapper.Map<BannerResponse>(episode.Value);
+                var bannerResponse = _mapper.Map<BannerResponse>(banner.Value);
 
                 return Ok(bannerResponse);
             }

@@ -31,4 +31,8 @@
     <ProjectReference Include="..\cafedebug.backend.application\cafedebug.backend.application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Middleware\" />
+  </ItemGroup>
+
 </Project>

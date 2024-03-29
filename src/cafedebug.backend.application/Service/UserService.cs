@@ -5,6 +5,8 @@ using cafedebug_backend.domain.Interfaces.Services;
 using cafedebug_backend.domain.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Net;
 
 namespace cafedebug.backend.application.Service
 {
@@ -152,6 +154,51 @@ namespace cafedebug.backend.application.Service
                 _logger.LogError($"An unexpected error occurred. {exception}");
                 return Result<UserAdmin>.Failure("An unexpected error occurred.");
             }
+        }
+
+        public async Task<Result> DeleteAsync(int id, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var user = await _userRepository.GetByIdAsync(id, cancellationToken);
+
+                if (user is null)
+                {
+                    _logger.LogWarning($"User admin not found.");
+                    return Result.Failure("User admin not found.");
+                }
+
+                await _userRepository.DeleteAsync(user.Id, cancellationToken);
+                _logger.LogInformation($"User deleted with success.");
+
+                return Result.Success();
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"An unexpected error occurred. {exception}");
+                return Result.Failure("An unexpected error occurred.");
+            }       
+        }
+
+        public async Task<Result<UserAdmin>> GettByEmailAsync(string email, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var user = await _userRepository.GetByEmailAsync(email, cancellationToken);
+
+                if(user is null)
+                {
+                    _logger.LogWarning($"User admin not found.");
+                    return Result<UserAdmin>.Failure("User admin not found.");
+                }
+
+                return Result<UserAdmin>.Success(user);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"An unexpected error occurred. {exception}");
+                return Result<UserAdmin>.Failure("An unexpected error occurred.");
+            }   
         }
     }
 }
