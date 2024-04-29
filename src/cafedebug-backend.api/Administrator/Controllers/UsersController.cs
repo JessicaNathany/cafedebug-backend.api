@@ -22,35 +22,5 @@ namespace cafedebug_backend.api.Administrator.Controllers
             _userService = userService;
             _logger = logger;
         }
-
-        [Authorize]
-        [HttpPost]
-        [Route("login")] // revisar método de autenticação
-        public async Task<IActionResult> Login([FromBody] UserModel model, CancellationToken cancellationToken)
-        {
-            var validator = new EmailValidator();
-            var validationResult = validator.Validate(model);
-
-            if (!validationResult.IsValid)
-            {
-                _logger.LogError("Email invalid.");
-                return BadRequest(validationResult.Errors);
-            }
-
-            var existUser = await _userService.GetByLoginAndPasswordAsync(model.Email, model.Password, cancellationToken);
-
-            if (existUser is null)
-            {
-                _logger.LogError("Email or Password invalid.");
-                return Unauthorized("Email or Password invalid.");
-            }
-
-            var tokenResponse = _jwtService.GenerateTokenAsync(model.Email, model.Password);
-
-            if (tokenResponse is null)
-                return BadRequest();
-
-            return Ok(tokenResponse);
-        }
     }
 }

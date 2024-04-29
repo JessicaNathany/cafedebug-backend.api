@@ -1,4 +1,5 @@
-﻿using cafedebug_backend.domain.Interfaces.Services;
+﻿using cafedebug_backend.domain.Interfaces.JWT;
+using cafedebug_backend.domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace cafedebug_backend.api.Administrator.Controllers
@@ -11,31 +12,37 @@ namespace cafedebug_backend.api.Administrator.Controllers
     {
         private readonly IUserService _userService;
         private readonly IConfiguration _configuration;
-        public AuthenticationController(IUserService userService, IConfiguration configuration)
+        private readonly IJWTService _jWTService;
+        public AuthenticationController(IUserService userService, IConfiguration configuration, IJWTService jWTService)
         {
             _userService = userService;
             _configuration = configuration;
+            _jWTService = jWTService;
         }
 
         [HttpPost]
         [Route("Auth")]
-        public async Task<IActionResult> Auth([FromBody] string apiKey, string email, CancellationToken cancellationToken)
+        public async Task<IActionResult> Auth([FromBody] string email, string password, CancellationToken cancellationToken)
         {
             try
             {
-                // aqui será feito a validação da api key e email para terar um token
+                if(string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+                        return Unauthorized("Email and password must not be empty.");
 
-                var apiSettings = _configuration.GetValue<string>("ApiSettings:ApiKey");
+                var userResult =  await _userService.GettByEmailAsync(email, cancellationToken); 
 
-                var user = _userService.GettByEmailAsync(email, cancellationToken);
+                if(!userResult.IsSuccess)
+                    return NotFound("User not found.");
 
-                if (user is null)
-                    return Unauthorized();
+                var user = userResult.Value;
 
-                if (apiKey != apiSettings)
-                    return Unauthorized();
+                var token = _jWTService.GenerateToken(user);
 
-                    return Ok("token");
+                return Ok(token);
+            }
+            catch (NullReferenceException)
+            {
+                throw;
             }
             catch (Exception)
             {
