@@ -21,10 +21,6 @@ namespace cafedebug_backend.infrastructure.Mapping
             builder.Property(b => b.HashedPassword)
                 .IsRequired()
                 .HasColumnType("varchar(500)");
-
-            builder.Property(b => b.RefreshToken)
-                .HasColumnType("varchar(500)");
-
             builder.ToTable("Banner");
         }
     }

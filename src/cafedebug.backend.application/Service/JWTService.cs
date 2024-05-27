@@ -4,6 +4,7 @@ using cafedebug_backend.domain.Jwt;
 using cafedebug_backend.domian.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Principal;
@@ -21,35 +22,6 @@ namespace cafedebug.backend.application.Service
 
         public async Task<JWTToken> GenerateToken(UserAdmin userAdmin)
         {
-            #region old code
-            //var tokenHandler = new JwtSecurityTokenHandler();
-
-            //var secretKey = _configuration["Jwt:SecretKey"];
-            //var issuer = _configuration["Jwt:Issuer"];
-            //var audience = _configuration["Jwt:Audience"];
-
-            //var key = Encoding.ASCII.GetBytes(secretKey);
-
-            //var tokenDescriptor = new SecurityTokenDescriptor
-            //{
-            //    Subject = new ClaimsIdentity(new[]
-            //    {
-            //        new Claim(ClaimTypes.NameIdentifier, userAdmin.Id.ToString()),
-            //        new Claim(ClaimTypes.Name, userAdmin.Name),
-            //        new Claim(ClaimTypes.Email, userAdmin.Email),
-            //        new Claim(ClaimTypes.Hash, userAdmin.HashedPassword)
-            //    }),
-
-            //    Expires = DateTime.UtcNow.AddMinutes(5),
-            //    Issuer = issuer,
-            //    Audience = audience,
-            //    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            //};
-
-            //var token = tokenHandler.CreateToken(tokenDescriptor);
-            //return tokenHandler.WriteToken(token);
-            #endregion
-
             var identity = GetClaimsIdentity(userAdmin);
 
             var jsonSecurityHandler = new JwtSecurityTokenHandler();
@@ -69,6 +41,11 @@ namespace cafedebug.backend.application.Service
                 accessToken, CreateRefreshToken(userAdmin.Name), 
                 TokenType.Bearer.ToString(), 
                 (long)TimeSpan.FromMinutes(_jtwSettings.ValidForMinutes).TotalSeconds);
+        }
+
+        public async Task RefreshToken()
+        {
+            throw new NotImplementedException();
         }
 
         private RefreshToken CreateRefreshToken(string userName)
@@ -103,4 +80,6 @@ namespace cafedebug.backend.application.Service
             return identity;
         }
     }
+
+
 }

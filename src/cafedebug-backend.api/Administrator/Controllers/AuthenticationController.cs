@@ -11,18 +11,16 @@ namespace cafedebug_backend.api.Administrator.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly IConfiguration _configuration;
         private readonly IJWTService _jWTService;
-        public AuthenticationController(IUserService userService, IConfiguration configuration, IJWTService jWTService)
+        public AuthenticationController(IUserService userService, IJWTService jWTService)
         {
             _userService = userService;
-            _configuration = configuration;
             _jWTService = jWTService;
         }
 
         [HttpPost]
         [Route("Auth")]
-        public async Task<IActionResult> Auth([FromBody] string email, string password, CancellationToken cancellationToken)
+        public async Task<IActionResult> Login([FromBody] string email, string password, CancellationToken cancellationToken)
         {
             try
             {
@@ -48,6 +46,18 @@ namespace cafedebug_backend.api.Administrator.Controllers
             {
                 throw;
             }
+        }
+
+        [HttpPost]
+        [Route("refresh-token")]
+        public async Task<IActionResult> RefreshToken([FromBody] string refreshToken, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(refreshToken) || string.IsNullOrEmpty(refreshToken))
+                return Unauthorized("RefreshToken canot not be nulll.");
+
+            //var refreshTokenResult = await _jWTService.Cre
+
+            return Ok("");
         }
     }
 }
