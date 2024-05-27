@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace cafedebug_backend.infrastructure.Mapping
 {
-    public class BannerModedlBuilder : IEntityTypeConfiguration<Banner>
+    public class BannerModelBuilder : IEntityTypeConfiguration<Banner>
     {
         public void Configure(EntityTypeBuilder<Banner> builder)
         {

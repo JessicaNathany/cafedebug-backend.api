@@ -1,12 +1,9 @@
+using cafedebug_backend.api.Configuration;
 using cafedebug_backend.api.DependencyInjection;
 using cafedebug_backend.application.Constants;
 using cafedebug_backend.infrastructure.Context;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,26 +11,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.ResolveDependencies();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-//// add localization service
-//builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
-
-//// configure support culture 
-//var supportedCultures = new[] { "en-US", "pt-BR" };
-
-//var localizationOptions = new RequestLocalizationOptions()
-//    .SetDefaultCulture(supportedCultures[0])
-//    .AddSupportedCultures(supportedCultures)
-//    .AddSupportedUICultures(supportedCultures);
-
-
-//builder.Services.Configure<RequestLocalizationOptions>(options =>
-//{
-//    options.DefaultRequestCulture = new RequestCulture(supportedCultures[0]);
-//    options.SupportedCultures = localizationOptions.SupportedCultures;
-//    options.SupportedUICultures = localizationOptions.SupportedUICultures;
-//});
-
 
 // configure Dbcontext class
 builder.Services.AddDbContextPool<CafedebugContext>(options =>
@@ -49,24 +26,7 @@ var audience = JWTConstants.JwtAudience;
 var secretKey = JWTConstants.JWTSecret;
 
 // Add services authentication JWT
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        //is the key used to validate the token's signature.
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"])),
-        ClockSkew = TimeSpan.Zero,
-    };
-});
-
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorizationConfiguration();
 
 //swagger configuration
 builder.Services.AddControllers();
@@ -85,9 +45,6 @@ builder.Services.AddControllers().AddFluentValidation(fluentValidation =>
 });
 
 var app = builder.Build();
-
-// Use localization Resx
-//app.UseRequestLocalization(localizationOptions);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -1,7 +1,10 @@
-﻿namespace cafedebug_backend.domain.Interfaces.JWT
+﻿using cafedebug_backend.domain.Entities;
+using cafedebug_backend.domain.Jwt;
+
+namespace cafedebug_backend.domain.Interfaces.JWT
 {
     public interface IJWTService
     {
-        string GenerateTokenAsync(string userName, string email);
+        Task<JWTToken> GenerateToken(UserAdmin userAdmin);
     }
 }
