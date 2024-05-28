@@ -1,7 +1,6 @@
 ﻿using cafedebug_backend.domain.Entities;
 using cafedebug_backend.domain.Interfaces.JWT;
 using cafedebug_backend.domain.Jwt;
-using cafedebug_backend.domian.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.CompilerServices;
@@ -31,6 +30,8 @@ namespace cafedebug.backend.application.Service
                 Subject = identity,
                 Issuer = _jtwSettings.Issuer,
                 Audience = _jtwSettings.Audience,
+                IssuedAt = _jtwSettings.IssuedAt,  
+                NotBefore = _jtwSettings.NotBefore,
                 Expires = _jtwSettings.AccessTokenExpiration,
                 SigningCredentials = _jtwSettings.SigningCredentials
             });
@@ -43,12 +44,17 @@ namespace cafedebug.backend.application.Service
                 (long)TimeSpan.FromMinutes(_jtwSettings.ValidForMinutes).TotalSeconds);
         }
 
-        public async Task RefreshToken()
+        public async Task<RefreshTokens> GetByTokenAsync(string token, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+        public async Task UpdateRefreshTokenAsync(string token, string newToken, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        private RefreshToken CreateRefreshToken(string userName)
+
+        private RefreshTokens CreateRefreshToken(string userName)
         {
             string generatedToken;
             var randomNumber = new byte[32];
@@ -61,7 +67,7 @@ namespace cafedebug.backend.application.Service
 
             var token = generatedToken.Replace("+", string.Empty).Replace("=", string.Empty).Replace("/", string.Empty);
 
-            var refreshToken = RefreshToken.Create(userName, token, _jtwSettings.RefreshTokenExpiration);
+            var refreshToken = RefreshTokens.Create(userName, token, _jtwSettings.RefreshTokenExpiration);
 
             return refreshToken;
         }
@@ -80,6 +86,4 @@ namespace cafedebug.backend.application.Service
             return identity;
         }
     }
-
-
 }

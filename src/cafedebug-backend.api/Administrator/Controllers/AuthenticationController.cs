@@ -1,4 +1,6 @@
-﻿using cafedebug_backend.domain.Interfaces.JWT;
+﻿using cafedebug.backend.application.Request;
+using cafedebug_backend.domain.Entities;
+using cafedebug_backend.domain.Interfaces.JWT;
 using cafedebug_backend.domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -50,12 +52,26 @@ namespace cafedebug_backend.api.Administrator.Controllers
 
         [HttpPost]
         [Route("refresh-token")]
-        public async Task<IActionResult> RefreshToken([FromBody] string refreshToken, CancellationToken cancellationToken)
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest refreshTokenRequest, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(refreshToken) || string.IsNullOrEmpty(refreshToken))
-                return Unauthorized("RefreshToken canot not be nulll.");
+            if(!ModelState.IsValid) return BadRequest(ModelState);
 
-            //var refreshTokenResult = await _jWTService.Cre
+            if (string.IsNullOrEmpty(refreshTokenRequest.Token))
+                return Unauthorized("Refresh token cannot be null.");
+
+            var refreshToken = await _jWTService.GetByTokenAsync(refreshTokenRequest.Token, cancellationToken);
+
+            if (refreshToken == null || !refreshToken.IsActive || refreshToken.ExpirationDate <= DateTime.UtcNow)
+                return Unauthorized("Invalid or expired refresh token.");
+
+           var user = await _userService.GetByIdAsync(refreshToken.UserId, cancellationToken);
+
+            if (user is null)
+                return NotFound("User not found.");
+
+            var newAcessToken = await _jWTService.GenerateToken(user);
+
+            await _jWTService.UpdateRefreshTokenAsync(refreshToken.Token, newAcessToken.RefreshToken.Token, cancellationToken);
 
             return Ok("");
         }

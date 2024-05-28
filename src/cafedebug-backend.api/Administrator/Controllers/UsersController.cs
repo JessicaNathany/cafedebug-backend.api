@@ -1,8 +1,5 @@
-﻿using cafedebug_backend.api.Validation;
-using cafedebug_backend.api.ViewModels;
-using cafedebug_backend.domain.Interfaces.JWT;
+﻿using cafedebug_backend.domain.Interfaces.JWT;
 using cafedebug_backend.domain.Interfaces.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace cafedebug_backend.api.Administrator.Controllers

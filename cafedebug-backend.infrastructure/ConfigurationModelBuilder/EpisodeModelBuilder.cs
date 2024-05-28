@@ -56,6 +56,10 @@ namespace cafedebug_backend.infrastructure.ConfigurationModelBuilder
             builder.Property(e => e.Like)
                .HasColumnType("int");
 
+            builder.HasOne<Category>()
+                .WithMany()
+                .HasForeignKey(e => e.CategoryId);
+
             builder.ToTable("Episode");
         }
     }
