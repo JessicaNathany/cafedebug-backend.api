@@ -5,9 +5,9 @@ namespace cafedebug_backend.domain.Interfaces.JWT
 {
     public interface IJWTService
     {
-        Task<JWTToken> GenerateToken(UserAdmin userAdmin);
+        Task<JWTToken> GenerateToken(UserAdmin userAdmin, CancellationToken cancellationToken);
 
-        Task UpdateRefreshTokenAsync(string token, string newToken, CancellationToken cancellationToken);
+        Task SaveRefreshTokenAsync(RefreshTokens refreshTokens, CancellationToken cancellationToken);
 
         Task<RefreshTokens> GetByTokenAsync(string token, CancellationToken cancellationToken);
     }

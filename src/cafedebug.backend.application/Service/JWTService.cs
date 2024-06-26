@@ -1,9 +1,9 @@
 ﻿using cafedebug_backend.domain.Entities;
 using cafedebug_backend.domain.Interfaces.JWT;
+using cafedebug_backend.domain.Interfaces.Respositories;
 using cafedebug_backend.domain.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Principal;
@@ -13,13 +13,15 @@ namespace cafedebug.backend.application.Service
     public class JWTService : IJWTService
     {
         private readonly JwtSettings _jtwSettings;
+        private readonly IRefreshTokensRepository _refreshTokensRepository;
 
-        public JWTService(JwtSettings jwttSettings)
+        public JWTService(JwtSettings jwttSettings, IRefreshTokensRepository refreshTokensRepository)
         {
             _jtwSettings = jwttSettings;
+            _refreshTokensRepository = refreshTokensRepository;
         }
 
-        public async Task<JWTToken> GenerateToken(UserAdmin userAdmin)
+        public async Task<JWTToken> GenerateToken(UserAdmin userAdmin, CancellationToken cancellationToken)
         {
             var identity = GetClaimsIdentity(userAdmin);
 
@@ -37,9 +39,10 @@ namespace cafedebug.backend.application.Service
             });
 
             var accessToken = jsonSecurityHandler.WriteToken(securityToken);
+            var createRefreshToken = CreateRefreshToken(userAdmin.Name, cancellationToken);
 
             return JWTToken.Create(
-                accessToken, CreateRefreshToken(userAdmin.Name), 
+                accessToken, createRefreshToken, 
                 TokenType.Bearer.ToString(), 
                 (long)TimeSpan.FromMinutes(_jtwSettings.ValidForMinutes).TotalSeconds);
         }
@@ -48,13 +51,12 @@ namespace cafedebug.backend.application.Service
         {
             throw new NotImplementedException();
         }
-        public async Task UpdateRefreshTokenAsync(string token, string newToken, CancellationToken cancellationToken)
+        public async Task SaveRefreshTokenAsync(RefreshTokens refreshTokens, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            await _refreshTokensRepository.SaveAsync(refreshTokens, cancellationToken);
         }
 
-
-        private RefreshTokens CreateRefreshToken(string userName)
+        private RefreshTokens CreateRefreshToken(string userName, CancellationToken cancellationToken)
         {
             string generatedToken;
             var randomNumber = new byte[32];
@@ -68,7 +70,7 @@ namespace cafedebug.backend.application.Service
             var token = generatedToken.Replace("+", string.Empty).Replace("=", string.Empty).Replace("/", string.Empty);
 
             var refreshToken = RefreshTokens.Create(userName, token, _jtwSettings.RefreshTokenExpiration);
-
+            
             return refreshToken;
         }
 
@@ -77,7 +79,7 @@ namespace cafedebug.backend.application.Service
             var identity = new ClaimsIdentity
             (
                 new GenericIdentity(userAdmin.Email),
-                new[] {
+                new[] { 
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(JwtRegisteredClaimNames.Sub, userAdmin.Name)
                 }

@@ -1,11 +1,12 @@
-﻿namespace cafedebug_backend.domain.Jwt
+﻿using cafedebug_backend.domain.Entities;
+
+namespace cafedebug_backend.domain.Jwt
 {
     /// <summary>
     /// Entity that represents the refresh token
     /// </summary>
-    public class RefreshTokens
+    public class RefreshTokens : Entity
     {
-        public int TokenId { get; set; }
         public int UserId { get; set; }
         public string UserName { get; set; }
         public string Token { get; set; }

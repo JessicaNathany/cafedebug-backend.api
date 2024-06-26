@@ -9,7 +9,7 @@ namespace cafedebug_backend.infrastructure.ConfigurationModelBuilder
     {
         public void Configure(EntityTypeBuilder<RefreshTokens> builder)
         {
-            builder.HasKey(r => r.TokenId);
+            builder.HasKey(r => r.Id);
 
             builder.Property(r => r.Token)
                 .IsRequired()

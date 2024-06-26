@@ -5,8 +5,6 @@ using cafedebug_backend.domain.Interfaces.Services;
 using cafedebug_backend.domain.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Net;
 
 namespace cafedebug.backend.application.Service
 {

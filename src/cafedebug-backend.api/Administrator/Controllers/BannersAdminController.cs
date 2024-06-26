@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using cafedebug.backend.application.Service;
 using cafedebug_backend.application.Request;
 using cafedebug_backend.application.Response;
 using cafedebug_backend.domain.Entities;
@@ -13,9 +14,9 @@ namespace cafedebug_backend.api.Administrator.Controllers
     [Route("api/v1/banner-admin")]
     public class BannersAdminController : ControllerBase
     {
-        private readonly IBannerService _bannerService;
+        private readonly BannerService _bannerService;
         private readonly IMapper _mapper;
-        public BannersAdminController(IBannerService bannerService, IMapper mapper)
+        public BannersAdminController(BannerService bannerService, IMapper mapper)
         {
             _bannerService = bannerService;
             _mapper = mapper;

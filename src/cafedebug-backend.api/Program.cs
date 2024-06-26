@@ -1,4 +1,3 @@
-using cafedebug_backend.api.Configuration;
 using cafedebug_backend.api.DependencyInjection;
 using cafedebug_backend.application.Constants;
 using cafedebug_backend.infrastructure.Context;
@@ -24,9 +23,6 @@ builder.Services.AddDbContextPool<CafedebugContext>(options =>
 var issuer = JWTConstants.JwtIssuer;
 var audience = JWTConstants.JwtAudience;
 var secretKey = JWTConstants.JWTSecret;
-
-// Add services authentication JWT
-builder.Services.AddAuthorizationConfiguration();
 
 //swagger configuration
 builder.Services.AddControllers();
