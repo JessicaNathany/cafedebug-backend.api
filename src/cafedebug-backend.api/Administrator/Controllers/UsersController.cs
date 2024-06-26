@@ -12,8 +12,8 @@ namespace cafedebug_backend.api.Administrator.Controllers
 
         private readonly IJWTService _jwtService;
         private readonly IUserService _userService;
-        private readonly ILogger<AuthenticationController> _logger;
-        public UsersController(IJWTService jwtService, IUserService userService, ILogger<AuthenticationController> logger)
+        private readonly ILogger<AuthController> _logger;
+        public UsersController(IJWTService jwtService, IUserService userService, ILogger<AuthController> logger)
         {
             _jwtService = jwtService;
             _userService = userService;

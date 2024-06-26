@@ -1,5 +1,4 @@
 ﻿using cafedebug.backend.application.Request;
-using cafedebug.backend.application.Service;
 using cafedebug_backend.domain.Interfaces.JWT;
 using cafedebug_backend.domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -8,27 +7,33 @@ namespace cafedebug_backend.api.Administrator.Controllers
 {
     [ApiController]
     [Produces("application/json")]
-    [Route("api/v1/authentication")]
-    public class AuthenticationController : ControllerBase
+    [Route("api/v1/auth")]
+    public class AuthController : ControllerBase
     {
         private readonly IUserService _userService;
         private readonly IJWTService _jWTService;
-        public AuthenticationController(IUserService userService, IJWTService jWTService)
+        public AuthController(IUserService userService, IJWTService jWTService)
         {
             _userService = userService;
             _jWTService = jWTService;
         }
 
         [HttpPost]
-        [Route("Auth")]
-        public async Task<IActionResult> Login([FromBody] string email, string password, CancellationToken cancellationToken)
+        [Route("token")]
+        public async Task<IActionResult> GetToken([FromBody] UserCredentialsRequest request, CancellationToken cancellationToken)
         {
             try
             {
-                if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+                if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
                     return Unauthorized("Email and password must not be empty.");
 
-                var userResult = await _userService.GettByEmailAsync(email, cancellationToken);
+                if(!ModelState.IsValid)
+                {
+                    // add log here
+                    return BadRequest("Model is invalid.");
+                }
+
+                var userResult = await _userService.GettByEmailAsync(request.Email, cancellationToken);
 
                 if (!userResult.IsSuccess)
                     return NotFound("User not found.");

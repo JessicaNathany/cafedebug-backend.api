@@ -178,11 +178,15 @@ namespace cafedebug.backend.application.Service
             }       
         }
 
-        public async Task<Result<UserAdmin>> GettByEmailAsync(string email, CancellationToken cancellationToken)
+        public async Task<Result<UserAdmin>> GettByEmailAsync(string email, string password, CancellationToken cancellationToken)
         {
             try
             {
                 var user = await _userRepository.GetByEmailAsync(email, cancellationToken);
+
+                // fazer validação da senha 
+                // será preciso gerar um sha256 da senha e comparar com o que está no banco
+
 
                 if(user is null)
                 {
