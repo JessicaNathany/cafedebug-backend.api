@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace cafedebug_backend.infrastructure.Mapping
 {
-    public class AdminUserModelBuilder : IEntityTypeConfiguration<UserAdmin>
+    public class UserAdminModelBuilder : IEntityTypeConfiguration<UserAdmin>
     {
         public void Configure(EntityTypeBuilder<UserAdmin> builder)
         {
@@ -21,7 +21,7 @@ namespace cafedebug_backend.infrastructure.Mapping
             builder.Property(b => b.HashedPassword)
                 .IsRequired()
                 .HasColumnType("varchar(500)");
-            builder.ToTable("Banner");
+            builder.ToTable("UserAdmin");
         }
     }
 }

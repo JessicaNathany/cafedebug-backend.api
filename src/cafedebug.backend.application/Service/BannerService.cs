@@ -3,6 +3,7 @@ using cafedebug_backend.domain.Entities;
 using cafedebug_backend.domain.Interfaces.Respositories;
 using cafedebug_backend.domain.Interfaces.Services;
 using cafedebug_backend.domain.Shared;
+using cafedebug_backend.infrastructure.Data.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace cafedebug.backend.application.Service

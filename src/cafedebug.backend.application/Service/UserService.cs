@@ -5,8 +5,8 @@ using cafedebug_backend.domain.Interfaces.Services;
 using cafedebug_backend.domain.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace cafedebug.backend.application.Service
 {
@@ -180,11 +180,17 @@ namespace cafedebug.backend.application.Service
             }       
         }
 
-        public async Task<Result<UserAdmin>> GettByEmailAsync(string email, CancellationToken cancellationToken)
+        public async Task<Result<UserAdmin>> GettByEmailAsync(string email, string password, CancellationToken cancellationToken)
         {
             try
             {
                 var user = await _userRepository.GetByEmailAsync(email, cancellationToken);
+
+                if (!CheckPassword(password, user.HashedPassword))
+                {
+                    _logger.LogWarning($"Password invalid.");
+                    return Result<UserAdmin>.Failure("Password invalid.");
+                }
 
                 if(user is null)
                 {
@@ -200,5 +206,31 @@ namespace cafedebug.backend.application.Service
                 return Result<UserAdmin>.Failure("An unexpected error occurred.");
             }   
         }
+
+        private bool CheckPassword(string password, string passwordHash)
+        {
+            var passwordHashGenerated = GenerateSHA256(password);
+
+            if (passwordHashGenerated == passwordHash)
+                return true;
+
+            return false;
+        }
+
+        private string GenerateSHA256(string password)
+        {
+            using (var sha256Hash = SHA256.Create())
+            {
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));    
+                StringBuilder builder = new StringBuilder();    
+                
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));    
+                }
+
+                return builder.ToString();
+            }
+        }   
     }
 }

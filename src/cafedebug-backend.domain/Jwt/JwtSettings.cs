@@ -12,7 +12,7 @@ namespace cafedebug_backend.domain.Jwt
         public int RefreshTokenValidForMinutes { get; }
         public SigningCredentials SigningCredentials { get; }
         public DateTime IssuedAt => DateTime.UtcNow;
-        public DateTime NotBefore => IssuedAt;
+        public DateTime NotBefore => DateTime.UtcNow;
         public DateTime AccessTokenExpiration => IssuedAt.AddMinutes(ValidForMinutes);
         public DateTime RefreshTokenExpiration => IssuedAt.AddMinutes(RefreshTokenValidForMinutes);
 

@@ -13,7 +13,7 @@ namespace cafedebug_backend.infrastructure.Data.Repositories
 
         public async Task<UserAdmin> GetByEmailAsync(string email, CancellationToken cancellationToken)
         {
-            return await _dbSet.FirstOrDefaultAsync(x => x.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase));
+            return await _dbSet.FirstOrDefaultAsync(x => x.Email == email);
         }
     }
 }
