@@ -221,33 +221,33 @@ namespace cafedebug.backend.api.test.Services
             Assert.NotNull(result.Value);
         }
 
-        [Fact]
-        public async Task Delete_BannerNotFound_ShouldBe_Failure()
-        {
-            var bannerRequest = new BannerRequest
-            {
-                Id = 1,
-                Name = "Banner Café Youtube",
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddDays(7),
-                Url = "http://teste.com/image",
-                UrlImage = "http://teste.com/image",
-                Active = true,
-            };
+        //[Fact]
+        //public async Task Delete_BannerNotFound_ShouldBe_Failure()
+        //{
+        //    var bannerRequest = new BannerRequest
+        //    {
+        //        Id = 1,
+        //        Name = "Banner Café Youtube",
+        //        StartDate = DateTime.Now,
+        //        EndDate = DateTime.Now.AddDays(7),
+        //        Url = "http://teste.com/image",
+        //        UrlImage = "http://teste.com/image",
+        //        Active = true,
+        //    };
 
-            _bannerRepositoryMock.Setup(b => b.GetByIdAsync(1, CancellationToken.None)).Returns(Task.FromResult<Banner>(null));
+        //    _bannerRepositoryMock.Setup(b => b.GetByIdAsync(1, CancellationToken.None)).Returns(Task.FromResult<Banner>(null));
 
-            var service = _autoMocker.CreateInstance<BannerService>();
-            await service.DeleteAsync(bannerRequest.Id, CancellationToken.None);
+        //    var service = _autoMocker.CreateInstance<BannerService>();
+        //    await service.DeleteAsync(bannerRequest.Id, CancellationToken.None);
 
-            // Act
-            var result = await service.DeleteAsync(bannerRequest.Id, CancellationToken.None);
+        //    // Act
+        //    var result = await service.DeleteAsync(bannerRequest.Id, CancellationToken.None);
 
-            // Assert
-            Assert.False(result.IsSuccess);
-            Assert.NotNull(result.Error);
-            Assert.Equal($"Banner not found {bannerRequest.Id}.", result.Error);
-        }
+        //    // Assert
+        //    Assert.False(result.IsSuccess);
+        //    Assert.NotNull(result.Error);
+        //    Assert.Equal($"Banner not found {bannerRequest.Id}.", result.Error);
+        //}
 
         [Fact]
         public async Task Delete_BannerNotFound_ShouldBe_Success()

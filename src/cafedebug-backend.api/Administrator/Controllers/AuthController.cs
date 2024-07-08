@@ -36,7 +36,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
                 var userResult = await _userService.GettByEmailAsync(request.Email,request.Password, cancellationToken);
 
                 if (!userResult.IsSuccess)
-                    return NotFound("User not found.");
+                    return Unauthorized("User not found.");
 
                 var user = userResult.Value;
 
