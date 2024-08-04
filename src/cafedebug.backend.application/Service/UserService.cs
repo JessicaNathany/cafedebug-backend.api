@@ -180,7 +180,7 @@ namespace cafedebug.backend.application.Service
             }       
         }
 
-        public async Task<Result<UserAdmin>> GettByEmailAsync(string email, string password, CancellationToken cancellationToken)
+        public async Task<Result<UserAdmin>> GetByEmailAsync(string email, string password, CancellationToken cancellationToken)
         {
             try
             {

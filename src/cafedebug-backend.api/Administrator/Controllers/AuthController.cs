@@ -1,4 +1,5 @@
 ﻿using cafedebug.backend.application.Request;
+using cafedebug_backend.application.Response;
 using cafedebug_backend.domain.Interfaces.JWT;
 using cafedebug_backend.domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -20,12 +21,16 @@ namespace cafedebug_backend.api.Administrator.Controllers
 
         [HttpPost]
         [Route("token")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetToken([FromBody] UserCredentialsRequest request, CancellationToken cancellationToken)
         {
             try
             {
                 if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
-                    return Unauthorized("Email and password must not be empty.");
+                    return BadRequest("Email and password must not be empty.");
 
                 if(!ModelState.IsValid)
                 {
@@ -33,18 +38,19 @@ namespace cafedebug_backend.api.Administrator.Controllers
                     return BadRequest("Model is invalid.");
                 }
 
-                var userResult = await _userService.GettByEmailAsync(request.Email,request.Password, cancellationToken);
+                var userResult = await _userService.GetByEmailAsync(request.Email,request.Password, cancellationToken);
 
                 if (!userResult.IsSuccess)
                     return Unauthorized("User not found.");
 
                 var user = userResult.Value;
+                var token = await _jWTService.GenerateToken(user);
 
-                var token = await _jWTService.GenerateToken(user, cancellationToken);
+                if (token is null)
+                    return Unauthorized("User unauthorized.");
 
                 return Ok(token);
             }
-
             catch (NullReferenceException)
             {
                 throw;
@@ -57,28 +63,46 @@ namespace cafedebug_backend.api.Administrator.Controllers
 
         [HttpPost]
         [Route("refresh-token")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest refreshTokenRequest, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            try
+            {
+                if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            if (string.IsNullOrEmpty(refreshTokenRequest.Token))
-                return Unauthorized("Refresh token cannot be null.");
+                if (string.IsNullOrEmpty(refreshTokenRequest.Token))
+                    return Unauthorized("Refresh token cannot be null.");
 
-            var refreshToken = await _jWTService.GetByTokenAsync(refreshTokenRequest.Token, cancellationToken);
+                var refreshToken = await _jWTService.GetByTokenAsync(refreshTokenRequest.Token);
 
-            if (refreshToken == null || !refreshToken.IsActive || refreshToken.ExpirationDate <= DateTime.UtcNow)
-                return Unauthorized("Invalid or expired refresh token.");
+                if (refreshToken == null || !refreshToken.Value.IsActive || refreshToken.Value.ExpirationDate <= DateTime.UtcNow)
+                    return Unauthorized("Invalid or expired refresh token.");
 
-            var user = await _userService.GetByIdAsync(refreshToken.UserId, cancellationToken);
+                var user = await _userService.GetByIdAsync(refreshToken.Value.UserId, cancellationToken);
 
-            if (user is null)
-                return NotFound("User not found.");
+                if (user is null)
+                    return NotFound("User not found.");
 
-            var newAcessToken = await _jWTService.GenerateToken(user, cancellationToken);
+                var newAcessToken = await _jWTService.GenerateToken(user);
 
-            await _jWTService.SaveRefreshTokenAsync(newAcessToken.RefreshToken, cancellationToken);
+                if (newAcessToken is null)
+                    return Unauthorized("User unauthorized.");
 
-            return Ok(newAcessToken.RefreshToken);
+                await _jWTService.SaveRefreshTokenAsync(newAcessToken.RefreshToken, cancellationToken);
+
+                return Ok(newAcessToken.RefreshToken);
+            }
+            catch (NullReferenceException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }
