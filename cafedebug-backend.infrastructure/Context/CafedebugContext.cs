@@ -1,4 +1,5 @@
 ﻿using cafedebug_backend.domain.Entities;
+using cafedebug_backend.domain.Jwt;
 using Microsoft.EntityFrameworkCore;
 namespace cafedebug_backend.infrastructure.Context
 {
@@ -17,6 +18,7 @@ namespace cafedebug_backend.infrastructure.Context
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<UserAdmin> Users { get; set; }
         public DbSet<Advertisement> Advertisements { get; set; }
+        public DbSet<RefreshTokens> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
