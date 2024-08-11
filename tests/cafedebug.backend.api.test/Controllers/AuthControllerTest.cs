@@ -100,20 +100,91 @@ namespace cafedebug.backend.api.test.Controllers
             // Assert
             var badResult = Assert.IsType<UnauthorizedObjectResult>(result);
             Assert.Equal("User unauthorized.", badResult.Value);
-
         }
 
 
         [Fact]
         public async Task GetToken_WhenUserTokenInvalid_ReturnsUnauthorized()
         {
+            // Arrange
+            var userCredentials = DataMocks.UserRequest();
+            var user = DataMocks.UserAdminMock();
 
+            var refreshToken = DataMocks.RefreshTokenMock();
+
+            var jwtToken = JWTToken.Create(
+                accessToken: "fake-jwt",
+                refreshToken: refreshToken,
+                tokenType: "Bearer",
+                expiresIn: 900 // 15 minutes
+            );
+
+            _userServiceMock
+                .Setup(x => x.GetByEmailAsync(userCredentials.Email, userCredentials.Password, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result<UserAdmin>.Success(user));
+
+            _jwtServiceMock.Setup(x => x.GenerateToken(user)).ReturnsAsync((JWTToken)null);
+
+            // Act
+            var result = await _authController.GetToken(userCredentials, default);
+
+            // Assert
+            var badResult = Assert.IsType<UnauthorizedObjectResult>(result);
+            Assert.Equal("User unauthorized.", badResult.Value);
         }
 
         [Fact]
-        public async Task RefreshToken()
+        public async Task RefreshToken_TokenInvalid_ReturnsUnauthorized()
         {
+            // Arrange
+            var refreshToken = new RefreshTokenRequest();
+            refreshToken.UserId = 1;
+            refreshToken.Token = null;
 
+             // Act
+            var result = await _authController.RefreshToken(refreshToken, default);
+
+            // Assert
+            var badResult = Assert.IsType<UnauthorizedObjectResult>(result);
+            Assert.Equal("Refresh token cannot be null.", badResult.Value);
+        }
+
+        [Fact]
+        public async Task RefreshToken_ExpirationDateTime_ReturnsUnauthorized()
+        {
+            // Arrange
+            var refreshTokenRequest = DataMocks.RefreshTokenRequest();
+
+            var fakeRefreshToken = new RefreshTokens("debugcafe@local.com", "fake-refresh-token", DateTime.UtcNow.AddMinutes(-5));
+            
+            _jwtServiceMock.Setup(service => service.GetByTokenAsync(It.IsAny<string>()))
+                .ReturnsAsync(Result<RefreshTokens>.Success(fakeRefreshToken));
+            
+            // Act
+            var result = await _authController.RefreshToken(refreshTokenRequest, default);
+
+            // Assert
+            var badResult = Assert.IsType<UnauthorizedObjectResult>(result);
+            Assert.Equal("Invalid or expired refresh token.", badResult.Value);
+        }
+
+        //[Fact] // cont
+        public async Task RefreshToken_UserNotFound_ReturnsNotFound()
+        {
+            // Arrange
+            var refreshTokenRequest = DataMocks.RefreshTokenRequest();
+
+            var fakeRefreshToken = new RefreshTokens("debugcafe@local.com", "fake-refresh-token", DateTime.UtcNow.AddMinutes(5));
+
+            _jwtServiceMock.Setup(service => service.GetByTokenAsync(It.IsAny<string>()))
+                .ReturnsAsync(Result<RefreshTokens>.Success(fakeRefreshToken));
+
+            // Act
+            var result = await _authController.RefreshToken(refreshTokenRequest, default);
+
+            // Assert
+            var badResult = Assert.IsType<UnauthorizedObjectResult>(result);
+            Assert.Equal("Invalid or expired refresh token.", badResult.Value);
         }
     }
 }

@@ -1,12 +1,13 @@
 ﻿using cafedebug.backend.application.Request;
-using cafedebug_backend.application.Response;
 using cafedebug_backend.domain.Interfaces.JWT;
 using cafedebug_backend.domain.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace cafedebug_backend.api.Administrator.Controllers
 {
     [ApiController]
+    [Authorize]
     [Produces("application/json")]
     [Route("api/v1/auth")]
     public class AuthController : ControllerBase
@@ -74,7 +75,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
                 if (!ModelState.IsValid) return BadRequest(ModelState);
 
                 if (string.IsNullOrEmpty(refreshTokenRequest.Token))
-                    return Unauthorized("Refresh token cannot be null.");
+                        return Unauthorized("Refresh token cannot be null.");
 
                 var refreshToken = await _jWTService.GetByTokenAsync(refreshTokenRequest.Token);
 
@@ -90,8 +91,6 @@ namespace cafedebug_backend.api.Administrator.Controllers
 
                 if (newAcessToken is null)
                     return Unauthorized("User unauthorized.");
-
-                await _jWTService.SaveRefreshTokenAsync(newAcessToken.RefreshToken, cancellationToken);
 
                 return Ok(newAcessToken.RefreshToken);
             }

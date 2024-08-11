@@ -95,7 +95,7 @@ namespace cafedebug.backend.api.test.Services
                 bannerRequest.EndDate,
                 bannerRequest.Active);
 
-            _bannerRepositoryMock.Setup(x => x.SaveAsync(It.IsAny<Banner>(), CancellationToken.None)).Verifiable();
+            _bannerRepositoryMock.Setup(x => x.SaveAsync(It.IsAny<Banner>())).Verifiable();
 
             var service = _autoMocker.CreateInstance<BannerService>();
             await service.CreateAsync(banner, CancellationToken.None);
@@ -133,7 +133,7 @@ namespace cafedebug.backend.api.test.Services
             var stringLocalizerMock = Mock.Of<IStringLocalizer<UserService>>();
 
 
-            _bannerRepositoryMock.Setup(x => x.SaveAsync(It.IsAny<Banner>(), CancellationToken.None));
+            _bannerRepositoryMock.Setup(x => x.SaveAsync(It.IsAny<Banner>()));
             
             _bannerRepositoryMock.Setup(x => x.GetByNameAsync("Banner Café Youtube", CancellationToken.None))
                 .Returns(Task.FromResult(bannerExist));
@@ -210,7 +210,7 @@ namespace cafedebug.backend.api.test.Services
             var stringLocalizerMock = Mock.Of<IStringLocalizer<UserService>>();
 
             _bannerRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(bannerExist));
-            _bannerRepositoryMock.Setup(x => x.SaveAsync(It.IsAny<Banner>(), CancellationToken.None)).Verifiable();
+            _bannerRepositoryMock.Setup(x => x.SaveAsync(It.IsAny<Banner>())).Verifiable();
 
             //Act
             var service = new BannerService(_bannerRepositoryMock.Object, looggerMock);

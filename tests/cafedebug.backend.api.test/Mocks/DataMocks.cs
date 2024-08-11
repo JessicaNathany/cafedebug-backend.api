@@ -20,19 +20,28 @@ namespace cafedebug.backend.api.test.Mocks
 
         public static RefreshTokens RefreshTokenMock()
         {
-            return new RefreshTokens("debugcafe@local.com", "fake-refresh-token", DateTime.Now.AddMinutes(15));
+            return new RefreshTokens(
+                userName: "debugcafe@local.com", 
+                token: "fake-refresh-token", 
+                expirationDate: DateTime.Now.AddMinutes(15));
         }
 
         public static UserCredentialsRequest UserRequest()
         {
             return new UserCredentialsRequest
             {
-                
                 Email = "debugcafe@local.com",
                 Password = "cafedebug123"
             };
         }
-    }
 
-    
+        public static RefreshTokenRequest RefreshTokenRequest()
+        {
+            return new RefreshTokenRequest
+            {
+               Token = "fake-refresh",
+               UserId = 1
+            };
+        }
+    }
 }

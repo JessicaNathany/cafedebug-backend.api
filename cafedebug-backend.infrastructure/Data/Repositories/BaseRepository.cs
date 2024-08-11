@@ -25,7 +25,7 @@ namespace cafedebug_backend.infrastructure.Data.Repositories
             var entity = await _dbSet.FirstOrDefaultAsync(x => x.Id == id);
 
             _dbSet.Remove(entity);
-            await SaveAsync(entity, cancellationToken);
+            await SaveAsync(entity);
         }
 
         public virtual async Task<IEnumerable<TEntity>> GetAllAsync(bool asNoTracking = false)
@@ -49,23 +49,23 @@ namespace cafedebug_backend.infrastructure.Data.Repositories
             return await _dbSet.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<TEntity> SaveAsync(TEntity entity, CancellationToken cancellationToken)
+        public async Task<TEntity> SaveAsync(TEntity entity)
         {
             _dbSet.Add(entity);
-            await SaveChangesAsync(cancellationToken);
+            await SaveChangesAsync();
 
             return entity;
         }
 
-        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
+        public async Task<int> SaveChangesAsync()
         {
             return await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken)
+        public async Task UpdateAsync(TEntity entity)
         {
             _context.Entry(entity).State = EntityState.Modified;
-            await SaveAsync(entity, cancellationToken);
+            await SaveAsync(entity);
         }
     }
 }

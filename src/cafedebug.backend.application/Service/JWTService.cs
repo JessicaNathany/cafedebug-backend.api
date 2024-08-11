@@ -9,6 +9,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Principal;
+using System.Threading;
 
 namespace cafedebug.backend.application.Service
 {
@@ -77,26 +78,26 @@ namespace cafedebug.backend.application.Service
                 throw;
             }
         }
-        public async Task SaveRefreshTokenAsync(RefreshTokens refreshTokens, CancellationToken cancellationToken)
-        {
-            await _refreshTokensRepository.SaveAsync(refreshTokens, cancellationToken);
-        }
-
+      
         private RefreshTokens CreateRefreshToken(string userName)
         {
             string generatedToken;
             var randomNumber = new byte[32];
 
-            using (var randonNumberGeneric = RandomNumberGenerator.Create())
+            using (var randonNumberGenerator = RandomNumberGenerator.Create())
             {
-                randonNumberGeneric.GetBytes(randomNumber);
+                randonNumberGenerator.GetBytes(randomNumber);
                 generatedToken = Convert.ToBase64String(randomNumber);
             }
 
             var token = generatedToken.Replace("+", string.Empty).Replace("=", string.Empty).Replace("/", string.Empty);
+            var expirationDate = DateTime.UtcNow.AddMinutes(_jtwSettings.RefreshTokenValidForMinutes);
 
-            var refreshToken = RefreshTokens.Create(userName, token, _jtwSettings.RefreshTokenExpiration);
-            
+            //var refreshToken = RefreshTokens.Create(userName, token, _jtwSettings.RefreshTokenExpiration);
+            var refreshToken = RefreshTokens.Create(userName, token, expirationDate);
+
+             _refreshTokensRepository.SaveAsync(refreshToken);
+
             return refreshToken;
         }
 

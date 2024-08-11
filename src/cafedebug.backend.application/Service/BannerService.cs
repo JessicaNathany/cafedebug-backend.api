@@ -46,7 +46,7 @@ namespace cafedebug.backend.application.Service
                 if (bannerExist != null)
                     return Result<Banner>.Failure($"Banner already exists {bannerExist.Name}.");
 
-                await _bannerRepository.SaveAsync(banner, cancellationToken);
+                await _bannerRepository.SaveAsync(banner);
                 _logger.LogInformation($"Banner saved with success.");
 
                 return Result<Banner>.Success(banner);
@@ -92,7 +92,7 @@ namespace cafedebug.backend.application.Service
                     bannerRepository.UpdateDate,
                     bannerRepository.Active);
 
-                await _bannerRepository.UpdateAsync(banner, cancellationToken);
+                await _bannerRepository.UpdateAsync(banner);
                 _logger.LogInformation($"Banner updated with success.");
 
                 return Result<Banner>.Success(banner);
