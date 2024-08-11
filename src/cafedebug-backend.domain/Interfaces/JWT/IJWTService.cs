@@ -8,8 +8,6 @@ namespace cafedebug_backend.domain.Interfaces.JWT
     {
         Task<JWTToken> GenerateToken(UserAdmin userAdmin);
 
-        Task SaveRefreshTokenAsync(RefreshTokens refreshTokens, CancellationToken cancellationToken);
-
         Task<Result<RefreshTokens>> GetByTokenAsync(string token);
     }
 }

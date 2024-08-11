@@ -4,9 +4,9 @@ namespace cafedebug_backend.domain.Interfaces.Respositories
 {
     public interface IBaseRepository<TEntity> where TEntity : Entity
     {
-        Task<TEntity> SaveAsync(TEntity entity, CancellationToken cancellationToken);
+        Task<TEntity> SaveAsync(TEntity entity);
 
-        Task UpdateAsync(TEntity entity, CancellationToken cancellationToken);
+        Task UpdateAsync(TEntity entity);
 
         Task DeleteAsync(int id, CancellationToken cancellationToken);
 
@@ -18,6 +18,6 @@ namespace cafedebug_backend.domain.Interfaces.Respositories
 
         Task<int> CountAsync();
 
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+        Task<int> SaveChangesAsync();
     }
 }

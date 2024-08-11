@@ -92,7 +92,7 @@ namespace cafedebug.backend.application.Service
                     Code = new Guid()
                 };
 
-                await _userRepository.SaveAsync(user, cancellationToken);
+                await _userRepository.SaveAsync(user);
                 _logger.LogInformation($"User saved with success.");
 
                 return Result<UserAdmin>.Success(user);
@@ -122,7 +122,7 @@ namespace cafedebug.backend.application.Service
                     return Result<UserAdmin>.Failure("User admin not found.");
                 }
 
-                await _userRepository.UpdateAsync(userAdmin, cancellationToken);
+                await _userRepository.UpdateAsync(userAdmin);
                 _logger.LogInformation($"User updated with success.");
 
                 return Result<UserAdmin>.Success(userAdmin);

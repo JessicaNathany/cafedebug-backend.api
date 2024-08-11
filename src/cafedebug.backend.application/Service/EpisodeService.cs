@@ -45,7 +45,7 @@ namespace cafedebug.backend.application.Service
                 if (episodeExist != null)
                     return Result<Episode>.Failure($"Banner already exists {episode.Title}.");
 
-                await _episodeRepository.SaveAsync(episode, cancellationToken);
+                await _episodeRepository.SaveAsync(episode);
                 _logger.LogInformation($"Banner saved with success.");
 
                 return Result<Episode>.Success(episode);
@@ -94,7 +94,7 @@ namespace cafedebug.backend.application.Service
                     episode.View,
                     episode.Like);
 
-                await _episodeRepository.UpdateAsync(episode, cancellationToken);
+                await _episodeRepository.UpdateAsync(episode);
                 _logger.LogInformation($"Banner updated with success.");
 
                 return Result<Episode>.Success(episode);
