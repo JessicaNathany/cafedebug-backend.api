@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace cafedebug_backend.api.Administrator.Controllers
 {
     [ApiController]
-    [Authorize]
     [Produces("application/json")]
     [Route("api/v1/auth")]
     public class AuthController : ControllerBase
@@ -45,7 +44,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
                     return Unauthorized("User not found.");
 
                 var user = userResult.Value;
-                var token = await _jWTService.GenerateToken(user);
+                var token = _jWTService.GenerateToken(user);
 
                 if (token is null)
                     return Unauthorized("User unauthorized.");
@@ -84,10 +83,10 @@ namespace cafedebug_backend.api.Administrator.Controllers
 
                 var user = await _userService.GetByIdAsync(refreshToken.Value.UserId, cancellationToken);
 
-                if (user is null)
+                if (!user.IsSuccess)
                     return NotFound("User not found.");
 
-                var newAcessToken = await _jWTService.GenerateToken(user);
+                var newAcessToken = _jWTService.GenerateToken(user);
 
                 if (newAcessToken is null)
                     return Unauthorized("User unauthorized.");

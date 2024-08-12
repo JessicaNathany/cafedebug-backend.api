@@ -44,7 +44,7 @@ namespace cafedebug.backend.api.test.Controllers
                 .Setup(x => x.GetByEmailAsync(userCredentials.Email, userCredentials.Password, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Result<UserAdmin>.Success(user));
 
-            _jwtServiceMock.Setup(x => x.GenerateToken(user)).ReturnsAsync(jwtToken);
+            _jwtServiceMock.Setup(x => x.GenerateToken(user)).Returns(jwtToken);
 
             // Act
             var result = await _authController.GetToken(userCredentials, default);
@@ -92,7 +92,7 @@ namespace cafedebug.backend.api.test.Controllers
                 .Setup(x => x.GetByEmailAsync(userCredentials.Email, userCredentials.Password, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Result<UserAdmin>.Success(user));
 
-             _jwtServiceMock.Setup(x => x.GenerateToken(user)).ReturnsAsync((JWTToken)null); 
+             _jwtServiceMock.Setup(x => x.GenerateToken(user)).Returns((JWTToken)null); 
 
             // Act
             var result = await _authController.GetToken(userCredentials, default);
@@ -123,7 +123,7 @@ namespace cafedebug.backend.api.test.Controllers
                 .Setup(x => x.GetByEmailAsync(userCredentials.Email, userCredentials.Password, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Result<UserAdmin>.Success(user));
 
-            _jwtServiceMock.Setup(x => x.GenerateToken(user)).ReturnsAsync((JWTToken)null);
+            _jwtServiceMock.Setup(x => x.GenerateToken(user)).Returns((JWTToken)null);
 
             // Act
             var result = await _authController.GetToken(userCredentials, default);
@@ -168,7 +168,7 @@ namespace cafedebug.backend.api.test.Controllers
             Assert.Equal("Invalid or expired refresh token.", badResult.Value);
         }
 
-        //[Fact] // cont
+        [Fact] 
         public async Task RefreshToken_UserNotFound_ReturnsNotFound()
         {
             // Arrange
@@ -179,12 +179,59 @@ namespace cafedebug.backend.api.test.Controllers
             _jwtServiceMock.Setup(service => service.GetByTokenAsync(It.IsAny<string>()))
                 .ReturnsAsync(Result<RefreshTokens>.Success(fakeRefreshToken));
 
+            _userServiceMock.Setup(x=> x.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result<UserAdmin>.Failure("User not found."));    
+
             // Act
             var result = await _authController.RefreshToken(refreshTokenRequest, default);
 
             // Assert
-            var badResult = Assert.IsType<UnauthorizedObjectResult>(result);
-            Assert.Equal("Invalid or expired refresh token.", badResult.Value);
+            var badResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal("User not found.", badResult.Value);
+        }
+
+        [Fact]
+        public async Task RefreshToken_ReturnSuccess()
+        {
+            // Arrange
+            var refreshTokenRequest = DataMocks.RefreshTokenRequest();
+            var refreshToken = DataMocks.RefreshTokenMock();
+
+            var jwtToken = new JWTToken("fake-jwt", refreshToken, "tokenType", 5);
+
+            var fakeRefreshToken = new RefreshTokens("debugcafe@local.com", "fake-refresh-token", DateTime.UtcNow.AddMinutes(5));
+
+            _jwtServiceMock.Setup(service => service.GetByTokenAsync(It.IsAny<string>()))
+              .ReturnsAsync(Result<RefreshTokens>.Success(fakeRefreshToken));
+
+            _userServiceMock.Setup(x => x.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Result<UserAdmin>.Success(It.IsAny<UserAdmin>()));
+
+            _jwtServiceMock.Setup(x => x.GenerateToken(It.IsAny<UserAdmin>()))
+                .Returns(jwtToken);
+
+            // Act
+            var result = await _authController.RefreshToken(refreshTokenRequest, default);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task RefreshToken_WhenTokenIsExpired_ReturnsUnauthorized()
+        {
+            // Arrange
+            var fakeRefreshToken = new RefreshTokens("user@example.com", "token", DateTime.UtcNow.AddMinutes(-5));
+            _jwtServiceMock.Setup(service => service.GetByTokenAsync(It.IsAny<string>()))
+                .ReturnsAsync(Result<RefreshTokens>.Success(fakeRefreshToken));
+
+            var refreshTokenRequest = new RefreshTokenRequest { Token = "token" };
+
+            // Act
+            var result = await _authController.RefreshToken(refreshTokenRequest, default);
+
+            // Assert
+            Assert.IsType<UnauthorizedResult>(result);
         }
     }
 }

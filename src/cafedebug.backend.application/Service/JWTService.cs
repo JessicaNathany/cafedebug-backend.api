@@ -9,7 +9,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Principal;
-using System.Threading;
 
 namespace cafedebug.backend.application.Service
 {
@@ -26,7 +25,7 @@ namespace cafedebug.backend.application.Service
             _refreshTokensRepository = refreshTokensRepository;
         }
 
-        public async Task<JWTToken> GenerateToken(UserAdmin userAdmin)
+        public JWTToken GenerateToken(UserAdmin userAdmin)
         {
             try
             {
