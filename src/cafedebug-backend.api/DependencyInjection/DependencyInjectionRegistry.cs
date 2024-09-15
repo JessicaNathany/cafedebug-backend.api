@@ -55,7 +55,6 @@ namespace cafedebug_backend.api.DependencyInjection
             service.AddScoped<IPasswordHasher<UserAdmin>, PasswordHasher<UserAdmin>>();
 
             var jwtSettings = service.BuildServiceProvider().GetRequiredService<JwtSettings>();
-            
 
             service.AddAuthentication(x =>
             {

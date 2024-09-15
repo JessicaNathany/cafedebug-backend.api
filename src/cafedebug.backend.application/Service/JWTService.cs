@@ -6,6 +6,7 @@ using cafedebug_backend.domain.Shared;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Principal;
@@ -25,7 +26,7 @@ namespace cafedebug.backend.application.Service
             _refreshTokensRepository = refreshTokensRepository;
         }
 
-        public JWTToken GenerateToken(UserAdmin userAdmin)
+        public async Task<JWTToken> GenerateAccesTokenAndRefreshtoken(UserAdmin userAdmin)
         {
             try
             {
@@ -45,7 +46,7 @@ namespace cafedebug.backend.application.Service
                 });
 
                 var accessToken = jsonSecurityHandler.WriteToken(securityToken);
-                var createRefreshToken = CreateRefreshToken(userAdmin.Name);
+                var createRefreshToken = await CreateRefreshToken(userAdmin.Id, userAdmin.Name);
 
                 return JWTToken.Create(
                     accessToken, createRefreshToken,
@@ -58,7 +59,7 @@ namespace cafedebug.backend.application.Service
             }
         }
 
-        public async Task<Result<RefreshTokens>>  GetByTokenAsync(string token)
+        public async Task<Result<RefreshTokens>> GetByTokenAsync(string token)
         {
             try
             {
@@ -78,7 +79,7 @@ namespace cafedebug.backend.application.Service
             }
         }
       
-        private RefreshTokens CreateRefreshToken(string userName)
+        private async Task<RefreshTokens> CreateRefreshToken(int userId, string userName)
         {
             string generatedToken;
             var randomNumber = new byte[32];
@@ -92,12 +93,64 @@ namespace cafedebug.backend.application.Service
             var token = generatedToken.Replace("+", string.Empty).Replace("=", string.Empty).Replace("/", string.Empty);
             var expirationDate = DateTime.UtcNow.AddMinutes(_jtwSettings.RefreshTokenValidForMinutes);
 
-            //var refreshToken = RefreshTokens.Create(userName, token, _jtwSettings.RefreshTokenExpiration);
-            var refreshToken = RefreshTokens.Create(userName, token, expirationDate);
+            var refreshToken = RefreshTokens.Create(userId, userName, token, expirationDate);
 
-             _refreshTokensRepository.SaveAsync(refreshToken);
+            var refreshTokenByUser = await _refreshTokensRepository.GetByTokenByUserIdAsync(userId);
+
+            if(refreshTokenByUser != null)
+            {
+                refreshTokenByUser.InactiveRefreshToken();
+                await _refreshTokensRepository.UpdateAsync(refreshTokenByUser);
+            }
+
+            await SaveRefreshToken(refreshToken);
 
             return refreshToken;
+        }
+
+        public async Task<JWTToken> GenerateNewAccessToken(UserAdmin userAdmin, RefreshTokens refreshTokens)
+        {
+            try
+            {
+                var identity = GetClaimsIdentity(userAdmin);
+
+                var jsonSecurityHandler = new JwtSecurityTokenHandler();
+
+                var securityToken = jsonSecurityHandler.CreateToken(new SecurityTokenDescriptor
+                {
+                    Subject = identity,
+                    Issuer = _jtwSettings.Issuer,
+                    Audience = _jtwSettings.Audience,
+                    IssuedAt = _jtwSettings.IssuedAt,
+                    NotBefore = _jtwSettings.NotBefore,
+                    Expires = _jtwSettings.AccessTokenExpiration,
+                    SigningCredentials = _jtwSettings.SigningCredentials
+                });
+
+                var accessToken = jsonSecurityHandler.WriteToken(securityToken);
+
+                return JWTToken.Create(
+                    accessToken, refreshTokens,
+                    TokenType.Bearer.ToString(),
+                    (long)TimeSpan.FromMinutes(_jtwSettings.ValidForMinutes).TotalSeconds);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+       
+        public async Task UpdateRefreshToken(RefreshTokens oldRefreshTokens, RefreshTokens newRefreshTokens)
+        {
+            oldRefreshTokens.InactiveRefreshToken();
+            await _refreshTokensRepository.UpdateAsync(oldRefreshTokens);
+
+            await SaveRefreshToken(newRefreshTokens);
+        }
+
+        private async Task SaveRefreshToken(RefreshTokens refreshToken)
+        {
+            await _refreshTokensRepository.SaveAsync(refreshToken);
         }
 
         private ClaimsIdentity GetClaimsIdentity(UserAdmin userAdmin)

@@ -14,6 +14,11 @@ namespace cafedebug_backend.infrastructure.Data.Repositories
         public async Task<RefreshTokens> GetByTokenAsync(string token)
         {
             return await _context.RefreshTokens.FirstOrDefaultAsync(x => x.Token == token);
-        }   
+        }
+
+        public async Task<RefreshTokens> GetByTokenByUserIdAsync(int userId)
+        {
+            return await _context.RefreshTokens.FirstOrDefaultAsync(x => x.UserId == userId);
+        }
     }
 }

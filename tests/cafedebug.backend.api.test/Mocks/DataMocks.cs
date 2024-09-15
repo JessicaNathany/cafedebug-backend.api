@@ -21,6 +21,7 @@ namespace cafedebug.backend.api.test.Mocks
         public static RefreshTokens RefreshTokenMock()
         {
             return new RefreshTokens(
+                userId: 1,
                 userName: "debugcafe@local.com", 
                 token: "fake-refresh-token", 
                 expirationDate: DateTime.Now.AddMinutes(15));
@@ -39,8 +40,7 @@ namespace cafedebug.backend.api.test.Mocks
         {
             return new RefreshTokenRequest
             {
-               Token = "fake-refresh",
-               UserId = 1
+               RefreshToken = "fake-refresh",
             };
         }
     }
