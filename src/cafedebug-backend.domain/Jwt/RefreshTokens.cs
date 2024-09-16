@@ -13,29 +13,23 @@ namespace cafedebug_backend.domain.Jwt
         public DateTime ExpirationDate { get; private set; }
         public bool IsActive { get; private set; }
 
-        public RefreshTokens(string userName, string token, DateTime expirationDate)
+        public RefreshTokens(int userId, string userName, string token, DateTime expirationDate)
         {
+            UserId = userId;
             UserName = userName;
             Token = token;
+            IsActive = true;
             ExpirationDate = expirationDate;
-            CheckExpirationDateToken();
         }
 
-        public static RefreshTokens Create(string userName, string token, DateTime expirationDate)
+        public static RefreshTokens Create(int userId, string userName, string token, DateTime expirationDate)
         {
-            return new RefreshTokens(userName, token, expirationDate);
+            return new RefreshTokens(userId, userName, token, expirationDate);
         }
 
-        public void CheckExpirationDateToken()
+        public void InactiveRefreshToken()
         {
-            if(DateTime.UtcNow >= ExpirationDate)
-            {
-                IsActive = false;
-            }
-            else
-            {
-                IsActive = true;
-            }
+            IsActive = false;
         }
     }
 }

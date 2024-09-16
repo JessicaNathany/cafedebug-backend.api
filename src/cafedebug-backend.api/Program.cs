@@ -6,6 +6,17 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configurações de logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+builder.Logging.AddEventSourceLogger();
+builder.Logging.AddEventLog(settings =>
+{
+    settings.LogName = "Application";
+    settings.SourceName = "Cafedebug";
+});
+
 // Register Depndencies
 builder.Services.ResolveDependencies();
 
