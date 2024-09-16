@@ -77,7 +77,7 @@ namespace cafedebug.backend.api.test.Controllers
         }
 
         [Fact]
-        public async Task GetToken_WhenUserNotFound_ReturnsUnauthorized()
+            public async Task GetToken_WhenUserNotFound_ReturnsUnauthorized()
         {
             // Arrange
             var userCredentials = DataMocks.UserRequest();

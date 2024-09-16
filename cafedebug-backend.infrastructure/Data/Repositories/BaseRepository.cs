@@ -65,7 +65,6 @@ namespace cafedebug_backend.infrastructure.Data.Repositories
         public async Task UpdateAsync(TEntity entity)
         {
             _context.Entry(entity).State = EntityState.Modified;
-            await SaveAsync(entity);
         }
     }
 }
