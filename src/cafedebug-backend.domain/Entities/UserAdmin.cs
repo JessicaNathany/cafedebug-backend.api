@@ -12,10 +12,5 @@ namespace cafedebug_backend.domain.Entities
         public string Email { get; set; }
 
         public string HashedPassword { get; set; }
-
-        //public static implicit operator UserAdmin(Result<UserAdmin> v)
-        //{
-        //    throw new NotImplementedException();
-        //}
     }
 }
