@@ -34,13 +34,13 @@ namespace cafedebug.backend.api.test.Services
             string password = "123456";
 
             var service = _autoMocker.CreateInstance<UserService>();
-            await service.GetByLoginAndPasswordAsync(email, password, It.IsAny<CancellationToken>());
+            await service.GetByLoginAndPasswordAsync(email, password);
 
             _autoMocker.GetMock<IUserRepository>()
-                .Setup(x => x.GetByEmailAsync(email, It.IsAny<CancellationToken>()))
+                .Setup(x => x.GetByEmailAsync(email))
                 .Returns(Task.FromResult<UserAdmin>(null));
 
-            var result = await service.GetByLoginAndPasswordAsync(email, password, It.IsAny<CancellationToken>());
+            var result = await service.GetByLoginAndPasswordAsync(email, password);
 
             // Assert
             Assert.False(result.IsSuccess);
@@ -63,8 +63,7 @@ namespace cafedebug.backend.api.test.Services
                 HashedPassword = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"
             };
 
-            _userRepositoryMock.Setup(x => x.GetByEmailAsync(email, It.IsAny<CancellationToken>()))
-                              .ReturnsAsync(userAdmin);
+            _userRepositoryMock.Setup(x => x.GetByEmailAsync(email)).ReturnsAsync(userAdmin);
 
             _passwordHasherMock.Setup(x => x.VerifyHashedPassword(It.IsAny<UserAdmin>(), It.IsAny<string>(), password))
                                .Returns(PasswordVerificationResult.Success);
@@ -74,7 +73,7 @@ namespace cafedebug.backend.api.test.Services
             var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
 
             // Act
-            var result = await userService.GetByLoginAndPasswordAsync(email, password, CancellationToken.None);
+            var result = await userService.GetByLoginAndPasswordAsync(email, password);
 
             // Assert
             Assert.True(result.IsSuccess);
@@ -94,8 +93,7 @@ namespace cafedebug.backend.api.test.Services
                 HashedPassword = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"
             };
 
-            _userRepositoryMock.Setup(x => x.GetByEmailAsync(email, It.IsAny<CancellationToken>()))
-                              .ReturnsAsync(userAdmin);
+            _userRepositoryMock.Setup(x => x.GetByEmailAsync(email)).ReturnsAsync(userAdmin);
 
             _passwordHasherMock.Setup(x => x.VerifyHashedPassword(It.IsAny<UserAdmin>(), It.IsAny<string>(), password))
                                .Returns(PasswordVerificationResult.Failed);
@@ -105,7 +103,7 @@ namespace cafedebug.backend.api.test.Services
             var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
 
             // Act
-            var result = await userService.GetByLoginAndPasswordAsync(email, password, CancellationToken.None);
+            var result = await userService.GetByLoginAndPasswordAsync(email, password);
 
             // Assert
             Assert.False(result.IsSuccess);
@@ -223,8 +221,7 @@ namespace cafedebug.backend.api.test.Services
             var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
 
             var userMock = new Mock<IUserRepository>();
-            userMock.Setup(x => x.GetByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                    .Returns(Task.FromResult<UserAdmin>(null));
+            userMock.Setup(x => x.GetByEmailAsync(It.IsAny<string>())).Returns(Task.FromResult<UserAdmin>(null));
 
             // Act
             var result = await userService.UpdateAsync(userAdmin, CancellationToken.None);

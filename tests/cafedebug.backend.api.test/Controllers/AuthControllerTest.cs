@@ -44,8 +44,7 @@ namespace cafedebug.backend.api.test.Controllers
             );
 
             _userServiceMock
-                .Setup(x => x.GetByEmailAsync(userCredentials.Email, userCredentials.Password, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(Result<UserAdmin>.Success(user));
+                .Setup(x => x.GetByEmailAsync(userCredentials.Email, userCredentials.Password)).ReturnsAsync(Result<UserAdmin>.Success(user));
 
             _jwtServiceMock.Setup(x => x.GenerateAccesTokenAndRefreshtoken(user)).ReturnsAsync(jwtToken);
 
@@ -92,7 +91,7 @@ namespace cafedebug.backend.api.test.Controllers
             );
 
             _userServiceMock
-                .Setup(x => x.GetByEmailAsync(userCredentials.Email, userCredentials.Password, It.IsAny<CancellationToken>()))
+                .Setup(x => x.GetByEmailAsync(userCredentials.Email, userCredentials.Password))
                 .ReturnsAsync(Result<UserAdmin>.Success(user));
 
             _jwtServiceMock.Setup(x => x.GenerateAccesTokenAndRefreshtoken(user)).ReturnsAsync((JWTToken)null); 

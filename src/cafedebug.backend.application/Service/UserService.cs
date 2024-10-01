@@ -28,9 +28,9 @@ namespace cafedebug.backend.application.Service
             _logger = logger;
         }
 
-        public async Task<Result<UserAdmin>> GetByLoginAndPasswordAsync(string email, string password, CancellationToken cancellationToken)
+        public async Task<Result<UserAdmin>> GetByLoginAndPasswordAsync(string email, string password)
         {
-            var user = await _userRepository.GetByEmailAsync(email, cancellationToken);
+            var user = await _userRepository.GetByEmailAsync(email);
 
             if (user is null)
             {
@@ -180,11 +180,11 @@ namespace cafedebug.backend.application.Service
             }       
         }
 
-        public async Task<Result<UserAdmin>> GetByEmailAsync(string email, string password, CancellationToken cancellationToken)
+        public async Task<Result<UserAdmin>> GetByEmailAsync(string email, string password)
         {
             try
             {
-                var user = await _userRepository.GetByEmailAsync(email, cancellationToken);
+                var user = await _userRepository.GetByEmailAsync(email);
 
                 if (!CheckPassword(password, user.HashedPassword))
                 {
