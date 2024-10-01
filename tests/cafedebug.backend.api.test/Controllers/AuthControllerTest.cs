@@ -9,7 +9,6 @@ using cafedebug_backend.domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Reflection.Metadata;
 using Xunit;
 
 namespace cafedebug.backend.api.test.Controllers
@@ -77,7 +76,7 @@ namespace cafedebug.backend.api.test.Controllers
         }
 
         [Fact]
-            public async Task GetToken_WhenUserNotFound_ReturnsUnauthorized()
+        public async Task GetToken_WhenUserNotFound_ReturnsBadRequest()
         {
             // Arrange
             var userCredentials = DataMocks.UserRequest();
@@ -96,46 +95,16 @@ namespace cafedebug.backend.api.test.Controllers
                 .Setup(x => x.GetByEmailAsync(userCredentials.Email, userCredentials.Password, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Result<UserAdmin>.Success(user));
 
-             _jwtServiceMock.Setup(x => x.GenerateAccesTokenAndRefreshtoken(user)).ReturnsAsync((JWTToken)null); 
+            _jwtServiceMock.Setup(x => x.GenerateAccesTokenAndRefreshtoken(user)).ReturnsAsync((JWTToken)null); 
 
             // Act
             var result = await _authController.GetToken(userCredentials, default);
 
             // Assert
-            var badResult = Assert.IsType<UnauthorizedObjectResult>(result);
-            Assert.Equal("User unauthorized.", badResult.Value);
+            var badResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Error creating token", badResult.Value);
         }
 
-
-        [Fact]
-        public async Task GetToken_WhenUserTokenInvalid_ReturnsUnauthorized()
-        {
-            // Arrange
-            var userCredentials = DataMocks.UserRequest();
-            var user = DataMocks.UserAdminMock();
-
-            var refreshToken = DataMocks.RefreshTokenMock();
-
-            var jwtToken = JWTToken.Create(
-                accessToken: "fake-jwt",
-                refreshToken: refreshToken,
-                tokenType: "Bearer",
-                expiresIn: 900 // 15 minutes
-            );
-
-            _userServiceMock
-                .Setup(x => x.GetByEmailAsync(userCredentials.Email, userCredentials.Password, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(Result<UserAdmin>.Success(user));
-
-            _jwtServiceMock.Setup(x => x.GenerateAccesTokenAndRefreshtoken(user)).ReturnsAsync((JWTToken)null);
-
-            // Act
-            var result = await _authController.GetToken(userCredentials, default);
-
-            // Assert
-            var badResult = Assert.IsType<UnauthorizedObjectResult>(result);
-            Assert.Equal("User unauthorized.", badResult.Value);
-        }
 
         [Fact]
         public async Task RefreshToken_TokenInvalid_ReturnsUnauthorized()
@@ -198,20 +167,32 @@ namespace cafedebug.backend.api.test.Controllers
         {
             // Arrange
             var refreshTokenRequest = DataMocks.RefreshTokenRequest();
+            var userAdmin = new UserAdmin
+            {
+                Id = 1,
+                Name = "Café Debug",
+                HashedPassword = "123456", 
+                Email = "debugcafe@local.com",
+                Code = Guid.NewGuid()
+            };
+
             var refreshToken = DataMocks.RefreshTokenMock();
 
             var jwtToken = new JWTToken("fake-jwt", refreshToken, "tokenType", 5);
 
-            var fakeRefreshToken = new RefreshTokens(1, "debugcafe@local.com", "fake-refresh-token", DateTime.UtcNow.AddMinutes(5));
+            var fakeRefreshToken = new RefreshTokens(
+                1, "debugcafe@local.com", "fake-refresh-token", DateTime.UtcNow.AddMinutes(5));
 
             _jwtServiceMock.Setup(service => service.GetByTokenAsync(It.IsAny<string>()))
               .ReturnsAsync(Result<RefreshTokens>.Success(fakeRefreshToken));
 
             _userServiceMock.Setup(x => x.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(Result<UserAdmin>.Success(It.IsAny<UserAdmin>()));
+                .ReturnsAsync(Result<UserAdmin>.Success(userAdmin));
 
             _jwtServiceMock.Setup(x => x.GenerateAccesTokenAndRefreshtoken(It.IsAny<UserAdmin>()))
                 .ReturnsAsync(jwtToken);
+
+            _jwtServiceMock.Setup(x => x.GenerateNewAccessToken(It.IsAny<UserAdmin>(), It.IsAny<RefreshTokens>())).ReturnsAsync(jwtToken);
 
             // Act
             var result = await _authController.RefreshToken(refreshTokenRequest, default);
@@ -234,7 +215,8 @@ namespace cafedebug.backend.api.test.Controllers
             var result = await _authController.RefreshToken(refreshTokenRequest, default);
 
             // Assert
-            Assert.IsType<UnauthorizedResult>(result);
+            var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(result);
+            Assert.Equal("Invalid or expired refresh token.", unauthorizedResult.Value);
         }
     }
 }

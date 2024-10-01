@@ -13,9 +13,9 @@ namespace cafedebug_backend.domain.Entities
 
         public string HashedPassword { get; set; }
 
-        public static implicit operator UserAdmin(Result<UserAdmin> v)
-        {
-            throw new NotImplementedException();
-        }
+        //public static implicit operator UserAdmin(Result<UserAdmin> v)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }
