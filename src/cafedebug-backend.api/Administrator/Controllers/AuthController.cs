@@ -39,7 +39,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
                     return BadRequest("Model is invalid.");
                 }
 
-                var userResult = await _userService.GetByEmailAsync(request.Email,request.Password, cancellationToken);
+                var userResult = await _userService.GetByEmailAsync(request.Email,request.Password);
 
                 if (!userResult.IsSuccess)
                     return Unauthorized("User not found.");

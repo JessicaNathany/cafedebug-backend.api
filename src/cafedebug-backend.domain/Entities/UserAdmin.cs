@@ -1,6 +1,4 @@
-﻿using cafedebug_backend.domain.Shared;
-
-namespace cafedebug_backend.domain.Entities
+﻿namespace cafedebug_backend.domain.Entities
 {
     /// <summary>
     /// Entity user admin application
@@ -12,10 +10,5 @@ namespace cafedebug_backend.domain.Entities
         public string Email { get; set; }
 
         public string HashedPassword { get; set; }
-
-        public static implicit operator UserAdmin(Result<UserAdmin> v)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

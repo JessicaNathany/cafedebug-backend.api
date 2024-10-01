@@ -5,7 +5,7 @@ namespace cafedebug_backend.domain.Interfaces.Services
 {
     public interface IUserService
     {
-        Task<Result<UserAdmin>> GetByLoginAndPasswordAsync(string email, string password, CancellationToken cancellationToken);
+        Task<Result<UserAdmin>> GetByLoginAndPasswordAsync(string email, string password);
 
         Task<Result<UserAdmin>> CreateAsync(string email, string password, CancellationToken cancellationToken);
 
@@ -15,6 +15,6 @@ namespace cafedebug_backend.domain.Interfaces.Services
 
         Task<Result> DeleteAsync(int id, CancellationToken cancellationToken);
 
-        Task<Result<UserAdmin>> GetByEmailAsync(string email, string password, CancellationToken cancellationToken);
+        Task<Result<UserAdmin>> GetByEmailAsync(string email, string password);
     }
 }
