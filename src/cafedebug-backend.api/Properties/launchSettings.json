@@ -26,7 +26,10 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ConnectionStrings__CafedebugConnectionStringMySQL": "server=localhost;port=3307;database=cafedebug-mysql-local;user=root;password=root; sslmode=none"
+        "ConnectionStrings__CafedebugConnectionStringMySQL": "server=localhost;port=3307;database=cafedebug-mysql-local;user=root;password=root; sslmode=none",
+        "SMTP_NAME": "",
+        "SMTP_PASSWORD": "",
+        "SMTP_FROM": ""
       },
       "applicationUrl": "http://localhost:46370"
     },

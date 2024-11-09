@@ -16,5 +16,7 @@ namespace cafedebug_backend.domain.Interfaces.Services
         Task<Result> DeleteAsync(int id, CancellationToken cancellationToken);
 
         Task<Result<UserAdmin>> GetByEmailAsync(string email, string password);
+
+        Task<Result<UserAdmin>> GetUserAdminByEmail(string email);
     }
 }

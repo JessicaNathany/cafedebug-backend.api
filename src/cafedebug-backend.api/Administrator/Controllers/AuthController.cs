@@ -52,7 +52,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
 
                 return Ok(token);
             }
-            catch (NullReferenceException)
+            catch (UnauthorizedAccessException)
             {
                 throw;
             }

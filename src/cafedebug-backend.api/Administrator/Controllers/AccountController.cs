@@ -2,6 +2,7 @@
 using cafedebug.backend.application.Request;
 using cafedebug_backend.domain.Interfaces.Services;
 using cafedebug_backend.domain.Request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace cafedebug_backend.api.Administrator.Controllers
@@ -9,21 +10,25 @@ namespace cafedebug_backend.api.Administrator.Controllers
     [ApiController]
     [Produces("application/json")]
     [Route("api/v1/account")]
+    [Authorize]
     public class AccountController : ControllerBase
     {
         private readonly ILogger<AuthController> _logger;
+        private readonly IUserService _userService;
         private readonly IAccountService _accountService;
 
-        public AccountController(IAccountService accountService, ILogger<AuthController> logger)
+        public AccountController(ILogger<AuthController> logger, IUserService userService, IAccountService accountService)
         {
-            _accountService = accountService;
+            _userService = userService;
             _logger = logger;
+            _accountService = accountService;
         }
 
         [HttpPost]
         [Route("forgot-password")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest emailRequest)
         {
@@ -35,9 +40,9 @@ namespace cafedebug_backend.api.Administrator.Controllers
                     return BadRequest("Model is invalid.");
                 }
 
-                var user = _accountService.GetUserAdminByEmail(emailRequest.Email);
+                var user = _userService.GetUserAdminByEmail(emailRequest.Email);
 
-                if (user is null)
+                if (user.Result.Value is null)
                 {
                     _logger.LogInformation("User not found.");
                     return NotFound("User not found.");
@@ -48,11 +53,10 @@ namespace cafedebug_backend.api.Administrator.Controllers
                     Name = emailRequest.Name,
                     Email = emailRequest.Email,
                     Subject = "Reset Password",
-                    MessageBody = InsfrastructureConstants.MessageBodyForgotPassword,
-                    Message = InsfrastructureConstants.MessageForgotPassword,
+                    MessageType = InsfrastructureConstants.MessageTypeResetPassword,
                 };
 
-                await _accountService.GeneratePasswordResetToken(sendEmail);
+                await _accountService.SendEmailForgotPassword(sendEmail);
 
                 return Ok();
             }
