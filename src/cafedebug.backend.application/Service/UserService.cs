@@ -36,7 +36,6 @@ namespace cafedebug.backend.application.Service
             {
                 _logger.LogWarning($"User with {email} not found!");
                 return Result<UserAdmin>.Failure("User not found.");
-                //return Result<UserAdmin>.Failure(EpisodeError.NotFound(_localizer));  TODO: ajustar isso aqui para pegar do Resource
             }
 
             var verificationResult = _passwordHasher.VerifyHashedPassword(user, user.HashedPassword, password);
@@ -205,6 +204,20 @@ namespace cafedebug.backend.application.Service
                 _logger.LogError($"An unexpected error occurred. {exception}");
                 return Result<UserAdmin>.Failure("An unexpected error occurred.");
             }   
+        }
+
+        public async Task<Result<UserAdmin>> GetUserAdminByEmail(string email)
+        {
+            try
+            {
+                var userAdmin = _userRepository.GetByEmailAsync(email);
+                return Result<UserAdmin>.Success(userAdmin.Result);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"An unexpected error occurred. {exception}");
+                throw;
+            }
         }
 
         private bool CheckPassword(string password, string passwordHash)
