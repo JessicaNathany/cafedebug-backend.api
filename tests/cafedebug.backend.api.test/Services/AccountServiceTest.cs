@@ -2,7 +2,6 @@
 using cafedebug_backend.domain.Interfaces.Services;
 using cafedebug_backend.domain.Request;
 using cafedebug_backend.domain.Shared;
-using Moq;
 using Moq.AutoMock;
 using Xunit;
 
@@ -11,12 +10,10 @@ namespace cafedebug.backend.api.test.Services
     public class AccountServiceTest
     {
         private readonly AutoMocker _autoMocker;
-        private readonly Mock<IEmailService> _emailServiceMock;
 
         public AccountServiceTest()
         {
             _autoMocker = new AutoMocker();
-            _emailServiceMock = new Mock<IEmailService>();
         }
 
         [Fact]
@@ -25,7 +22,7 @@ namespace cafedebug.backend.api.test.Services
             // Arrange
             var request = new SendEmailRequest
             {
-                Email = "test.test.com",
+                EmailFrom = "test.test.com",
                 EmailCopy = "jessica.nathany@local.com",
                 EmailTo = "debugcafe@local.com",
                 Name = "Test",
@@ -44,7 +41,7 @@ namespace cafedebug.backend.api.test.Services
             // Assert
             Assert.False(result.IsSuccess);
             Assert.NotNull(result.Error);
-            Assert.Equal("Email invalid.", result.Error);
+            Assert.Equal("Email invalid. - AccountService - SendEmailForgotPassword", result.Error);
         }
 
         [Fact]
@@ -53,9 +50,9 @@ namespace cafedebug.backend.api.test.Services
             // Arrange
             var request = new SendEmailRequest
             {
-                Email = "test@test.com",
+                EmailFrom = "debugcafe@local.com",
                 EmailCopy = "jessica.nathany@local.com",
-                EmailTo = "debugcafe@local.com",
+                EmailTo = "jn.devtemp@gmail.com",
                 Name = "Test",
                 MessageType = "Reset Password"
             };

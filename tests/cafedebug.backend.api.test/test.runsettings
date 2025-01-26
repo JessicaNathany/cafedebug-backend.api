@@ -1,0 +1,11 @@
+<!-- File name extension must be .runsettings -->
+<RunSettings>
+  <RunConfiguration>
+      <EnvironmentVariables>
+          <!-- List of environment variables we want to set-->
+          <SMTP_PASSWORD>admin@22</SMTP_PASSWORD>
+          <SMTP_SERVER>smtp.gmail.com</SMTP_SERVER>
+		  <SMTP_FROM>faleconosco.cafedebug@gmail.com</SMTP_FROM>
+      </EnvironmentVariables>
+  </RunConfiguration>
+</RunSettings>

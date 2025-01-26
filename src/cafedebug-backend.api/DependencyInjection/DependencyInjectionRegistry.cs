@@ -39,7 +39,8 @@ namespace cafedebug_backend.api.DependencyInjection
             service.AddScoped<IUserService, UserService>();
             service.AddScoped<IAdvertisementService, AdvertisementService>();
             service.AddScoped<IAccountService, AccountService>();
-            service.AddScoped<IEmailService, EmailService>();   
+            service.AddScoped<IEmailService, EmailService>();
+            service.AddScoped<IEmailSender, SmtpEmailSender>();
 
             #endregion
 

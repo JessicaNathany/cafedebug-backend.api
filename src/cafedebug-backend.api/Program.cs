@@ -30,6 +30,8 @@ builder.Services.AddDbContextPool<CafedebugContext>(options =>
     options.EnableRetryOnFailure(maxRetryCount: 10, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null));
 });
 
+
+
 // get constants
 var issuer = JWTConstants.JwtIssuer;
 var audience = JWTConstants.JwtAudience;
@@ -61,11 +63,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseAuthorization();
-app.MapControllers();
-
-// Use authentication and authorization.
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapControllers();
 
 app.Run();

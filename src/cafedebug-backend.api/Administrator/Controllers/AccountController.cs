@@ -51,7 +51,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
                 var sendEmail = new SendEmailRequest
                 {
                     Name = emailRequest.Name,
-                    Email = emailRequest.Email,
+                    EmailFrom = emailRequest.Email,
                     Subject = "Reset Password",
                     MessageType = InsfrastructureConstants.MessageTypeResetPassword,
                 };
@@ -85,7 +85,6 @@ namespace cafedebug_backend.api.Administrator.Controllers
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -106,11 +105,12 @@ namespace cafedebug_backend.api.Administrator.Controllers
                     return BadRequest("Model is invalid.");
                 }
 
+                await _accountService.ResetPassword(request.Email, request.NewPassword);
+
                 return NoContent();
             }
             catch (Exception)
             {
-
                 throw;
             }
         }

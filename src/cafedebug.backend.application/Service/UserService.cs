@@ -88,7 +88,8 @@ namespace cafedebug.backend.application.Service
                 {
                     Email = email,
                     HashedPassword = hashedPassword,
-                    Code = new Guid()
+                    Code = new Guid(),
+                    CreatedDate = DateTime.Now
                 };
 
                 await _userRepository.SaveAsync(user);
@@ -176,7 +177,7 @@ namespace cafedebug.backend.application.Service
             {
                 _logger.LogError($"An unexpected error occurred. {exception}");
                 return Result.Failure("An unexpected error occurred.");
-            }       
+            }
         }
 
         public async Task<Result<UserAdmin>> GetByEmailAsync(string email, string password)
@@ -191,7 +192,7 @@ namespace cafedebug.backend.application.Service
                     return Result<UserAdmin>.Failure("Password invalid.");
                 }
 
-                if(user is null)
+                if (user is null)
                 {
                     _logger.LogWarning($"User admin not found.");
                     return Result<UserAdmin>.Failure("User admin not found.");
@@ -203,7 +204,7 @@ namespace cafedebug.backend.application.Service
             {
                 _logger.LogError($"An unexpected error occurred. {exception}");
                 return Result<UserAdmin>.Failure("An unexpected error occurred.");
-            }   
+            }
         }
 
         public async Task<Result<UserAdmin>> GetUserAdminByEmail(string email)
@@ -234,16 +235,16 @@ namespace cafedebug.backend.application.Service
         {
             using (var sha256Hash = SHA256.Create())
             {
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));    
-                StringBuilder builder = new StringBuilder();    
-                
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
+                StringBuilder builder = new StringBuilder();
+
                 for (int i = 0; i < bytes.Length; i++)
                 {
-                    builder.Append(bytes[i].ToString("x2"));    
+                    builder.Append(bytes[i].ToString("x2"));
                 }
 
                 return builder.ToString();
             }
-        }   
+        }
     }
 }
