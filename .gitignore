@@ -39,3 +39,6 @@ appsettings.json
 /src/cafedebug-backend.api/appsettings.Development.json
 /src/cafedebug-backend.api/appsettings.json
 /src/cafedebug-backend.api/Properties/launchSettings.json
+
+docker-compose.yml
+/src/cafedebug-backend.api/Properties/launchSettings.json
