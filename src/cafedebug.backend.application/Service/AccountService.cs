@@ -31,14 +31,6 @@ namespace cafedebug.backend.application.Service
         {
             try
             {
-                var emailValidation = EmailValidation(sendEmailRequest.EmailFrom);
-
-                if (!emailValidation)
-                {
-                    _logger.LogError("Email invalid. - AccountService - SendEmailForgotPassword");
-                    return Result.Failure("Email invalid. - AccountService - SendEmailForgotPassword");
-                }
-
                 await _emailService.SendEmail(sendEmailRequest);
                 return Result.Success();
             }
@@ -53,14 +45,6 @@ namespace cafedebug.backend.application.Service
         {
             try
             {
-                var emailValidation = EmailValidation(email);
-
-                if (!emailValidation)
-                {
-                    _logger.LogError("Email invalid. - AccountService - ResetPassword");
-                    return Result.Failure("Email invalid. - AccountService - ResetPassword");
-                }
-
                 var user = _userService.GetUserAdminByEmail(email);   
 
                 if (user.Result.Value is null)
@@ -82,15 +66,6 @@ namespace cafedebug.backend.application.Service
                 _logger.LogError($"An unexpected error occurred. - AccountService - ResetPassword {exception}");
                 throw;
             }   
-        }
-        private bool EmailValidation(string email)
-        {
-            Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
-            Match match = regex.Match(email);
-
-            if (!match.Success) return false;
-
-            return true;
         }
     }
 }

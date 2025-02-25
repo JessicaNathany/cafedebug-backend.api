@@ -9,6 +9,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Principal;
+using System.Text;
 
 namespace cafedebug.backend.application.Service
 {
@@ -164,6 +165,31 @@ namespace cafedebug.backend.application.Service
             );
 
             return identity;
+        }
+
+        public string GenerateResetToken(int userId)
+        {
+            throw new NotImplementedException();
+
+            //try
+            //{
+            //    var tokenHandler = new JwtSecurityTokenHandler();
+            //    var key = Encoding.UTF8.GetBytes(_jtwSettings..SigningKey); // corrigir depois isso aqui
+            //    var tokenDescriptor = new SecurityTokenDescriptor
+            //    {
+            //        Subject = new ClaimsIdentity(new[] { new Claim("userId", userId.ToString()) }),
+            //        Expires = DateTime.UtcNow.AddMinutes(15), 
+
+            //        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
+            //    };
+
+            //    var token = tokenHandler.CreateToken(tokenDescriptor);
+            //    return tokenHandler.WriteToken(token);
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
         }
     }
 }

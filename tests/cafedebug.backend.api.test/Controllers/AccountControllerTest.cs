@@ -1,6 +1,7 @@
 ﻿using cafedebug.backend.application.Request;
 using cafedebug_backend.api.Administrator.Controllers;
 using cafedebug_backend.domain.Entities;
+using cafedebug_backend.domain.Interfaces.JWT;
 using cafedebug_backend.domain.Interfaces.Services;
 using cafedebug_backend.domain.Shared;
 using Microsoft.AspNetCore.Mvc;
@@ -15,12 +16,15 @@ namespace cafedebug.backend.api.test.Controllers
         private readonly Mock<IUserService> _userService;
         private readonly Mock<IAccountService> _accountService;
         private readonly AccountController _accountController;
+        private readonly Mock<IJWTService> _jwtService;
         public AccountControllerTest()
         {
             var loggerMock = Mock.Of<ILogger<AuthController>>();
             _userService = new Mock<IUserService>();
             _accountService = new Mock<IAccountService>();
-            _accountController = new AccountController(loggerMock, _userService.Object, _accountService.Object);
+            _jwtService = new Mock<IJWTService>();
+
+            _accountController = new AccountController(loggerMock, _userService.Object, _accountService.Object, _jwtService.Object);
         }
 
         [Fact]

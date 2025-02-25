@@ -31,7 +31,7 @@ namespace cafedebug.backend.application.Service
             }
         }
 
-        private async Task<MailMessage> ConfigureEmailAsync(SendEmailRequest emailRequest)
+        public async Task<MailMessage> ConfigureEmailAsync(SendEmailRequest emailRequest)
         {
             var message = new MailMessage
             {
@@ -41,7 +41,7 @@ namespace cafedebug.backend.application.Service
                 IsBodyHtml = true,
                 Priority = MailPriority.High,
                 Body = $"<html><body><h2>{emailRequest.MessageType}</h2><br /><p>Nome: {emailRequest.Name} </b></p><p>Mensagem: {emailRequest.MessageBody} </p><p>Email: {emailRequest.EmailFrom} </p></body></html>",
-                From = new MailAddress(Environment.GetEnvironmentVariable("SMTP_PASSWORD"), Environment.GetEnvironmentVariable("SMTP_NAME"), Encoding.UTF8)
+                From = new MailAddress(Environment.GetEnvironmentVariable("SMTP_FROM"), Environment.GetEnvironmentVariable("SMTP_NAME"), Encoding.UTF8)
             };
 
             message.To.Add(new MailAddress(emailRequest.EmailTo));
@@ -50,7 +50,7 @@ namespace cafedebug.backend.application.Service
             return message;
         }
 
-        private async Task<MailMessage> ConfigureEmailRecoveryPasswordAsync(SendEmailRequest emailRequest)
+        public async Task<MailMessage> ConfigureEmailRecoveryPasswordAsync(SendEmailRequest emailRequest)
         {
             var url = InsfrastructureConstants.ForgotPasswordUrl;
 

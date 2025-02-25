@@ -2,8 +2,8 @@
 {
     public class InsfrastructureConstants
     {
-        public const string MessageBodyContactUs = "Você recebeu uma nova mensagem no site Café Debug";
-        public const string MessageTypeResetPassword = "Reset sua senha";
+        public const string EmailMessageBodyContactUs = "Você recebeu uma nova mensagem no site Café Debug";
+        public const string EmailMessageTypeResetPassword = "Reset sua senha";
         public const string ForgotPasswordUrl = "http://www.cafedebug.com.br/reset-password";
     }
 }

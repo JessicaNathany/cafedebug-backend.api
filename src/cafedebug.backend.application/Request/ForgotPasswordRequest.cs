@@ -5,6 +5,7 @@ namespace cafedebug.backend.application.Request
     public class ForgotPasswordRequest
     {
         [Required]
+        [RegularExpression(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$", ErrorMessage = "Email invalid")]
         public string Email { get; set; }
         
         [Required]
