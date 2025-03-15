@@ -29,10 +29,10 @@ namespace cafedebug.backend.api.test.Services
         public async Task Create_BannerIsNull_ShouldBe_Failure()
         {
             var service = _autoMocker.CreateInstance<BannerService>();
-            await service.CreateAsync(null, CancellationToken.None);
+            await service.CreateAsync(null);
 
             //Act
-            var result = await service.CreateAsync(null, CancellationToken.None);
+            var result = await service.CreateAsync(null);
 
             // Assert
             Assert.False(result.IsSuccess);
@@ -62,10 +62,10 @@ namespace cafedebug.backend.api.test.Services
                 bannerRequest.Active);
 
             var service = _autoMocker.CreateInstance<BannerService>();
-            await service.CreateAsync(banner, CancellationToken.None);
+            await service.CreateAsync(banner);
 
             // Act
-            var result = await service.CreateAsync(banner, CancellationToken.None);
+            var result = await service.CreateAsync(banner);
 
             // Assert
             Assert.False(result.IsSuccess);
@@ -98,9 +98,9 @@ namespace cafedebug.backend.api.test.Services
             _bannerRepositoryMock.Setup(x => x.SaveAsync(It.IsAny<Banner>())).Verifiable();
 
             var service = _autoMocker.CreateInstance<BannerService>();
-            await service.CreateAsync(banner, CancellationToken.None);
+            await service.CreateAsync(banner);
 
-            var result = await service.CreateAsync(banner, CancellationToken.None);
+            var result = await service.CreateAsync(banner);
 
             // Assert
             Assert.True(result.IsSuccess);
@@ -135,13 +135,13 @@ namespace cafedebug.backend.api.test.Services
 
             _bannerRepositoryMock.Setup(x => x.SaveAsync(It.IsAny<Banner>()));
             
-            _bannerRepositoryMock.Setup(x => x.GetByNameAsync("Banner Café Youtube", CancellationToken.None))
+            _bannerRepositoryMock.Setup(x => x.GetByNameAsync("Banner Café Youtube"))
                 .Returns(Task.FromResult(bannerExist));
 
             var service = new BannerService(_bannerRepositoryMock.Object, looggerMock);
-            await service.CreateAsync(It.IsAny<Banner>(), CancellationToken.None);
+            await service.CreateAsync(It.IsAny<Banner>());
 
-            var result = await service.CreateAsync(bannerExist, CancellationToken.None);
+            var result = await service.CreateAsync(bannerExist);
 
             // Assert
             Assert.False(result.IsSuccess);
@@ -172,10 +172,10 @@ namespace cafedebug.backend.api.test.Services
                bannerRequest.Active);
 
             var service = _autoMocker.CreateInstance<BannerService>();
-            await service.UpdateAsync(banner, CancellationToken.None);
+            await service.UpdateAsync(banner);
 
             // Act
-            var result = await service.UpdateAsync(banner, CancellationToken.None);
+            var result = await service.UpdateAsync(banner);
 
             // Assert
             Assert.False(result.IsSuccess);
@@ -209,12 +209,12 @@ namespace cafedebug.backend.api.test.Services
             var looggerMock = Mock.Of<ILogger<BannerService>>();
             var stringLocalizerMock = Mock.Of<IStringLocalizer<UserService>>();
 
-            _bannerRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(bannerExist));
+            _bannerRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<int>())).Returns(Task.FromResult(bannerExist));
             _bannerRepositoryMock.Setup(x => x.SaveAsync(It.IsAny<Banner>())).Verifiable();
 
             //Act
             var service = new BannerService(_bannerRepositoryMock.Object, looggerMock);
-            var result = await service.UpdateAsync(bannerExist, CancellationToken.None);
+            var result = await service.UpdateAsync(bannerExist);
 
             // Assert
             Assert.True(result.IsSuccess);
@@ -271,16 +271,16 @@ namespace cafedebug.backend.api.test.Services
                 bannerRequest.EndDate,
                 bannerRequest.Active);
 
-            _bannerRepositoryMock.Setup(b => b.GetByIdAsync(1, CancellationToken.None)).ReturnsAsync(banner);
+            _bannerRepositoryMock.Setup(b => b.GetByIdAsync(1)).ReturnsAsync(banner);
 
             var looggerMock = Mock.Of<ILogger<BannerService>>();
             var userService = new BannerService(_bannerRepositoryMock.Object, looggerMock);
 
             var service = _autoMocker.CreateInstance<BannerService>();
-            await service.DeleteAsync(bannerRequest.Id, CancellationToken.None);
+            await service.DeleteAsync(bannerRequest.Id);
 
             // Act
-            var result = await service.DeleteAsync(bannerRequest.Id, CancellationToken.None);
+            var result = await service.DeleteAsync(bannerRequest.Id);
 
             // Assert
             Assert.False(result.IsSuccess);

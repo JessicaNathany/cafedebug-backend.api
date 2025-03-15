@@ -52,11 +52,11 @@ namespace cafedebug_backend.api.Controllers
         [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetById(int id)
         {
             try
             {
-                var episode = await _bannerService.GetByIdAsync(id, cancellationToken);
+                var episode = await _bannerService.GetByIdAsync(id);
 
                 if (!episode.IsSuccess)
                     return BadRequest(episode.Error);

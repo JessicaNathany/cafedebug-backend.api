@@ -11,12 +11,12 @@ namespace cafedebug_backend.infrastructure.Data.Repositories
         {
         }
 
-        public async Task<Banner> GetByNameAsync(string bannerName, CancellationToken cancellationToken)
+        public async Task<Banner> GetByNameAsync(string bannerName)
         {
             return await _context.Banners
                 .AsNoTracking()
                 .Where(banner => banner.Name.Contains(bannerName, StringComparison.InvariantCultureIgnoreCase))
-                .FirstOrDefaultAsync(cancellationToken);
+                .FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<Banner>> GetPagedAsync(int pageIndex = 0, int pageSize = 10)

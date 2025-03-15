@@ -1,4 +1,5 @@
 ﻿using cafedebug.backend.application.Service;
+using cafedebug_backend.domain.Entities;
 using cafedebug_backend.domain.Interfaces.Services;
 using cafedebug_backend.domain.Request;
 using cafedebug_backend.domain.Shared;
@@ -39,6 +40,21 @@ namespace cafedebug.backend.api.test.Services
             // Assert
             Assert.True(result.IsSuccess);
             Assert.Equal("", result.Error);
+        }
+
+        [Fact]
+        public async Task ChangePassword_Should_be_success()
+        {
+            // Arrange
+            var user = new UserAdmin
+            {
+
+            };
+
+            // Act
+
+
+            // Assert
         }
     }
 }

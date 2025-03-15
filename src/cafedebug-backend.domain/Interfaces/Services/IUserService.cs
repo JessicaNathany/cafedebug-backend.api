@@ -7,13 +7,13 @@ namespace cafedebug_backend.domain.Interfaces.Services
     {
         Task<Result<UserAdmin>> GetByLoginAndPasswordAsync(string email, string password);
 
-        Task<Result<UserAdmin>> CreateAsync(string email, string password, CancellationToken cancellationToken);
+        Task<Result<UserAdmin>> CreateAsync(string email, string password);
 
-        Task<Result<UserAdmin>> UpdateAsync(UserAdmin userAdmin, CancellationToken cancellationToken);
+        Task<Result<UserAdmin>> UpdateAsync(UserAdmin userAdmin);
 
-        Task<Result<UserAdmin>> GetByIdAsync(int id, CancellationToken cancellationToken);
+        Task<Result<UserAdmin>> GetByIdAsync(int id);
 
-        Task<Result> DeleteAsync(int id, CancellationToken cancellationToken);
+        Task<Result> DeleteAsync(int id);
 
         Task<Result<UserAdmin>> GetByEmailAsync(string email, string password);
 

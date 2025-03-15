@@ -1,6 +1,5 @@
 ﻿using cafedebug.backend.application.Constants;
 using cafedebug.backend.application.Request;
-using cafedebug.backend.application.Service;
 using cafedebug_backend.domain.Interfaces.JWT;
 using cafedebug_backend.domain.Interfaces.Services;
 using cafedebug_backend.domain.Request;
@@ -12,7 +11,6 @@ namespace cafedebug_backend.api.Administrator.Controllers
     [ApiController]
     [Produces("application/json")]
     [Route("api/v1/account")]
-    [Authorize]
     public class AccountController : ControllerBase
     {
         private readonly ILogger<AuthController> _logger;
@@ -42,6 +40,8 @@ namespace cafedebug_backend.api.Administrator.Controllers
         {
             try
             {
+                // validar o token
+
                 if (!ModelState.IsValid)
                 {
                     _logger.LogInformation("Model is invalid.");
@@ -74,16 +74,23 @@ namespace cafedebug_backend.api.Administrator.Controllers
 
                 return Ok();
             }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
             catch (Exception)
             {
                 throw;
             }
         }
 
+
         [HttpPost]
+        [Authorize]
         [Route("change-password")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
@@ -95,7 +102,17 @@ namespace cafedebug_backend.api.Administrator.Controllers
                     return BadRequest("Model is invalid.");
                 }
 
+                await _accountService.ChangePassword(request.Email, request.NewPassword);
+
                 return NoContent();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (NullReferenceException)
+            {
+                throw;
             }
             catch (Exception)
             {
@@ -105,6 +122,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
 
 
         [HttpPost]
+        [Authorize]
         [Route("reset-password")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -130,6 +148,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [Route("verify-email")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]

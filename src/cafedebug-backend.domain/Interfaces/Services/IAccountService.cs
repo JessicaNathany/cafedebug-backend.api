@@ -8,5 +8,7 @@ namespace cafedebug_backend.domain.Interfaces.Services
         Task<Result> SendEmailForgotPassword(SendEmailRequest sendEmailRequest);
 
         Task<Result> ResetPassword(string email, string newPassword);
+
+        Task<Result> ChangePassword(string email, string newPassword);
     }
 }

@@ -8,13 +8,13 @@ namespace cafedebug_backend.domain.Interfaces.Respositories
 
         Task UpdateAsync(TEntity entity);
 
-        Task DeleteAsync(int id, CancellationToken cancellationToken);
+        Task DeleteAsync(int id);
 
         Task<IEnumerable<TEntity>> GetAllAsync(bool asNoTracking = false);
 
-        Task<TEntity> GetByIdAsync(int id, CancellationToken cancellationToken);
+        Task<TEntity> GetByIdAsync(int id);
 
-        Task<TEntity> GetByCodeAsync(Guid code, CancellationToken cancellationToken);
+        Task<TEntity> GetByCodeAsync(Guid code);
 
         Task<int> CountAsync();
 

@@ -3,7 +3,6 @@ using cafedebug_backend.domain.Entities;
 using cafedebug_backend.domain.Interfaces.Respositories;
 using cafedebug_backend.domain.Interfaces.Services;
 using cafedebug_backend.domain.Shared;
-using cafedebug_backend.infrastructure.Data.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace cafedebug.backend.application.Service
@@ -21,7 +20,7 @@ namespace cafedebug.backend.application.Service
             _logger = logger;
         }
 
-        public async Task<Result<Banner>> CreateAsync(Banner banner, CancellationToken cancellationToken)
+        public async Task<Result<Banner>> CreateAsync(Banner banner)
         {
             if (banner is null)
             {
@@ -41,7 +40,7 @@ namespace cafedebug.backend.application.Service
 
             try
             {
-                var bannerExist = await _bannerRepository.GetByNameAsync(banner.Name, cancellationToken);
+                var bannerExist = await _bannerRepository.GetByNameAsync(banner.Name);
 
                 if (bannerExist != null)
                     return Result<Banner>.Failure($"Banner already exists {bannerExist.Name}.");
@@ -58,7 +57,7 @@ namespace cafedebug.backend.application.Service
             }
         }
 
-        public async Task<Result<Banner>> UpdateAsync(Banner banner, CancellationToken cancellationToken)
+        public async Task<Result<Banner>> UpdateAsync(Banner banner)
         {
             if (banner is null)
             {
@@ -78,7 +77,7 @@ namespace cafedebug.backend.application.Service
 
             try
             {
-                var bannerRepository = await _bannerRepository.GetByIdAsync(banner.Id, cancellationToken);
+                var bannerRepository = await _bannerRepository.GetByIdAsync(banner.Id);
 
                 if (bannerRepository is null)
                     return Result<Banner>.Failure($"Banner not found {bannerRepository.Id}.");
@@ -104,9 +103,9 @@ namespace cafedebug.backend.application.Service
             }
         }
 
-        public async Task<Result> DeleteAsync(int id, CancellationToken cancellationToken)
+        public async Task<Result> DeleteAsync(int id)
         {
-            var banner = await _bannerRepository.GetByIdAsync(id, cancellationToken);
+            var banner = await _bannerRepository.GetByIdAsync(id);
 
             if (banner is null)
             {
@@ -116,7 +115,7 @@ namespace cafedebug.backend.application.Service
 
             try
             {
-                await _bannerRepository.DeleteAsync(id, cancellationToken);
+                await _bannerRepository.DeleteAsync(id);
                 _logger.LogInformation($"Banner deleted with success.");
 
                 return Result.Success();
@@ -128,11 +127,11 @@ namespace cafedebug.backend.application.Service
             }
         }
 
-        public async Task<Result<Banner>> GetByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<Result<Banner>> GetByIdAsync(int id)
         {
             try
             {
-                var banner = await _bannerRepository.GetByIdAsync(id, cancellationToken);
+                var banner = await _bannerRepository.GetByIdAsync(id);
 
                 if (banner is null)
                 {

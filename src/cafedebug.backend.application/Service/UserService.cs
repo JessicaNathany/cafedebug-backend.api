@@ -57,7 +57,7 @@ namespace cafedebug.backend.application.Service
             }
         }
 
-        public async Task<Result<UserAdmin>> CreateAsync(string email, string password, CancellationToken cancellationToken)
+        public async Task<Result<UserAdmin>> CreateAsync(string email, string password)
         {
             if (String.IsNullOrEmpty(email))
             {
@@ -104,7 +104,7 @@ namespace cafedebug.backend.application.Service
             }
         }
 
-        public async Task<Result<UserAdmin>> UpdateAsync(UserAdmin userAdmin, CancellationToken cancellationToken)
+        public async Task<Result<UserAdmin>> UpdateAsync(UserAdmin userAdmin)
         {
             try
             {
@@ -114,7 +114,7 @@ namespace cafedebug.backend.application.Service
                     return Result<UserAdmin>.Failure("User admin cannot be null.");
                 }
 
-                var userAdminRepository = await _userRepository.GetByIdAsync(userAdmin.Id, cancellationToken);
+                var userAdminRepository = await _userRepository.GetByIdAsync(userAdmin.Id);
 
                 if (userAdminRepository is null)
                 {
@@ -134,11 +134,11 @@ namespace cafedebug.backend.application.Service
             }
         }
 
-        public async Task<Result<UserAdmin>> GetByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<Result<UserAdmin>> GetByIdAsync(int id)
         {
             try
             {
-                var user = await _userRepository.GetByIdAsync(id, cancellationToken);
+                var user = await _userRepository.GetByIdAsync(id);
 
                 if (user is null)
                 {
@@ -156,11 +156,11 @@ namespace cafedebug.backend.application.Service
             }
         }
 
-        public async Task<Result> DeleteAsync(int id, CancellationToken cancellationToken)
+        public async Task<Result> DeleteAsync(int id)
         {
             try
             {
-                var user = await _userRepository.GetByIdAsync(id, cancellationToken);
+                var user = await _userRepository.GetByIdAsync(id);
 
                 if (user is null)
                 {
@@ -168,7 +168,7 @@ namespace cafedebug.backend.application.Service
                     return Result.Failure("User admin not found.");
                 }
 
-                await _userRepository.DeleteAsync(user.Id, cancellationToken);
+                await _userRepository.DeleteAsync(user.Id);
                 _logger.LogInformation($"User deleted with success.");
 
                 return Result.Success();

@@ -120,7 +120,7 @@ namespace cafedebug.backend.api.test.Services
             var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
 
             // Act
-            var result = await userService.CreateAsync(null, password, CancellationToken.None);
+            var result = await userService.CreateAsync(null, password);
 
             // Assert
             Assert.False(result.IsSuccess);
@@ -149,7 +149,7 @@ namespace cafedebug.backend.api.test.Services
             var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
 
             // Act
-            var result = await userService.CreateAsync(email, password, CancellationToken.None);
+            var result = await userService.CreateAsync(email, password);
 
             // Assert
             Assert.False(result.IsSuccess);
@@ -174,7 +174,7 @@ namespace cafedebug.backend.api.test.Services
             var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
 
             // Act
-            var result = await userService.CreateAsync(email, null, CancellationToken.None);
+            var result = await userService.CreateAsync(email, null);
 
             // Assert
             Assert.False(result.IsSuccess);
@@ -194,12 +194,12 @@ namespace cafedebug.backend.api.test.Services
             };
 
             var looggerMock = Mock.Of<ILogger<UserService>>();
-            _userRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(userAdmin));
+            _userRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<int>())).Returns(Task.FromResult(userAdmin));
 
             var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
 
             // Act
-            var result = await userService.UpdateAsync(userAdmin, CancellationToken.None);
+            var result = await userService.UpdateAsync(userAdmin);
 
             // Assert
             Assert.True(result.IsSuccess);
@@ -224,7 +224,7 @@ namespace cafedebug.backend.api.test.Services
             userMock.Setup(x => x.GetByEmailAsync(It.IsAny<string>())).Returns(Task.FromResult<UserAdmin>(null));
 
             // Act
-            var result = await userService.UpdateAsync(userAdmin, CancellationToken.None);
+            var result = await userService.UpdateAsync(userAdmin);
 
             // Assert
             Assert.False(result.IsSuccess);
@@ -239,7 +239,7 @@ namespace cafedebug.backend.api.test.Services
             var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
 
             // Act
-            var result = await userService.UpdateAsync(null, CancellationToken.None);
+            var result = await userService.UpdateAsync(null);
 
             // Assert
             Assert.False(result.IsSuccess);
@@ -254,7 +254,7 @@ namespace cafedebug.backend.api.test.Services
             var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
 
             // Act
-            var result = await userService.GetByIdAsync(1, CancellationToken.None);
+            var result = await userService.GetByIdAsync(1);
 
             // Assert
             Assert.False(result.IsSuccess);
@@ -283,7 +283,7 @@ namespace cafedebug.backend.api.test.Services
             var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
 
             // Act
-            var result = await userService.CreateAsync(email, password, CancellationToken.None);
+            var result = await userService.CreateAsync(email, password);
 
             // Assert
             Assert.True(result.IsSuccess);

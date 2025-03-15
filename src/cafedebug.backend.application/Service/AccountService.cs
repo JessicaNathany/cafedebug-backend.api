@@ -1,30 +1,34 @@
-﻿using cafedebug.backend.application.Request;
-using cafedebug_backend.domain.Entities;
+﻿using cafedebug_backend.domain.Entities;
+using cafedebug_backend.domain.Interfaces.Respositories;
 using cafedebug_backend.domain.Interfaces.Services;
 using cafedebug_backend.domain.Request;
 using cafedebug_backend.domain.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using System.Text.RegularExpressions;
 
 namespace cafedebug.backend.application.Service
 {
+    /// <summary>
+    /// Class responsible for the business rules of account user
+    /// </summary>
     public class AccountService : IAccountService
     {
         private readonly ILogger<AccountService> _logger;
         private readonly IEmailService _emailService;
-        private readonly IUserService _userService;
+        private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher<UserAdmin> _passwordHasher;
 
         public AccountService(
             ILogger<AccountService>
             logger, 
-            IEmailService emailService, 
-            IUserService userService, 
+            IEmailService emailService,
+            IUserRepository userRespository, 
             IPasswordHasher<UserAdmin> passwordHasher)
         {
             _logger = logger;
             _emailService = emailService;
+            _userRepository = userRespository;
+            _passwordHasher =  passwordHasher;
         }
 
         public async Task<Result> SendEmailForgotPassword(SendEmailRequest sendEmailRequest)
@@ -45,9 +49,9 @@ namespace cafedebug.backend.application.Service
         {
             try
             {
-                var user = _userService.GetUserAdminByEmail(email);   
+                var user = await _userRepository.GetByEmailAsync(email);   
 
-                if (user.Result.Value is null)
+                if (user is null)
                 {
                     _logger.LogInformation("User not found.");
                     return Result.Failure("User not found.");
@@ -55,17 +59,45 @@ namespace cafedebug.backend.application.Service
 
                 var hashedPassword = _passwordHasher.HashPassword(null, newPassword);
 
-                user.Result.Value.Email = email;
-                user.Result.Value.HashedPassword = hashedPassword;
-                user.Result.Value.LastUpdate = DateTime.Now;
+                user.Email = email;
+                user.HashedPassword = hashedPassword;
+                user.LastUpdate = DateTime.Now;
 
                 return Result.Success();
             }
             catch (Exception exception)
             {
-                _logger.LogError($"An unexpected error occurred. - AccountService - ResetPassword {exception}");
+                _logger.LogError($"An unexpected error occurred. - AccountService - ResetPassword {exception.Message}");
                 throw;
             }   
+        }
+
+        public async Task<Result> ChangePassword(string email, string newPassword)
+        {
+            try
+            {
+                var user = await _userRepository.GetByEmailAsync(email);
+
+                if (user is null)
+                {
+                    _logger.LogInformation("User not found.");
+                    return Result.Failure("User not found.");
+                }
+
+                var hashedPassword = _passwordHasher.HashPassword(null, newPassword);   
+
+                user.HashedPassword = hashedPassword;
+
+                await _userRepository.UpdateAsync(user);
+                await _userRepository.SaveAsync(user);
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An unexpected error occurred. - AccountService - ChangePassword {ex.Message}");
+                throw;
+            }
         }
     }
 }
