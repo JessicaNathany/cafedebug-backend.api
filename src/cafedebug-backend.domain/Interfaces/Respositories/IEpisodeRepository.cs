@@ -11,6 +11,6 @@ namespace cafedebug_backend.domain.Interfaces.Respositories
         Task<IEnumerable<Episode>> SearchByEpisodeName(string searchParam, int pageIndex = 0, int pageSize = 10);
 
         Task<IEnumerable<Episode>> GetEpisodesPagination(string searchParam, int pageIndex = 0, int pageSize = 10);
-        Task<Episode> GetByTitle(string title, CancellationToken cancellationToken);
+        Task<Episode> GetByTitle(string title);
     }
 }

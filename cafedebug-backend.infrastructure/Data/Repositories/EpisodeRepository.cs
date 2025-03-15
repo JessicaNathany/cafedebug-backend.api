@@ -51,12 +51,12 @@ namespace cafedebug_backend.infrastructure.Data.Repositories
             return await _context.Episodes.OrderByDescending(x => x.Number).Take(3).ToListAsync();
         }
 
-        public async Task<Episode> GetByTitle(string title, CancellationToken cancellationToken)
+        public async Task<Episode> GetByTitle(string title)
         {
             return await _context.Episodes
                .AsNoTracking()
                .Where(banner => banner.Title.Contains(title, StringComparison.InvariantCultureIgnoreCase))
-               .FirstOrDefaultAsync(cancellationToken);
+               .FirstOrDefaultAsync();
         }
     }
 }

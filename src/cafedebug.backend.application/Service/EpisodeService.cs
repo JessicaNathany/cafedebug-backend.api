@@ -20,7 +20,7 @@ namespace cafedebug.backend.application.Service
             _logger = logger;
         }
 
-        public async Task<Result<Episode>> CreateAsync(Episode episode, CancellationToken cancellationToken)
+        public async Task<Result<Episode>> CreateAsync(Episode episode)
         {
             if (episode is null)
             {
@@ -40,7 +40,7 @@ namespace cafedebug.backend.application.Service
 
             try
             {
-                var episodeExist = await _episodeRepository.GetByTitle(episode.Title, cancellationToken);
+                var episodeExist = await _episodeRepository.GetByTitle(episode.Title);
 
                 if (episodeExist != null)
                     return Result<Episode>.Failure($"Banner already exists {episode.Title}.");
@@ -57,7 +57,7 @@ namespace cafedebug.backend.application.Service
             }
         }
 
-        public async Task<Result<Episode>> UpdateAsync(Episode episode, CancellationToken cancellationToken)
+        public async Task<Result<Episode>> UpdateAsync(Episode episode)
         {
             if (episode is null)
             {
@@ -76,7 +76,7 @@ namespace cafedebug.backend.application.Service
             }
             try
             {
-                var episodeRepository = await _episodeRepository.GetByIdAsync(episode.Id, cancellationToken);
+                var episodeRepository = await _episodeRepository.GetByIdAsync(episode.Id);
 
                 if (episodeRepository is null)
                     return Result<Episode>.Failure($"Episode not found {episodeRepository.Id}.");
@@ -106,9 +106,9 @@ namespace cafedebug.backend.application.Service
             }
         }
 
-        public async Task<Result> DeleteAsync(int id, CancellationToken cancellationToken)
+        public async Task<Result> DeleteAsync(int id)
         {
-            var episode = await _episodeRepository.GetByIdAsync(id, cancellationToken);
+            var episode = await _episodeRepository.GetByIdAsync(id);
 
             if (episode is null)
             {
@@ -118,7 +118,7 @@ namespace cafedebug.backend.application.Service
 
             try
             {
-                await _episodeRepository.DeleteAsync(id, cancellationToken);
+                await _episodeRepository.DeleteAsync(id);
                 _logger.LogInformation($"Episode deleted with success.");
 
                 return Result.Success();
@@ -152,11 +152,11 @@ namespace cafedebug.backend.application.Service
             }
         }
 
-        public async Task<Result<Episode>> GetByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<Result<Episode>> GetByIdAsync(int id)
         {
             try
             {
-                var episode = await _episodeRepository.GetByIdAsync(id, cancellationToken);
+                var episode = await _episodeRepository.GetByIdAsync(id);
 
                 if (episode is null)
                 {

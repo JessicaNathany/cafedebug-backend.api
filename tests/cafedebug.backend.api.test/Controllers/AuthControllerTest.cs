@@ -49,7 +49,7 @@ namespace cafedebug.backend.api.test.Controllers
             _jwtServiceMock.Setup(x => x.GenerateAccesTokenAndRefreshtoken(user)).ReturnsAsync(jwtToken);
 
             // Act
-            var result = await _authController.GetToken(userCredentials, default);
+            var result = await _authController.GetToken(userCredentials);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -67,7 +67,7 @@ namespace cafedebug.backend.api.test.Controllers
             var userCredentials = new UserCredentialsRequest { Email = "", Password = "" };
 
             // Act
-            var result = await _authController.GetToken(userCredentials, default);
+            var result = await _authController.GetToken(userCredentials);
 
             // Assert
             var badResult = Assert.IsType<BadRequestObjectResult>(result);
@@ -97,7 +97,7 @@ namespace cafedebug.backend.api.test.Controllers
             _jwtServiceMock.Setup(x => x.GenerateAccesTokenAndRefreshtoken(user)).ReturnsAsync((JWTToken)null); 
 
             // Act
-            var result = await _authController.GetToken(userCredentials, default);
+            var result = await _authController.GetToken(userCredentials);
 
             // Assert
             var badResult = Assert.IsType<BadRequestObjectResult>(result);
@@ -113,7 +113,7 @@ namespace cafedebug.backend.api.test.Controllers
             refreshToken.RefreshToken = null;
 
              // Act
-            var result = await _authController.RefreshToken(refreshToken, default);
+            var result = await _authController.RefreshToken(refreshToken);
 
             // Assert
             var badResult = Assert.IsType<UnauthorizedObjectResult>(result);
@@ -132,7 +132,7 @@ namespace cafedebug.backend.api.test.Controllers
                 .ReturnsAsync(Result<RefreshTokens>.Success(fakeRefreshToken));
             
             // Act
-            var result = await _authController.RefreshToken(refreshTokenRequest, default);
+            var result = await _authController.RefreshToken(refreshTokenRequest);
 
             // Assert
             var badResult = Assert.IsType<UnauthorizedObjectResult>(result);
@@ -150,11 +150,11 @@ namespace cafedebug.backend.api.test.Controllers
             _jwtServiceMock.Setup(service => service.GetByTokenAsync(It.IsAny<string>()))
                 .ReturnsAsync(Result<RefreshTokens>.Success(fakeRefreshToken));
 
-            _userServiceMock.Setup(x=> x.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            _userServiceMock.Setup(x=> x.GetByIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(Result<UserAdmin>.Failure("User not found."));    
 
             // Act
-            var result = await _authController.RefreshToken(refreshTokenRequest, default);
+            var result = await _authController.RefreshToken(refreshTokenRequest);
 
             // Assert
             var badResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -185,7 +185,7 @@ namespace cafedebug.backend.api.test.Controllers
             _jwtServiceMock.Setup(service => service.GetByTokenAsync(It.IsAny<string>()))
               .ReturnsAsync(Result<RefreshTokens>.Success(fakeRefreshToken));
 
-            _userServiceMock.Setup(x => x.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            _userServiceMock.Setup(x => x.GetByIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(Result<UserAdmin>.Success(userAdmin));
 
             _jwtServiceMock.Setup(x => x.GenerateAccesTokenAndRefreshtoken(It.IsAny<UserAdmin>()))
@@ -194,7 +194,7 @@ namespace cafedebug.backend.api.test.Controllers
             _jwtServiceMock.Setup(x => x.GenerateNewAccessToken(It.IsAny<UserAdmin>(), It.IsAny<RefreshTokens>())).ReturnsAsync(jwtToken);
 
             // Act
-            var result = await _authController.RefreshToken(refreshTokenRequest, default);
+            var result = await _authController.RefreshToken(refreshTokenRequest);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -211,7 +211,7 @@ namespace cafedebug.backend.api.test.Controllers
             var refreshTokenRequest = new RefreshTokenRequest { RefreshToken = "refreshToken" };
 
             // Act
-            var result = await _authController.RefreshToken(refreshTokenRequest, default);
+            var result = await _authController.RefreshToken(refreshTokenRequest);
 
             // Assert
             var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(result);

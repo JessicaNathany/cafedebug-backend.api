@@ -20,7 +20,7 @@ namespace cafedebug_backend.infrastructure.Data.Repositories
             return await _dbSet.CountAsync();
         }
 
-        public async Task DeleteAsync(int id, CancellationToken cancellationToken)
+        public async Task DeleteAsync(int id)
         {
             var entity = await _dbSet.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -39,12 +39,12 @@ namespace cafedebug_backend.infrastructure.Data.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<TEntity> GetByCodeAsync(Guid code, CancellationToken cancellationToken)
+        public async Task<TEntity> GetByCodeAsync(Guid code)
         {
             return await _dbSet.FirstOrDefaultAsync(x => x.Code == code);
         }
 
-        public virtual async Task<TEntity> GetByIdAsync(int id, CancellationToken cancellationToken)
+        public virtual async Task<TEntity> GetByIdAsync(int id)
         {
             return await _dbSet.FirstOrDefaultAsync(x => x.Id == id);
         }

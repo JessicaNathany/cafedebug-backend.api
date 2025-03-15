@@ -28,7 +28,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
         [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody] BannerRequest bannerRequest, CancellationToken cancellationToken)
+        public async Task<IActionResult> Create([FromBody] BannerRequest bannerRequest)
         {
             try
             {
@@ -40,7 +40,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
 
                 var banner = _mapper.Map<Banner>(bannerRequest);
 
-                var result = await _bannerService.CreateAsync(banner, cancellationToken);
+                var result = await _bannerService.CreateAsync(banner);
 
                 if (!result.IsSuccess)
                     return BadRequest(result.Error);
@@ -65,7 +65,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
         [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Update([FromBody] BannerRequest bannerRequest, CancellationToken cancellationToken)
+        public async Task<IActionResult> Update([FromBody] BannerRequest bannerRequest)
         {
             try
             {
@@ -77,7 +77,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
 
                 var banner = _mapper.Map<Banner>(bannerRequest);
 
-                var result = await _bannerService.UpdateAsync(banner, cancellationToken);
+                var result = await _bannerService.UpdateAsync(banner);
 
                 if (!result.IsSuccess)
                     return BadRequest(result.Error);
@@ -129,11 +129,11 @@ namespace cafedebug_backend.api.Administrator.Controllers
         [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetById(int id)
         {
             try
             {
-                var banner = await _bannerService.GetByIdAsync(id, cancellationToken);
+                var banner = await _bannerService.GetByIdAsync(id);
 
                 if (!banner.IsSuccess)
                     return BadRequest(banner.Error);
@@ -158,7 +158,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
         [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
@@ -168,7 +168,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
                 if (id is 0)
                     return BadRequest("Banner Id can be not null.");
 
-                var result = await _bannerService.DeleteAsync(id, cancellationToken);
+                var result = await _bannerService.DeleteAsync(id);
 
                 if (!result.IsSuccess)
                     return BadRequest(result.Error);

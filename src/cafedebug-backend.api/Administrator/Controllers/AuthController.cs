@@ -26,7 +26,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetToken([FromBody] UserCredentialsRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetToken([FromBody] UserCredentialsRequest request)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                throw;
+                return Unauthorized();
             }
             catch (Exception)
             {
@@ -68,7 +68,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest refreshTokenRequest, CancellationToken cancellationToken)
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest refreshTokenRequest)
         {
             try
             {
@@ -82,7 +82,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
                 if (refreshToken == null || !refreshToken.Value.IsActive || refreshToken.Value.ExpirationDate <= DateTime.UtcNow)
                     return Unauthorized("Invalid or expired refresh token.");
 
-                var user = await _userService.GetByIdAsync(refreshToken.Value.UserId, cancellationToken);
+                var user = await _userService.GetByIdAsync(refreshToken.Value.UserId);
 
                 if (!user.IsSuccess)
                     return NotFound("User not found.");
@@ -94,6 +94,10 @@ namespace cafedebug_backend.api.Administrator.Controllers
                     return BadRequest("Error creating token");
 
                 return Ok(new { AccessToken = newAcessToken, RefreshToken = newAcessToken.RefreshToken });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
             }
             catch (NullReferenceException)
             {
