@@ -19,7 +19,7 @@
  
  Este é o repositório do projeto API Café Debug. Essa API tem como objetivo manter o backend separado do frontend<br/>
  trazendo informações do podcast como episódios e agenda e outros conteúdos relacionado a tecnologia. O site atual está
- sendo utilizado ASP.NET Core MVC, legado (wwww.cafedebug.com.br).
+ sendo utilizado ASP.NET Core MVC [site café debug](wwww.cafedebug.com.br).
 
 
 ## Setup 🔧
