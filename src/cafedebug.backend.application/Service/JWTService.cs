@@ -191,5 +191,10 @@ namespace cafedebug.backend.application.Service
             //    throw;
             //}
         }
+        public async Task InvalidateRefreshTokenAsync(RefreshTokens refreshToken)
+        {
+            refreshToken.InactiveRefreshToken();
+            await _refreshTokensRepository.UpdateAsync(refreshToken);
+        }
     }
 }
