@@ -64,7 +64,8 @@ Dê permissão ao arquivo .sh
 - `GET /api/episodio-admin/episodio/{id}`  - retorna episódio por id.
 - `DELETE /api/episodio-admin/episodio/{id}` - apaga episódio por id.
 
-
+### Architecture
+<img width="1154" height="614" alt="image" src="https://github.com/user-attachments/assets/5bfe0c95-463b-4a38-8f58-f456ba124e1d" />
 
 
 
