@@ -101,7 +101,7 @@ namespace cafedebug.backend.api.test.Controllers
 
             // Assert
             var badResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("Error creating token", badResult.Value);
+            Assert.Equal("Error creating token for user.", badResult.Value);
         }
 
 

@@ -85,5 +85,77 @@ namespace cafedebug.backend.api.test.Controllers
             // Assert
             Assert.IsType<OkResult>(result);
         }
+
+        [Fact]
+        public async Task ChangePassword_InvalidModel_ReturnsBadRequest()
+        {
+            // Arrange
+            var changePasswordRequest = new ChangePasswordRequest { Email = "", NewPassword = "novaSenha123" };
+            _accountController.ModelState.AddModelError("Email", "Email é obrigatório");
+
+            // Act
+            var result = await _accountController.ChangePassword(changePasswordRequest);
+
+            // Assert
+            var badResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Model is invalid.", badResult.Value.ToString());
+        }
+
+        [Fact]
+        public async Task ChangePassword_Success_ReturnsNoContent()
+        {
+            // Arrange
+            var changePasswordRequest = new ChangePasswordRequest { Email = "user@cafedebug.com", NewPassword = "newPassword123" };
+            _accountService.Setup(x => x.ChangePassword(changePasswordRequest.Email, changePasswordRequest.NewPassword)).Returns(Task.FromResult(Result.Success()));
+
+            // Act
+            var result = await _accountController.ChangePassword(changePasswordRequest);
+
+            // Assert
+            Assert.IsType<NoContentResult>(result);
+        }
+
+        [Fact]
+        public async Task ChangePassword_UnauthorizedAccessException_ReturnsUnauthorized()
+        {
+            // Arrange
+            var changePasswordRequest = new ChangePasswordRequest { Email = "user@cafedebug.com", NewPassword = "newPassword123" };
+            _accountService.Setup(x => x.ChangePassword(changePasswordRequest.Email, changePasswordRequest.NewPassword)).ThrowsAsync(new UnauthorizedAccessException());
+
+            // Act
+            var result = await _accountController.ChangePassword(changePasswordRequest);
+
+            // Assert
+            Assert.IsType<UnauthorizedResult>(result);
+        }
+
+        [Fact]
+        public async Task VerifyEmail_InvalidModel_ReturnsBadRequest()
+        {
+            // Arrange
+            var request = new ChangePasswordRequest { Email = "", NewPassword = "password123" };
+            _accountController.ModelState.AddModelError("Email", "Email is required");
+
+            // Act
+            var result = await _accountController.VerifyEmail(request);
+
+            // Assert
+            var badResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Model is invalid.", badResult.Value.ToString());
+        }
+
+        [Fact]
+        public async Task VerifyEmail_Success_ReturnsNoContent()
+        {
+            // Arrange
+            var request = new ChangePasswordRequest { Email = "user@cafedebug.com", NewPassword = "password123" };
+
+            // Act
+            var result = await _accountController.VerifyEmail(request);
+
+            // Assert
+            Assert.IsType<NoContentResult>(result);
+        }
     }
 }
+

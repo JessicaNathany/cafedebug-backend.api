@@ -167,7 +167,6 @@ namespace cafedebug_backend.api.Administrator.Controllers
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
