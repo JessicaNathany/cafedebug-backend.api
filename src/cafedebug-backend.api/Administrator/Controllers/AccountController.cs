@@ -40,8 +40,6 @@ namespace cafedebug_backend.api.Administrator.Controllers
         {
             try
             {
-                // validar o token
-
                 if (!ModelState.IsValid)
                 {
                     _logger.LogInformation("Model is invalid.");
