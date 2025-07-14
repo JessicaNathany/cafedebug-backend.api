@@ -169,27 +169,25 @@ namespace cafedebug.backend.application.Service
 
         public string GenerateResetToken(int userId)
         {
-            throw new NotImplementedException();
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = _jtwSettings.SigningCredentials.Key as SymmetricSecurityKey;
+            if (key == null)
+                throw new InvalidOperationException("Signing key is not a symmetric key.");
 
-            //try
-            //{
-            //    var tokenHandler = new JwtSecurityTokenHandler();
-            //    var key = Encoding.UTF8.GetBytes(_jtwSettings..SigningKey); // corrigir depois isso aqui
-            //    var tokenDescriptor = new SecurityTokenDescriptor
-            //    {
-            //        Subject = new ClaimsIdentity(new[] { new Claim("userId", userId.ToString()) }),
-            //        Expires = DateTime.UtcNow.AddMinutes(15), 
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[] { new Claim("userId", userId.ToString()) }),
+                Expires = DateTime.UtcNow.AddMinutes(15),
+                SigningCredentials = _jtwSettings.SigningCredentials
+            };
 
-            //        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-            //    };
-
-            //    var token = tokenHandler.CreateToken(tokenDescriptor);
-            //    return tokenHandler.WriteToken(token);
-            //}
-            //catch (Exception)
-            //{
-            //    throw;
-            //}
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+        public async Task InvalidateRefreshTokenAsync(RefreshTokens refreshToken)
+        {
+            refreshToken.InactiveRefreshToken();
+            await _refreshTokensRepository.UpdateAsync(refreshToken);
         }
     }
 }

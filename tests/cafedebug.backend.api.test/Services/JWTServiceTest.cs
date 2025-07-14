@@ -2,9 +2,6 @@
 {
     public class JWTServiceTest
     {
-        public JWTServiceTest()
-        {
-                
-        }
+      
     }
 }
