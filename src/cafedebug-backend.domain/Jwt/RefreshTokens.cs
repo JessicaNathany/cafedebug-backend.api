@@ -11,25 +11,29 @@ namespace cafedebug_backend.domain.Jwt
         public string UserName { get; private set; }
         public string Token { get; private set; }
         public DateTime ExpirationDate { get; private set; }
-        public bool IsActive { get; private set; }
+        public DateTime CreatedDate { get; private set; } = DateTime.UtcNow;
+        public DateTime LastUpdate { get; private set; }
 
-        public RefreshTokens(int userId, string userName, string token, DateTime expirationDate)
+        public RefreshTokens(int userId, string userName, string token, DateTime expirationDate, DateTime lastUpdate)
         {
             UserId = userId;
             UserName = userName;
             Token = token;
-            IsActive = true;
             ExpirationDate = expirationDate;
+            LastUpdate = lastUpdate;
         }
 
-        public static RefreshTokens Create(int userId, string userName, string token, DateTime expirationDate)
+        public static RefreshTokens Create(int userId, string userName, string token, DateTime expirationDate, DateTime lastUpdate)
         {
-            return new RefreshTokens(userId, userName, token, expirationDate);
+            return new RefreshTokens(userId, userName, token, expirationDate, lastUpdate);
         }
 
-        public void InactiveRefreshToken()
+        public void UpdateToken(string token, DateTime expirationDate)
         {
-            IsActive = false;
+            Token = token;
+            ExpirationDate = expirationDate;
+            LastUpdate = DateTime.UtcNow;
         }
     }
 }
+    

@@ -3,7 +3,6 @@ using cafedebug.backend.application.Service;
 using cafedebug_backend.application.Request;
 using cafedebug_backend.application.Response;
 using cafedebug_backend.domain.Entities;
-using cafedebug_backend.domain.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,6 +31,8 @@ namespace cafedebug_backend.api.Administrator.Controllers
         {
             try
             {
+                // check auth token
+
                 if (!ModelState.IsValid)
                     return BadRequest("BannerRequest can be not valid.");
 

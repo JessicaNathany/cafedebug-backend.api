@@ -16,7 +16,9 @@
 
         public bool Active { get; private set; }
 
-        public Banner(string name, string urlImage, string url, DateTime startDate, DateTime endDate, bool active)
+        public int Ordem { get; private set; }
+
+        public Banner(string name, string urlImage, string url, DateTime startDate, DateTime endDate, bool active, int ordem)
         {
             Code = Guid.NewGuid();
             Name = name;
@@ -26,9 +28,10 @@
             EndDate = endDate;
             Active = active;
             EndDateVerify(endDate);
+            Ordem = ordem;
         }
 
-        public void Update(string name, string urlImage, string url, DateTime startDate, DateTime endDate, DateTime? updateDate, bool active)
+        public void Update(string name, string urlImage, string url, DateTime startDate, DateTime endDate, DateTime? updateDate, bool active, int ordem)
         {
             Name = name;
             UrlImage = urlImage;
@@ -38,6 +41,7 @@
             UpdateDate = updateDate;
             Active = active;
             EndDateVerify(endDate);
+            Ordem = ordem;
         }
         public void EndDateVerify(DateTime endDate)
         {

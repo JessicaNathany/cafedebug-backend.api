@@ -35,6 +35,9 @@ namespace cafedebug_backend.infrastructure.Mapping
             builder.Property(b => b.Active)
                 .HasColumnType("bit");
 
+            builder.Property(b => b.Ordem)
+                .HasColumnType("int");
+
             builder.ToTable("Banner");
         }
     }

@@ -26,7 +26,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetToken([FromBody] UserCredentialsRequest request)
+        public async Task<IActionResult> GenerateToken([FromBody] UserCredentialsRequest request)
         {
             try
             {
@@ -92,36 +92,31 @@ namespace cafedebug_backend.api.Administrator.Controllers
                     return Unauthorized("Refresh token cannot be null.");
                 }
 
-                var refreshToken = await _jWTService.GetByTokenAsync(refreshTokenRequest.RefreshToken);
+                var refreshTokenResult = await _jWTService.GetByTokenAsync(refreshTokenRequest.RefreshToken);
 
-                if (refreshToken == null || !refreshToken.Value.IsActive || refreshToken.Value.ExpirationDate <= DateTime.UtcNow)
+                if (refreshTokenResult.Value == null || refreshTokenResult.Value.ExpirationDate <= DateTime.UtcNow)
                 {
                     _logger.LogWarning("Invalid or expired refresh token.");
                     return Unauthorized("Invalid or expired refresh token.");
                 }
 
-                var user = await _userService.GetByIdAsync(refreshToken.Value.UserId);
+                var userResult = await _userService.GetByIdAsync(refreshTokenResult.Value.UserId);
 
-                if (!user.IsSuccess)
+                if (!userResult.IsSuccess)
                 {
                     _logger.LogWarning("User not found for refresh token.");
                     return NotFound("User not found.");
                 }
 
-                refreshToken.Value.InactiveRefreshToken();
-                
-                await _jWTService.InvalidateRefreshTokenAsync(refreshToken.Value);
+                var token = await _jWTService.RefreshTokenAsync(refreshTokenResult.Value, userResult.Value);
 
-                // Generate new access token and refresh token
-                var newAcessToken = await _jWTService.GenerateNewAccessToken(user.Value, refreshToken.Value);
-
-                if (newAcessToken is null)
+                if (token is null)
                 {
                     _logger.LogError("Error creating new token during refresh.");
                     return BadRequest("Error creating token.");
                 }
 
-                return Ok(new { AccessToken = newAcessToken, RefreshToken = newAcessToken.RefreshToken });
+                return Ok(token);
             }
             catch (UnauthorizedAccessException)
             {

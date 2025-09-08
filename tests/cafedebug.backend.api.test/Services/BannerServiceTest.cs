@@ -59,7 +59,8 @@ namespace cafedebug.backend.api.test.Services
                 bannerRequest.Url,
                 bannerRequest.StartDate,
                 bannerRequest.EndDate,
-                bannerRequest.Active);
+                bannerRequest.Active,
+                bannerRequest.Ordem);
 
             var service = _autoMocker.CreateInstance<BannerService>();
             await service.CreateAsync(banner);
@@ -93,7 +94,8 @@ namespace cafedebug.backend.api.test.Services
                 bannerRequest.Url,
                 bannerRequest.StartDate,
                 bannerRequest.EndDate,
-                bannerRequest.Active);
+                bannerRequest.Active,
+                bannerRequest.Ordem);
 
             _bannerRepositoryMock.Setup(x => x.SaveAsync(It.IsAny<Banner>())).Verifiable();
 
@@ -119,6 +121,7 @@ namespace cafedebug.backend.api.test.Services
                 Url = "http://teste.com/image",
                 UrlImage = "http://teste.com/image",
                 Active = true,
+                Ordem = 1
             };
 
             var bannerExist = new Banner(
@@ -127,7 +130,8 @@ namespace cafedebug.backend.api.test.Services
                "http://teste.com/2",
                DateTime.Now.AddDays(-30),
                DateTime.Now.AddDays(-5),
-               bannerRequest.Active);
+               bannerRequest.Active,
+               bannerRequest.Ordem = 1);
 
             var looggerMock = Mock.Of<ILogger<BannerService>>();
             var stringLocalizerMock = Mock.Of<IStringLocalizer<UserService>>();
@@ -161,6 +165,7 @@ namespace cafedebug.backend.api.test.Services
                 Url = "http://teste.com/image",
                 UrlImage = "http://teste.com/image",
                 Active = true,
+                Ordem = 1
             };
 
             var banner = new Banner(
@@ -169,7 +174,8 @@ namespace cafedebug.backend.api.test.Services
                bannerRequest.Url,
                bannerRequest.StartDate,
                bannerRequest.EndDate,
-               bannerRequest.Active);
+               bannerRequest.Active,
+               bannerRequest.Ordem);
 
             var service = _autoMocker.CreateInstance<BannerService>();
             await service.UpdateAsync(banner);
@@ -195,6 +201,7 @@ namespace cafedebug.backend.api.test.Services
                 Url = "http://teste.com/image",
                 UrlImage = "http://teste.com/image",
                 Active = true,
+                Ordem = 1
             };
 
             var bannerExist = new Banner(
@@ -203,8 +210,9 @@ namespace cafedebug.backend.api.test.Services
                 bannerRequest.Url,
                 bannerRequest.StartDate,
                 bannerRequest.EndDate,
-                bannerRequest.Active);
-                bannerExist.Id = 1;
+                bannerRequest.Active,
+                bannerRequest.Ordem);
+                bannerExist.Id = 1;    
 
             var looggerMock = Mock.Of<ILogger<BannerService>>();
             var stringLocalizerMock = Mock.Of<IStringLocalizer<UserService>>();
@@ -261,6 +269,7 @@ namespace cafedebug.backend.api.test.Services
                 Url = "http://teste.com/image",
                 UrlImage = "http://teste.com/image",
                 Active = true,
+                Ordem = 1   
             };
 
             var banner = new Banner(
@@ -269,7 +278,8 @@ namespace cafedebug.backend.api.test.Services
                 bannerRequest.Url,
                 bannerRequest.StartDate,
                 bannerRequest.EndDate,
-                bannerRequest.Active);
+                bannerRequest.Active, 
+                bannerRequest.Ordem);
 
             _bannerRepositoryMock.Setup(b => b.GetByIdAsync(1)).ReturnsAsync(banner);
 

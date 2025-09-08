@@ -24,7 +24,7 @@ namespace cafedebug.backend.api.test.Mocks
                 userId: 1,
                 userName: "debugcafe@local.com", 
                 token: "fake-refresh-token", 
-                expirationDate: DateTime.Now.AddMinutes(15));
+                expirationDate: DateTime.Now.AddMinutes(15), DateTime.Now);
         }
 
         public static UserCredentialsRequest UserRequest()

@@ -2,7 +2,7 @@
 
 namespace cafedebug_backend.application.Request
 {
-    public class BannerRequest
+    public record BannerRequest
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -17,5 +17,6 @@ namespace cafedebug_backend.application.Request
 
         public DateTime? DateUpdate { get;  set; }
         public bool Active { get; set; }
+        public int Ordem { get; set; }
     }
 }

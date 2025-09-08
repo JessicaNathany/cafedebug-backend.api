@@ -89,7 +89,8 @@ namespace cafedebug.backend.application.Service
                     bannerRepository.StartDate,
                     bannerRepository.EndDate,
                     bannerRepository.UpdateDate,
-                    bannerRepository.Active);
+                    bannerRepository.Active,
+                    bannerRepository.Ordem);
 
                 await _bannerRepository.UpdateAsync(banner);
                 _logger.LogInformation($"Banner updated with success.");

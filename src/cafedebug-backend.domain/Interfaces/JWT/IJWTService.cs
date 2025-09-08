@@ -10,12 +10,8 @@ namespace cafedebug_backend.domain.Interfaces.JWT
 
         Task<Result<RefreshTokens>> GetByTokenAsync(string token);
 
-        Task UpdateRefreshToken(RefreshTokens oldRefreshTokens, RefreshTokens newRefreshTokens);
-
-        Task<JWTToken> GenerateNewAccessToken(UserAdmin userAdmin, RefreshTokens refreshTokens);
-
         string GenerateResetToken(int userId);
 
-        Task InvalidateRefreshTokenAsync(RefreshTokens refreshToken);
+        Task<JWTToken> RefreshTokenAsync(RefreshTokens refreshToken, UserAdmin userAdmin);
     }
 }

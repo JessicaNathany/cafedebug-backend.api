@@ -21,12 +21,12 @@ namespace cafedebug_backend.infrastructure.ConfigurationModelBuilder
             builder.Property(r => r.ExpirationDate)
                 .IsRequired();
 
-            builder.Property(r => r.IsActive)
-                .IsRequired();
-
             builder.HasOne<UserAdmin>()
                 .WithMany()
                 .HasForeignKey(r => r.UserId);
+
+            builder.Property(r => r.CreatedDate);
+            builder.Property(r => r.LastUpdate);
 
             builder.ToTable("RefreshTokens");   
         }   
