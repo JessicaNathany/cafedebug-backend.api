@@ -9,7 +9,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Principal;
-using System.Text;
 
 namespace cafedebug.backend.application.Service
 {
@@ -25,7 +24,6 @@ namespace cafedebug.backend.application.Service
             _logger = logger;   
             _refreshTokensRepository = refreshTokensRepository;
         }
-
         public async Task<JWTToken> GenerateAccesTokenAndRefreshtoken(UserAdmin userAdmin)
         {
             try
@@ -92,65 +90,22 @@ namespace cafedebug.backend.application.Service
 
             var token = generatedToken.Replace("+", string.Empty).Replace("=", string.Empty).Replace("/", string.Empty);
             var expirationDate = DateTime.UtcNow.AddMinutes(_jtwSettings.RefreshTokenValidForMinutes);
-
-            var refreshToken = RefreshTokens.Create(userId, userName, token, expirationDate);
+            var now = DateTime.UtcNow;
 
             var refreshTokenByUser = await _refreshTokensRepository.GetByTokenByUserIdAsync(userId);
 
-            if(refreshTokenByUser != null)
+            if (refreshTokenByUser != null)
             {
-                refreshTokenByUser.InactiveRefreshToken();
+                refreshTokenByUser.UpdateToken(token, expirationDate);
                 await _refreshTokensRepository.UpdateAsync(refreshTokenByUser);
+                return refreshTokenByUser;
             }
-
-            await SaveRefreshToken(refreshToken);
-
-            return refreshToken;
-        }
-
-        public async Task<JWTToken> GenerateNewAccessToken(UserAdmin userAdmin, RefreshTokens refreshTokens)
-        {
-            try
+            else
             {
-                var identity = GetClaimsIdentity(userAdmin);
-
-                var jsonSecurityHandler = new JwtSecurityTokenHandler();
-
-                var securityToken = jsonSecurityHandler.CreateToken(new SecurityTokenDescriptor
-                {
-                    Subject = identity,
-                    Issuer = _jtwSettings.Issuer,
-                    Audience = _jtwSettings.Audience,
-                    IssuedAt = _jtwSettings.IssuedAt,
-                    NotBefore = _jtwSettings.NotBefore,
-                    Expires = _jtwSettings.AccessTokenExpiration,
-                    SigningCredentials = _jtwSettings.SigningCredentials
-                });
-
-                var accessToken = jsonSecurityHandler.WriteToken(securityToken);
-
-                return JWTToken.Create(
-                    accessToken, refreshTokens,
-                    TokenType.Bearer.ToString(),
-                    (long)TimeSpan.FromMinutes(_jtwSettings.ValidForMinutes).TotalSeconds);
+                var refreshToken = RefreshTokens.Create(userId, userName, token, expirationDate, now);
+                await _refreshTokensRepository.SaveAsync(refreshToken);
+                return refreshToken;
             }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-       
-        public async Task UpdateRefreshToken(RefreshTokens oldRefreshTokens, RefreshTokens newRefreshTokens)
-        {
-            oldRefreshTokens.InactiveRefreshToken();
-            await _refreshTokensRepository.UpdateAsync(oldRefreshTokens);
-
-            await SaveRefreshToken(newRefreshTokens);
-        }
-
-        private async Task SaveRefreshToken(RefreshTokens refreshToken)
-        {
-            await _refreshTokensRepository.SaveAsync(refreshToken);
         }
 
         private ClaimsIdentity GetClaimsIdentity(UserAdmin userAdmin)
@@ -184,10 +139,41 @@ namespace cafedebug.backend.application.Service
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
-        public async Task InvalidateRefreshTokenAsync(RefreshTokens refreshToken)
+        public async Task<JWTToken> RefreshTokenAsync(RefreshTokens refreshToken, UserAdmin userAdmin)
         {
-            refreshToken.InactiveRefreshToken();
+            string generatedToken;
+            var randomNumber = new byte[32];
+            using (var randonNumberGenerator = RandomNumberGenerator.Create())
+            {
+                randonNumberGenerator.GetBytes(randomNumber);
+                generatedToken = Convert.ToBase64String(randomNumber);
+            }
+            var token = generatedToken.Replace("+", string.Empty).Replace("=", string.Empty).Replace("/", string.Empty);
+
+            var expirationDate = DateTime.UtcNow.AddMinutes(_jtwSettings.RefreshTokenValidForMinutes);
+
+            refreshToken.UpdateToken(token, expirationDate);
             await _refreshTokensRepository.UpdateAsync(refreshToken);
+
+            // Gere novo access token
+            var identity = GetClaimsIdentity(userAdmin);
+            var jsonSecurityHandler = new JwtSecurityTokenHandler();
+            var securityToken = jsonSecurityHandler.CreateToken(new SecurityTokenDescriptor
+            {
+                Subject = identity,
+                Issuer = _jtwSettings.Issuer,
+                Audience = _jtwSettings.Audience,
+                IssuedAt = _jtwSettings.IssuedAt,
+                NotBefore = _jtwSettings.NotBefore,
+                Expires = _jtwSettings.AccessTokenExpiration,
+                SigningCredentials = _jtwSettings.SigningCredentials
+            });
+            var accessToken = jsonSecurityHandler.WriteToken(securityToken);
+
+            return JWTToken.Create(
+                accessToken, refreshToken,
+                TokenType.Bearer.ToString(),
+                (long)TimeSpan.FromMinutes(_jtwSettings.ValidForMinutes).TotalSeconds);
         }
     }
 }
