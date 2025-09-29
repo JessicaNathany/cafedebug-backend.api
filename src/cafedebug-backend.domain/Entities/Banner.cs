@@ -18,7 +18,10 @@
 
         public int Ordem { get; private set; }
 
-        public Banner(string name, string urlImage, string url, DateTime startDate, DateTime endDate, bool active, int ordem)
+        public Banner(
+            string name, string urlImage, string url, 
+            DateTime startDate, 
+            DateTime endDate, bool active, int ordem)
         {
             Code = Guid.NewGuid();
             Name = name;
@@ -31,7 +34,10 @@
             Ordem = ordem;
         }
 
-        public void Update(string name, string urlImage, string url, DateTime startDate, DateTime endDate, DateTime? updateDate, bool active, int ordem)
+        public void Update(string name, string urlImage, 
+            string url, DateTime startDate, 
+            DateTime endDate, DateTime? updateDate, 
+            bool active, int ordem)
         {
             Name = name;
             UrlImage = urlImage;
