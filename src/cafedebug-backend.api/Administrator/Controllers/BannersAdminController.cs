@@ -13,10 +13,12 @@ namespace cafedebug_backend.api.Administrator.Controllers
     [Route("api/v1/banner-admin")]
     public class BannersAdminController : ControllerBase
     {
+        private readonly ILogger<BannersAdminController> _logger;
         private readonly BannerService _bannerService;
         private readonly IMapper _mapper;
-        public BannersAdminController(BannerService bannerService, IMapper mapper)
+        public BannersAdminController(ILogger<BannersAdminController> logger, BannerService bannerService, IMapper mapper)
         {
+            _logger = logger;
             _bannerService = bannerService;
             _mapper = mapper;
         }
@@ -50,13 +52,20 @@ namespace cafedebug_backend.api.Administrator.Controllers
 
                 return StatusCode(StatusCodes.Status201Created, bannerResponse);
             }
-            catch (NullReferenceException)
+            catch (UnauthorizedAccessException)
             {
-                throw;
+                _logger.LogWarning("CreateBanner - Unauthorized access during refresh token.");
+                return Unauthorized();
             }
-            catch (Exception)
+            catch (NullReferenceException ex)
             {
-                throw;
+                _logger.LogError(ex, "CreateBanner - NullReferenceException in refresh token endpoint.");
+                return StatusCode(500, "CreateBanner - NullReferenceException in refresh token endpoint.RefreshToken_ReturnSuccess ");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "CreateBanner - Internal server error.");
+                return StatusCode(500, "CreateBanner - Internal server error");
             }
         }
 
@@ -126,6 +135,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [Route("buscar-banner/{id}")]
         [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
