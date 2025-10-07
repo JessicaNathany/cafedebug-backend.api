@@ -7,9 +7,6 @@ using Microsoft.Extensions.Logging;
 
 namespace cafedebug.backend.application.Service
 {
-    /// <summary>
-    /// Class responsible for the business rules of the banner frontend
-    /// </summary>
     public class BannerService : IBannerService
     {
         private readonly IBannerRepository _bannerRepository;
@@ -19,15 +16,8 @@ namespace cafedebug.backend.application.Service
             _bannerRepository = bannerRepository;
             _logger = logger;
         }
-
         public async Task<Result<Banner>> CreateAsync(Banner banner)
         {
-            if (banner is null)
-            {
-                _logger.LogWarning($"Banner cannot be null.");
-                return Result<Banner>.Failure("Banner cannot be null.");
-            }
-
             var bannerValidator = new BannerValidation();
             var validationResult = bannerValidator.Validate(banner);
 

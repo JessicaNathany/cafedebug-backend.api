@@ -27,29 +27,24 @@ namespace cafedebug_backend.api.Administrator.Controllers
         [Authorize]
         [Route("novo-banner")]
         [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] BannerRequest bannerRequest)
         {
             try
             {
-                // check auth token
-
                 if (!ModelState.IsValid)
-                    return BadRequest("BannerRequest can be not valid.");
+                    return BadRequest("BannerRequest is not valid.");
 
                 if (bannerRequest is null)
-                    return BadRequest("BannerRequest can be not null.");
+                    return BadRequest("BannerRequest cannot be null.");
 
                 var banner = _mapper.Map<Banner>(bannerRequest);
-
                 var result = await _bannerService.CreateAsync(banner);
 
                 if (!result.IsSuccess)
                     return BadRequest(result.Error);
 
                 var bannerResponse = _mapper.Map<BannerResponse>(result.Value);
-
                 return StatusCode(StatusCodes.Status201Created, bannerResponse);
             }
             catch (UnauthorizedAccessException)
@@ -59,8 +54,8 @@ namespace cafedebug_backend.api.Administrator.Controllers
             }
             catch (NullReferenceException ex)
             {
-                _logger.LogError(ex, "CreateBanner - NullReferenceException in refresh token endpoint.");
-                return StatusCode(500, "CreateBanner - NullReferenceException in refresh token endpoint.RefreshToken_ReturnSuccess ");
+                _logger.LogError(ex, "CreateBanner - Erro create banner");
+                return StatusCode(500, "CreateBanner -  Erro create banner");
             }
             catch (Exception ex)
             {
