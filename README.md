@@ -39,6 +39,8 @@ Dê permissão ao arquivo .sh
  ./cafedebug-setup.sh
 ```
 
+
+
 ## Endpoints :clipboard: <br/>
 
 *AdvertisementsAdmin*
@@ -66,6 +68,11 @@ Dê permissão ao arquivo .sh
 
 ### Architecture
 <img width="1154" height="614" alt="image" src="https://github.com/user-attachments/assets/5bfe0c95-463b-4a38-8f58-f456ba124e1d" />
+
+
+## Como contribuir 🤝
+
+Confira o guia de contribuição em [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 
 
