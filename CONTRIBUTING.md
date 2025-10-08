@@ -1,4 +1,4 @@
-# Contributing to Café Debug API ☕🚀
+# Contribuindo com  Café Debug API ☕🚀
 
 ## Sobre o projeto 📑
 Esse projeto é a API backend do site Café Debug. Atualmente está em produção na arquitetura ASP.NET Core MVC. O objetivo é separar o frontend (FE) do backend (BE) para escalar melhor o site, criar novas telas e permitir contribuições open source.
