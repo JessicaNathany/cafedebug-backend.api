@@ -79,10 +79,10 @@ chmod +x cafedebug-setup.sh
 ```bash
 ./cafedebug-setup.sh
 ```
-<img width="894" height="559" alt="image" src="https://github.com/user-attachments/assets/5b8949f0-ad8c-49f3-b2a4-f389950c3b5a" />
+<img width="594" height="559" alt="image" src="https://github.com/user-attachments/assets/5b8949f0-ad8c-49f3-b2a4-f389950c3b5a" /><br />
 
 
-<img width="1503" height="603" alt="image" src="https://github.com/user-attachments/assets/defd3d75-288b-400a-aa92-1d7ca7a9a5b4" />
+<img width="803" height="603" alt="image" src="https://github.com/user-attachments/assets/defd3d75-288b-400a-aa92-1d7ca7a9a5b4" />
 
 
 
