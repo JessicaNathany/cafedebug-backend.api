@@ -120,7 +120,7 @@ Adicione ao seu `Properties/launchSettings.json`:
         "SMTP_SERVER": "smtp.gmail.com",
         "SMTP_NAME": "Café Debug - Fale conosco",
         "SMTP_PORT": "587",
-        "SMTP_PASSWORD": "admin@22",
+        "SMTP_PASSWORD": "123465",
         "SMTP_FROM": "faleconosco.cafedebug@gmail.com",
         "AWSS3_BUCKETNAME": "cafedebug-uploads",
         "AWS_ACCESS_KEY_ID": "123465abc",
