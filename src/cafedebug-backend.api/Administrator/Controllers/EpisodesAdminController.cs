@@ -8,28 +8,28 @@ namespace cafedebug_backend.api.Administrator.Controllers
     public class EpisodesAdminController : ControllerBase
     {
 
-        [Route("listar-episodios")]
+        [Route("search-episodes")]
         [HttpGet]
         public async Task<IActionResult> Get()
         {
             throw new NotImplementedException();
         }
 
-        [Route("novo-episodio")]
+        [Route("new-episode")]
         [HttpPost]
         public async Task<IActionResult> Create(EpisodeViewModel model)
         {
             throw new NotImplementedException();
         }
 
-        [Route("editar-episodio/{id}")]
+        [Route("edit-episode/{id}")]
         [HttpPut]
         public async Task<ActionResult> Update(int id) 
         {
             throw new NotImplementedException();
         }
 
-        [Route("delete-episodio/{id}")]
+        [Route("delete-episode/{id}")]
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {

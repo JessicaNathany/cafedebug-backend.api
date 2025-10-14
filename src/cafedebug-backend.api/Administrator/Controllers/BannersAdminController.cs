@@ -25,7 +25,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
 
         [HttpPost]
         [Authorize]
-        [Route("novo-banner")]
+        [Route("new-banner")]
         [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] BannerRequest bannerRequest)
@@ -66,7 +66,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
 
         [HttpPut]
         [Authorize]
-        [Route("editar-banner")]
+        [Route("edit-banner")]
         [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -131,7 +131,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("buscar-banner/{id}")]
+        [Route("get-banner/{id}")]
         [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -160,7 +160,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
 
         [HttpDelete]
         [Authorize]
-        [Route("deletar-banner/{id}")]
+        [Route("delete-banner/{id}")]
         [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
