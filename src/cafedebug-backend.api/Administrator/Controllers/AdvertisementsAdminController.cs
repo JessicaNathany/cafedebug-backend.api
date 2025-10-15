@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace cafedebug_backend.api.Administrator.Controllers
 {
+    [ApiController]
     [Area(nameof(Administrator))]
-    [Route("api/teams-advertisements")]
+    [Produces("application/json")]
+    [Route("api/v1/admin-advertisements")]
     public class AdvertisementsAdminController : ControllerBase
     {
         public AdvertisementsAdminController()

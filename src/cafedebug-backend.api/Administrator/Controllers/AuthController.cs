@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace cafedebug_backend.api.Administrator.Controllers
 {
     [ApiController]
+    [Area(nameof(Administrator))]
     [Produces("application/json")]
-    [Route("api/v1/auth")]
+    [Route("api/v1/admin-auth")]
     public class AuthController : ControllerBase
     {
         private readonly ILogger<AuthController> _logger;

@@ -3,34 +3,32 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace cafedebug_backend.api.Administrator.Controllers
 {
+    [ApiController]
+    [Produces("application/json")]
     [Area(nameof(Administrator))]
-    [Route("api/episodio-admin")]
+    [Route("api/v1/admin-episodes")]
     public class EpisodesAdminController : ControllerBase
     {
 
-        [Route("search-episodes")]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        [Route("new-episode")]
         [HttpPost]
         public async Task<IActionResult> Create(EpisodeViewModel model)
         {
             throw new NotImplementedException();
         }
 
-        [Route("edit-episode/{id}")]
-        [HttpPut]
+        [HttpPut("{id}")]
         public async Task<ActionResult> Update(int id) 
         {
             throw new NotImplementedException();
         }
 
-        [Route("delete-episode/{id}")]
-        [HttpPost]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             throw new NotImplementedException();

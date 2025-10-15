@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace cafedebug_backend.api.Administrator.Controllers
 {
+    [ApiController]
+    [Produces("application/json")]
     [Area(nameof(Administrator))]
-    [Route("api/teams-admin")]
+    [Route("api/v1/admin-teams")]
     public class TeamsAdminController : ControllerBase
     {
         public TeamsAdminController()
