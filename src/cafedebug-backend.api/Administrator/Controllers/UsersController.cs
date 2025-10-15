@@ -6,7 +6,8 @@ namespace cafedebug_backend.api.Administrator.Controllers
 {
     [ApiController]
     [Produces("application/json")]
-    [Route("api/v1/user-admin")]
+    [Area(nameof(Administrator))]
+    [Route("api/v1/admin-users")]
     public class UsersController : ControllerBase
     {
 
