@@ -102,5 +102,54 @@ chmod +x cafedebug-setup.sh
       ```
 
 ---
+## Exemplo de configuração das variáveis de ambiente
+
+### Para Visual Studio (Windows)
+Adicione ao seu `Properties/launchSettings.json`:
+
+```json
+{
+  "profiles": {
+    "cafedebug-backend.api": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ConnectionStrings__CafedebugConnectionStringMySQL": "server=localhost;port=3307;database=cafedebug-mysql-local;user=root;password=root; sslmode=none",
+        "SMTP_SERVER": "smtp.gmail.com",
+        "SMTP_NAME": "Café Debug - Fale conosco",
+        "SMTP_PORT": "587",
+        "SMTP_PASSWORD": "123465",
+        "SMTP_FROM": "faleconosco.cafedebug@gmail.com",
+        "AWSS3_BUCKETNAME": "cafedebug-uploads",
+        "AWS_ACCESS_KEY_ID": "123465abc",
+        "AWS_SECRET_KEY": "123abc",
+        "FORGOT_PASSWORD_URL": "http://www.cafedebug.com.br/forgot-password"
+      },
+      "applicationUrl": "http://localhost:46370"
+    }
+  }
+}
+```
+
+### Para Mac/Linux
+Execute no terminal antes de rodar o projeto:
+
+```bash
+export ASPNETCORE_ENVIRONMENT=Development
+export ConnectionStrings__CafedebugConnectionStringMySQL="server=localhost;port=3307;database=cafedebug-mysql-local;user=root;password=root; sslmode=none"
+export SMTP_SERVER="smtp.gmail.com"
+export SMTP_NAME="Café Debug - Fale conosco"
+export SMTP_PORT="587"
+export SMTP_PASSWORD="123465"
+export SMTP_FROM="faleconosco.cafedebug@gmail.com"
+export AWSS3_BUCKETNAME="cafedebug-uploads"
+export AWS_ACCESS_KEY_ID="123465abc"
+export AWS_SECRET_KEY="123abc"
+export FORGOT_PASSWORD_URL="http://www.cafedebug.com.br/forgot-password"
+```
+
+> Ajuste os valores conforme seu ambiente.
 
 Se tiver dúvidas, abra uma issue! Boas contribuições! 🚀

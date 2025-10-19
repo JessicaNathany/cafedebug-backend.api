@@ -11,20 +11,20 @@ using Xunit;
 
 namespace cafedebug.backend.api.test.Controllers
 {
-    public class AccountControllerTest
+    public class AccountsControllerTest
     {
         private readonly Mock<IUserService> _userService;
         private readonly Mock<IAccountService> _accountService;
-        private readonly AccountController _accountController;
+        private readonly AccountsController _accountController;
         private readonly Mock<IJWTService> _jwtService;
-        public AccountControllerTest()
+        public AccountsControllerTest()
         {
             var loggerMock = Mock.Of<ILogger<AuthController>>();
             _userService = new Mock<IUserService>();
             _accountService = new Mock<IAccountService>();
             _jwtService = new Mock<IJWTService>();
 
-            _accountController = new AccountController(loggerMock, _userService.Object, _accountService.Object, _jwtService.Object);
+            _accountController = new AccountsController(loggerMock, _userService.Object, _accountService.Object, _jwtService.Object);
         }
 
         [Fact]

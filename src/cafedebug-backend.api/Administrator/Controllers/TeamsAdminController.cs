@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace cafedebug_backend.api.Administrator.Controllers
 {
+    [ApiController]
+    [Produces("application/json")]
+    [Area(nameof(Administrator))]
+    [Route("api/v1/admin-teams")]
     public class TeamsAdminController : ControllerBase
     {
         public TeamsAdminController()
@@ -11,14 +15,14 @@ namespace cafedebug_backend.api.Administrator.Controllers
 
         }
 
-        [Route("listar-debugers")]
+        [Route("list-debugers")]
         [HttpGet]
         public async Task<IActionResult> Get()
         {
             throw new NotImplementedException();
         }
 
-        [Route("listar-debugers/{id}")]
+        [Route("get-debuger/{id}")]
         [HttpGet]
         public async Task<IActionResult> GetById()
         {
@@ -26,7 +30,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
         }
 
         [Authorize]
-        [Route("novo-debugers")]
+        [Route("new-debuger")]
         [HttpPost]
         public async Task<IActionResult> Create(TeamViewModel model)
         {
@@ -34,7 +38,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
         }
 
         [Authorize]
-        [Route("editar-debuger/{id}")]
+        [Route("edit-debuger/{id}")]
         [HttpPut]
         public async Task<ActionResult> Update(Guid code)
         {

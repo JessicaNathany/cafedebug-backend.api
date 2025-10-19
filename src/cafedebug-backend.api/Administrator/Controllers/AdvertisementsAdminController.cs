@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace cafedebug_backend.api.Administrator.Controllers
 {
+    [ApiController]
+    [Area(nameof(Administrator))]
+    [Produces("application/json")]
+    [Route("api/v1/admin-advertisements")]
     public class AdvertisementsAdminController : ControllerBase
     {
         public AdvertisementsAdminController()
@@ -12,14 +16,14 @@ namespace cafedebug_backend.api.Administrator.Controllers
         }
 
 
-        [Route("listar-anuncios")]
+        [Route("list-advertisements")]
         [HttpGet]
         public async Task<IActionResult> Get()
         {
             throw new NotImplementedException();
         }
 
-        [Route("listar-anuncios/{id}")]
+        [Route("get-advertisements/{id}")]
         [HttpGet]
         public async Task<IActionResult> GetById()
         {
@@ -27,7 +31,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
         }
 
         [Authorize]
-        [Route("novo-anuncios")]
+        [Route("new-advertisements")]
         [HttpPost]
         public async Task<IActionResult> Create(AdvertisementViewModel model)
         {
@@ -35,7 +39,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
         }
 
         [Authorize]
-        [Route("editar-anuncios/{id}")]
+        [Route("edit-advertisements/{id}")]
         [HttpPut]
         public async Task<ActionResult> Update(Guid code)
         {
@@ -43,7 +47,7 @@ namespace cafedebug_backend.api.Administrator.Controllers
         }
 
         [Authorize]
-        [Route("delete-anuncios")]
+        [Route("delete-advertisements")]
         [HttpPost]
         public async Task<IActionResult> Delete(Guid code)
         {

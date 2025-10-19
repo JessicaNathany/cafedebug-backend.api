@@ -10,15 +10,16 @@ namespace cafedebug_backend.api.Administrator.Controllers
 {
     [ApiController]
     [Produces("application/json")]
-    [Route("api/v1/account")]
-    public class AccountController : ControllerBase
+    [Area(nameof(Administrator))]
+    [Route("api/v1/accounts-admin")]
+    public class AccountsController : ControllerBase
     {
         private readonly ILogger<AuthController> _logger;
         private readonly IUserService _userService;
         private readonly IAccountService _accountService;
         private readonly IJWTService _jWTService;
 
-        public AccountController(
+        public AccountsController(
             ILogger<AuthController> logger, 
             IUserService userService, 
             IAccountService accountService,
