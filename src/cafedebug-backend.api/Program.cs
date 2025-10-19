@@ -2,6 +2,7 @@ using System.Text.Json;
 using cafedebug_backend.api.Configurations;
 using cafedebug_backend.api.DependencyInjection;
 using cafedebug_backend.api.Filters;
+using cafedebug_backend.api.Infrastructure.HealthChecks;
 using cafedebug_backend.application.Constants;
 using cafedebug_backend.infrastructure.Context;
 using cafedebug.backend.application.Common.Extensions;
@@ -22,7 +23,7 @@ builder.Host.AddSerilogConfiguration(builder.Configuration);
 // Register Dependencies
 builder.Services.ResolveDependencies();
 
-// configure Dbcontext class
+// database configuration
 builder.Services.AddDatabaseConfiguration(builder.Configuration, builder.Environment.IsDevelopment());
 
 // get constants
@@ -37,6 +38,9 @@ builder.Services.AddSwaggerGen();
 
 // Add Application layer services (includes validators)
 builder.Services.AddApplicationServices();
+
+// Health Checks
+builder.Services.AddHealthChecksConfiguration(builder.Configuration);
 
 // Suppress automatic model state validation
 builder.Services.Configure<ApiBehaviorOptions>(options =>
@@ -77,6 +81,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseAppHealthChecks();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
