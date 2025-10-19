@@ -1,4 +1,4 @@
-﻿using cafedebug_backend.domain.Request;
+﻿using cafedebug_backend.domain.Messages.Email.Request;
 using cafedebug_backend.domain.Shared;
 
 namespace cafedebug.backend.application.Accounts.Interfaces;

@@ -1,8 +1,8 @@
 ﻿using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Accounts.Errors;
 using cafedebug_backend.domain.Interfaces.Repositories;
-using cafedebug_backend.domain.Interfaces.Services;
-using cafedebug_backend.domain.Request;
+using cafedebug_backend.domain.Messages.Email.Request;
+using cafedebug_backend.domain.Messages.Email.Services;
 using cafedebug_backend.domain.Shared;
 using cafedebug.backend.application.Accounts.Interfaces;
 using Microsoft.AspNetCore.Identity;

@@ -5,7 +5,7 @@ using cafedebug_backend.domain.Accounts.Errors;
 using cafedebug_backend.domain.Interfaces.Repositories;
 using cafedebug_backend.domain.Shared;
 using cafedebug.backend.application.Accounts.Interfaces;
-using cafedebug.backend.application.Validations;
+using cafedebug.backend.application.Accounts.Validators;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 

@@ -1,4 +1,4 @@
-﻿using cafedebug.backend.application.ViewModel;
+﻿using cafedebug.backend.application.Podcasts.DTOs.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

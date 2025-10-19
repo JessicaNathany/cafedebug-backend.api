@@ -1,5 +1,5 @@
 using cafedebug_backend.api.Infrastructure.HealthChecks;
-using cafedebug_backend.infrastructure.Context;
+using cafedebug_backend.infrastructure.Data;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace cafedebug_backend.api.Configurations;

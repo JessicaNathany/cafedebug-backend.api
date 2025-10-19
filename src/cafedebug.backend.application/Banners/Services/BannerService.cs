@@ -5,7 +5,6 @@ using cafedebug_backend.domain.Interfaces.Repositories;
 using cafedebug_backend.domain.Shared;
 using cafedebug.backend.application.Banners.Interfaces;
 using cafedebug.backend.application.Banners.Validators;
-using cafedebug.backend.application.Validations;
 using Microsoft.Extensions.Logging;
 
 namespace cafedebug.backend.application.Banners.Services;

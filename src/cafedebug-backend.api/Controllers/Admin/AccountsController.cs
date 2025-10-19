@@ -1,9 +1,8 @@
-﻿using cafedebug_backend.domain.Interfaces.JWT;
-using cafedebug_backend.domain.Interfaces.Services;
-using cafedebug_backend.domain.Request;
+﻿using cafedebug_backend.domain.Accounts.Services;
+using cafedebug_backend.domain.Messages.Email.Request;
+using cafedebug_backend.infrastructure.Constants;
 using cafedebug.backend.application.Accounts.DTOs.Requests;
 using cafedebug.backend.application.Accounts.Interfaces;
-using cafedebug.backend.application.Common.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

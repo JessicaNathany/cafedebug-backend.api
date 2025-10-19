@@ -1,5 +1,4 @@
-﻿using cafedebug_backend.domain.Interfaces.JWT;
-using cafedebug_backend.domain.Interfaces.Services;
+﻿using cafedebug_backend.domain.Accounts.Services;
 using cafedebug.backend.application.Accounts.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 

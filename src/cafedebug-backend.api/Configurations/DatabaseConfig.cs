@@ -1,4 +1,4 @@
-using cafedebug_backend.infrastructure.Context;
+using cafedebug_backend.infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace cafedebug_backend.api.Configurations;

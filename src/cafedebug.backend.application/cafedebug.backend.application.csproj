@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Accounts\DTOs\Responses\" />
+    <Folder Include="Common\DTOs\Requests\" />
     <Folder Include="Content\Services\" />
   </ItemGroup>
 

@@ -2,7 +2,7 @@ using System.Text.Json;
 using cafedebug_backend.api.Configurations;
 using cafedebug_backend.api.Filters;
 using cafedebug_backend.api.Infrastructure.HealthChecks;
-using cafedebug.backend.application.Common.Constants;
+using cafedebug_backend.infrastructure.Constants;
 using cafedebug.backend.application.Common.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;

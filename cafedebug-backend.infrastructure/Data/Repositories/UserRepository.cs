@@ -1,6 +1,5 @@
 ﻿using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Interfaces.Repositories;
-using cafedebug_backend.infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace cafedebug_backend.infrastructure.Data.Repositories;

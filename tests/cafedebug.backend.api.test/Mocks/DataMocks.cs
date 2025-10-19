@@ -1,4 +1,5 @@
 ﻿using cafedebug_backend.domain.Accounts;
+using cafedebug_backend.domain.Accounts.Tokens;
 using cafedebug_backend.domain.Jwt;
 using cafedebug.backend.application.Accounts.DTOs.Requests;
 
