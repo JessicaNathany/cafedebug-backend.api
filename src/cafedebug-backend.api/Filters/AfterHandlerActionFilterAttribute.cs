@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace cafedebug_backend.api.Filters;
 
-public abstract class AfterHandlerActionFilterAttribute : ActionFilterAttribute
+public class AfterHandlerActionFilterAttribute : ActionFilterAttribute
 {
     private readonly IDictionary<ErrorType, Action<ActionExecutedContext, Result>> _failureHandlers;
 

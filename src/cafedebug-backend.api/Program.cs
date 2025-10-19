@@ -1,4 +1,5 @@
 using System.Text.Json;
+using cafedebug_backend.api.Configurations;
 using cafedebug_backend.api.DependencyInjection;
 using cafedebug_backend.api.Filters;
 using cafedebug_backend.application.Constants;
@@ -6,31 +7,23 @@ using cafedebug_backend.infrastructure.Context;
 using cafedebug.backend.application.Common.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configura��es de logging
-// builder.Logging.ClearProviders();
-// builder.Logging.AddConsole();
-// builder.Logging.AddDebug();
-// builder.Logging.AddEventSourceLogger();
-// builder.Logging.AddEventLog(settings =>
-// {
-//     settings.LogName = "Application";
-//     settings.SourceName = "Cafedebug";
-// });
+// Add default logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 
-// Register Depndencies
+// Add Serilog
+builder.Host.AddSerilogConfiguration(builder.Configuration);
+
+// Register Dependencies
 builder.Services.ResolveDependencies();
 
 // configure Dbcontext class
-builder.Services.AddDbContextPool<CafedebugContext>(options =>
-{
-    var connectionString = builder.Configuration.GetConnectionString("CafedebugConnectionStringMySQL");
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), options =>
-        options.EnableRetryOnFailure(maxRetryCount: 10, maxRetryDelay: TimeSpan.FromSeconds(30),
-            errorNumbersToAdd: null));
-});
+builder.Services.AddDatabaseConfiguration(builder.Configuration, builder.Environment.IsDevelopment());
 
 // get constants
 var issuer = JWTConstants.JwtIssuer;
@@ -41,11 +34,6 @@ var secretKey = JWTConstants.JWTSecret;
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-// Loggin Configuration
-builder.Logging.AddConsole();
-builder.Logging.AddDebug();
-builder.Logging.SetMinimumLevel(LogLevel.Information);
 
 // Add Application layer services (includes validators)
 builder.Services.AddApplicationServices();
@@ -60,6 +48,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 builder.Services.AddControllers(options =>
     {
         options.Filters.Add<AfterHandlerActionFilterAttribute>();
+        options.Filters.Add<ApiExceptionFilterAttribute>();
     })
     .AddJsonOptions(options =>
     {
@@ -68,6 +57,19 @@ builder.Services.AddControllers(options =>
     });
 
 var app = builder.Build();
+
+// Add Serilog request logging
+app.UseSerilogRequestLogging(options =>
+{
+    options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+    {
+        diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value);
+        diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
+        diagnosticContext.Set("RemoteIP", httpContext.Connection.RemoteIpAddress?.ToString());
+        diagnosticContext.Set("UserAgent", httpContext.Request.Headers.UserAgent.ToString());
+    };
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
