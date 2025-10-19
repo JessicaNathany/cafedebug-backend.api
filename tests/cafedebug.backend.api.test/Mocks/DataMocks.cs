@@ -1,6 +1,6 @@
-﻿using cafedebug.backend.application.Request;
-using cafedebug_backend.domain.Entities;
+﻿using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Jwt;
+using cafedebug.backend.application.Accounts.DTOs.Requests;
 
 namespace cafedebug.backend.api.test.Mocks
 {

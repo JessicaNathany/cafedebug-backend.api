@@ -1,12 +1,13 @@
 ﻿using cafedebug.backend.api.test.Mocks;
-using cafedebug.backend.application.Request;
-using cafedebug_backend.api.Administrator.Controllers;
+using cafedebug_backend.api.Controllers.Admin;
+using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Accounts.Errors;
-using cafedebug_backend.domain.Entities;
 using cafedebug_backend.domain.Interfaces.JWT;
 using cafedebug_backend.domain.Interfaces.Services;
 using cafedebug_backend.domain.Jwt;
 using cafedebug_backend.domain.Shared;
+using cafedebug.backend.application.Accounts.DTOs.Requests;
+using cafedebug.backend.application.Accounts.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;

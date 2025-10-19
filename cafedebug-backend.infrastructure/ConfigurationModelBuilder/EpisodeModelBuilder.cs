@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
-using cafedebug_backend.domain.Episodes.Entities;
+using cafedebug_backend.domain.Episodes;
+using cafedebug_backend.domain.Podcasts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

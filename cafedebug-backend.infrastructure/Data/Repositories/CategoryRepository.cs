@@ -1,5 +1,6 @@
-﻿using cafedebug_backend.domain.Episodes.Entities;
+﻿using cafedebug_backend.domain.Episodes;
 using cafedebug_backend.domain.Episodes.Repositories;
+using cafedebug_backend.domain.Podcasts;
 using cafedebug_backend.infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 

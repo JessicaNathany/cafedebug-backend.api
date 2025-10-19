@@ -1,13 +1,10 @@
 using System.Text.Json;
 using cafedebug_backend.api.Configurations;
-using cafedebug_backend.api.DependencyInjection;
 using cafedebug_backend.api.Filters;
 using cafedebug_backend.api.Infrastructure.HealthChecks;
-using cafedebug_backend.application.Constants;
-using cafedebug_backend.infrastructure.Context;
+using cafedebug.backend.application.Common.Constants;
 using cafedebug.backend.application.Common.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);

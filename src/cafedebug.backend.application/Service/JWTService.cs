@@ -1,5 +1,4 @@
-﻿using cafedebug_backend.domain.Entities;
-using cafedebug_backend.domain.Interfaces.JWT;
+﻿using cafedebug_backend.domain.Interfaces.JWT;
 using cafedebug_backend.domain.Jwt;
 using cafedebug_backend.domain.Shared;
 using Microsoft.Extensions.Logging;
@@ -8,7 +7,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Principal;
+using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Accounts.Errors;
+using cafedebug_backend.domain.Accounts.Repositories;
 using cafedebug_backend.domain.Interfaces.Repositories;
 
 namespace cafedebug.backend.application.Service;

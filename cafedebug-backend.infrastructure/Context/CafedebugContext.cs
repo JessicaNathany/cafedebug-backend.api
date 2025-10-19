@@ -1,6 +1,10 @@
-﻿using cafedebug_backend.domain.Entities;
-using cafedebug_backend.domain.Episodes.Entities;
+﻿using cafedebug_backend.domain.Accounts;
+using cafedebug_backend.domain.Advertisements;
+using cafedebug_backend.domain.Audience;
+using cafedebug_backend.domain.Banners;
+using cafedebug_backend.domain.Episodes;
 using cafedebug_backend.domain.Jwt;
+using cafedebug_backend.domain.Podcasts;
 using Microsoft.EntityFrameworkCore;
 namespace cafedebug_backend.infrastructure.Context
 {

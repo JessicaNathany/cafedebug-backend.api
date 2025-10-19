@@ -1,4 +1,4 @@
-﻿using cafedebug_backend.domain.Entities;
+﻿using cafedebug_backend.domain.Accounts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

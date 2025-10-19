@@ -1,7 +1,9 @@
-﻿using cafedebug_backend.domain.Accounts.Errors;
+﻿using cafedebug_backend.domain.Accounts;
+using cafedebug_backend.domain.Accounts.Errors;
 using cafedebug.backend.application.Service;
-using cafedebug_backend.domain.Entities;
 using cafedebug_backend.domain.Interfaces.Repositories;
+using cafedebug.backend.application.Accounts;
+using cafedebug.backend.application.Accounts.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;

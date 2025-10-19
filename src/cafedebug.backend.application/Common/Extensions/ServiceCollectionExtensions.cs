@@ -1,8 +1,6 @@
 using System.Reflection;
 using AutoMapper;
 using cafedebug.backend.application.Common.Validations;
-using cafedebug.backend.application.Episodes;
-using cafedebug.backend.application.Episodes.Interfaces;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -16,7 +14,7 @@ public static class ServiceCollectionExtensions
     {
         // register from the assembly marker
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-        
+
         // Add SharpGrip FluentValidation auto validation
         services.AddFluentValidationAutoValidation(configuration =>
         {
@@ -24,24 +22,28 @@ public static class ServiceCollectionExtensions
             configuration.DisableBuiltInModelValidation = true;
             configuration.OverrideDefaultResultFactoryWith<AutoValidationResultFactory>();
         });
-        
+
         // Register application services
-        services.AddScoped<ICreateEpisodeService, CreateEpisodeService>();
-        
+        services.Scan(scan => scan
+            .FromAssemblies(Assembly.GetExecutingAssembly()) // application assembly
+            .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Service")))
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
+
         // AutoMapper
         services.AddSingleton<IMapper>(provider =>
         {
             var loggerFactory = provider.GetService<ILoggerFactory>();
-            
+
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.AddMaps(Assembly.GetExecutingAssembly());
                 cfg.ConstructServicesUsing(provider.GetService);
             }, loggerFactory);
-    
+
             return config.CreateMapper();
         });
-        
+
         return services;
     }
 }

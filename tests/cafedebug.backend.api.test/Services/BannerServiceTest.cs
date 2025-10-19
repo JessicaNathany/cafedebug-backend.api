@@ -1,8 +1,13 @@
-﻿using cafedebug.backend.application.Service;
-using cafedebug_backend.application.Request;
+﻿using cafedebug_backend.domain.Banners;
+using cafedebug.backend.application.Service;
 using cafedebug_backend.domain.Banners.Errors;
-using cafedebug_backend.domain.Entities;
+using cafedebug_backend.domain.Banners.Repositories;
 using cafedebug_backend.domain.Interfaces.Repositories;
+using cafedebug.backend.application.Accounts;
+using cafedebug.backend.application.Accounts.Services;
+using cafedebug.backend.application.Banners;
+using cafedebug.backend.application.Banners.DTOs.Requests;
+using cafedebug.backend.application.Banners.Services;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Moq;

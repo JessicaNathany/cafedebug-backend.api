@@ -1,4 +1,5 @@
-﻿using cafedebug_backend.domain.Entities;
+﻿using cafedebug_backend.domain.Banners;
+using cafedebug_backend.domain.Banners.Repositories;
 using cafedebug_backend.domain.Interfaces.Repositories;
 using cafedebug_backend.domain.Interfaces.Respositories;
 using cafedebug_backend.infrastructure.Context;

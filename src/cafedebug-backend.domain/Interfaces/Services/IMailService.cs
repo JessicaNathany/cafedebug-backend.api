@@ -1,4 +1,4 @@
-﻿using cafedebug_backend.domain.Entities;
+﻿using cafedebug_backend.domain.Audience;
 
 namespace cafedebug_backend.domain.Interfaces.Services
 {

@@ -1,4 +1,4 @@
-﻿using cafedebug_backend.domain.Enums;
+﻿using cafedebug_backend.domain.Advertisements;
 using Newtonsoft.Json;
 
 namespace cafedebug.backend.application.ViewModel

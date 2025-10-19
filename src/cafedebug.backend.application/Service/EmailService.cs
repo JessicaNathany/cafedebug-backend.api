@@ -1,9 +1,9 @@
-﻿using cafedebug.backend.application.Constants;
-using cafedebug_backend.domain.Interfaces.Services;
+﻿using cafedebug_backend.domain.Interfaces.Services;
 using cafedebug_backend.domain.Request;
 using Microsoft.Extensions.Logging;
 using System.Net.Mail;
 using System.Text;
+using cafedebug.backend.application.Common.Constants;
 
 namespace cafedebug.backend.application.Service
 {

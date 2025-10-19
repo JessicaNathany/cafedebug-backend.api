@@ -1,9 +1,11 @@
-﻿using cafedebug.backend.application.Service;
-using cafedebug_backend.domain.Entities;
+﻿using cafedebug_backend.domain.Accounts;
+using cafedebug.backend.application.Service;
 using cafedebug_backend.domain.Errors;
 using cafedebug_backend.domain.Interfaces.Services;
 using cafedebug_backend.domain.Request;
 using cafedebug_backend.domain.Shared;
+using cafedebug.backend.application.Accounts;
+using cafedebug.backend.application.Accounts.Services;
 using Moq.AutoMock;
 using Xunit;
 

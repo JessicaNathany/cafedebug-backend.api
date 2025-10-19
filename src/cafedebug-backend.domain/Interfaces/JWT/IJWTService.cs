@@ -1,4 +1,4 @@
-﻿using cafedebug_backend.domain.Entities;
+﻿using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Jwt;
 using cafedebug_backend.domain.Shared;
 

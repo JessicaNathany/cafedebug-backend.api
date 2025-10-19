@@ -1,4 +1,4 @@
-﻿using cafedebug_backend.domain.Entities;
+﻿using cafedebug_backend.domain.Banners;
 using FluentValidation;
 
 namespace cafedebug.backend.application.Validations
