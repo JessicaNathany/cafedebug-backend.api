@@ -1,4 +1,5 @@
 ﻿using cafedebug_backend.domain.Enums;
+using cafedebug_backend.domain.Shared;
 
 namespace cafedebug_backend.domain.Entities
 {

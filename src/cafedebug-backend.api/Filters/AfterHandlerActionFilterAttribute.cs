@@ -1,0 +1,130 @@
+using cafedebug_backend.domain.Errors;
+using cafedebug_backend.domain.Shared;
+using cafedebug.backend.application.Common.Validations;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+
+namespace cafedebug_backend.api.Filters;
+
+public abstract class AfterHandlerActionFilterAttribute : ActionFilterAttribute
+{
+    private readonly IDictionary<ErrorType, Action<ActionExecutedContext, Result>> _failureHandlers;
+
+    public AfterHandlerActionFilterAttribute()
+    {
+        _failureHandlers = new Dictionary<ErrorType, Action<ActionExecutedContext, Result>>
+        {
+            {ErrorType.ValidationError, HandlerValidationError},
+            {ErrorType.ResourceNotFound, HandlerNotFound},
+            {ErrorType.ErrorWhenExecuting, HandlerError}
+        };
+    }
+
+    public override void OnActionExecuted(ActionExecutedContext context)
+    {
+        HandleResult(context);
+
+        base.OnActionExecuted(context);
+    }
+
+    private void HandleResult(ActionExecutedContext context)
+    {
+        if (context.Result is not ObjectResult objectResult)
+            return;
+
+        if (objectResult.Value is not Result result)
+            return;
+
+        if (result.IsFailure)
+        {
+            HandleFailure(context, result);
+        }
+        else
+        {
+            var isGenericType = objectResult.Value.GetType().IsGenericType &&
+                                objectResult.Value.GetType().GetGenericTypeDefinition() == typeof(Result<>);
+
+            if (isGenericType)
+            {
+                dynamic dynamicResult = objectResult.Value;
+                HandleGenericResult(context, dynamicResult);
+            }
+            else
+            {
+                context.Result = new NoContentResult();
+            }
+        }
+    }
+
+    private static void HandleGenericResult<TResult>(ActionExecutedContext context, Result<TResult> result)
+    {
+        context.Result = context.HttpContext.Request.Method == HttpMethod.Post.Method
+            ? new CreatedResult(string.Empty, result.Value)
+            : new OkObjectResult(result.Value);
+    }
+
+    private void HandleFailure(ActionExecutedContext context, Result result)
+    {
+        if (Enum.TryParse(result.Error.Code, out ErrorType errorType))
+        {
+            if (_failureHandlers.TryGetValue(errorType, out var handler))
+            {
+                handler.Invoke(context, result);
+                return;
+            }
+        }
+
+        context.Result = new BadRequestObjectResult(result.Error);
+    }
+
+    private static void HandlerValidationError(ActionExecutedContext context, Result result)
+    {
+        var details = result switch
+        {
+            IValidationResult validationResult => CreateValidationProblemDetails(result.Error, validationResult.Errors),
+            _ => CreateValidationProblemDetails(result.Error)
+        };
+
+        context.Result = new BadRequestObjectResult(details);
+    }
+
+    private static void HandlerNotFound(ActionExecutedContext context, Result result)
+    {
+        var details = new ProblemDetails
+        {
+            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.4",
+            Title = "The specified resource was not found.",
+            Detail = result.Error.Message
+        };
+
+        context.Result = new NotFoundObjectResult(details);
+    }
+    
+    private static void HandlerError(ActionExecutedContext context, Result result)
+    {
+        var details = new ProblemDetails
+        {
+            Status = StatusCodes.Status500InternalServerError,
+            Title = "An error occurred while processing your request.",
+            Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
+            Detail = result.Error.Message
+        };
+
+        context.Result = new ObjectResult(details)
+        {
+            StatusCode = StatusCodes.Status500InternalServerError
+        };
+    }
+
+    private static ProblemDetails CreateValidationProblemDetails(Error error, Error[]? errors = null)
+    {
+        return new ProblemDetails
+        {
+            Title = "Validation Error",
+            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+            Detail = error.Message,
+            Status = StatusCodes.Status400BadRequest,
+            Extensions = {{nameof(errors), errors}}
+        };
+    }
+}

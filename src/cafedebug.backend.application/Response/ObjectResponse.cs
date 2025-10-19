@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using cafedebug.backend.application.Response;
+using Newtonsoft.Json;
 
 namespace cafedebug_backend.application.Response
 {

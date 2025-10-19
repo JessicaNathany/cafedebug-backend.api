@@ -1,36 +1,36 @@
+using System.Text.Json;
 using cafedebug_backend.api.DependencyInjection;
+using cafedebug_backend.api.Filters;
 using cafedebug_backend.application.Constants;
 using cafedebug_backend.infrastructure.Context;
-using FluentValidation.AspNetCore;
+using cafedebug.backend.application.Common.Extensions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurações de logging
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-builder.Logging.AddDebug();
-builder.Logging.AddEventSourceLogger();
-builder.Logging.AddEventLog(settings =>
-{
-    settings.LogName = "Application";
-    settings.SourceName = "Cafedebug";
-});
+// Configuraï¿½ï¿½es de logging
+// builder.Logging.ClearProviders();
+// builder.Logging.AddConsole();
+// builder.Logging.AddDebug();
+// builder.Logging.AddEventSourceLogger();
+// builder.Logging.AddEventLog(settings =>
+// {
+//     settings.LogName = "Application";
+//     settings.SourceName = "Cafedebug";
+// });
 
 // Register Depndencies
 builder.Services.ResolveDependencies();
-
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // configure Dbcontext class
 builder.Services.AddDbContextPool<CafedebugContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("CafedebugConnectionStringMySQL");
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), options =>
-    options.EnableRetryOnFailure(maxRetryCount: 10, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null));
+        options.EnableRetryOnFailure(maxRetryCount: 10, maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorNumbersToAdd: null));
 });
-
-
 
 // get constants
 var issuer = JWTConstants.JwtIssuer;
@@ -43,15 +43,29 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Loggin Configuration
-builder.Logging.AddConsole(); 
-builder.Logging.AddDebug();  
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 builder.Logging.SetMinimumLevel(LogLevel.Information);
 
-// FluentValidation
-builder.Services.AddControllers().AddFluentValidation(fluentValidation =>
+// Add Application layer services (includes validators)
+builder.Services.AddApplicationServices();
+
+// Suppress automatic model state validation
+builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
-    fluentValidation.RegisterValidatorsFromAssemblyContaining<Program>();
+    options.SuppressModelStateInvalidFilter = true;
 });
+
+// Add FluentValidation to ASP.NET Core
+builder.Services.AddControllers(options =>
+    {
+        options.Filters.Add<AfterHandlerActionFilterAttribute>();
+    })
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+    });
 
 var app = builder.Build();
 

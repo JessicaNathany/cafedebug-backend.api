@@ -1,4 +1,6 @@
-﻿namespace cafedebug_backend.domain.Entities
+﻿using cafedebug_backend.domain.Shared;
+
+namespace cafedebug_backend.domain.Entities
 {
     /// <summary>
     /// Entity user admin application

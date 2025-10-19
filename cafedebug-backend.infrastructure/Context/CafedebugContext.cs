@@ -1,4 +1,5 @@
 ﻿using cafedebug_backend.domain.Entities;
+using cafedebug_backend.domain.Episodes.Entities;
 using cafedebug_backend.domain.Jwt;
 using Microsoft.EntityFrameworkCore;
 namespace cafedebug_backend.infrastructure.Context

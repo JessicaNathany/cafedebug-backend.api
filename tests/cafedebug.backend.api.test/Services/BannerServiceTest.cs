@@ -1,7 +1,7 @@
 ﻿using cafedebug.backend.application.Service;
 using cafedebug_backend.application.Request;
 using cafedebug_backend.domain.Entities;
-using cafedebug_backend.domain.Interfaces.Respositories;
+using cafedebug_backend.domain.Interfaces.Repositories;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Moq;

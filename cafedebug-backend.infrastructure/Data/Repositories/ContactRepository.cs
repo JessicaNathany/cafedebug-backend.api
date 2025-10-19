@@ -3,23 +3,20 @@ using cafedebug_backend.domain.Interfaces.Respositories;
 using cafedebug_backend.infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 
-namespace cafedebug_backend.infrastructure.Data.Repositories
+namespace cafedebug_backend.infrastructure.Data.Repositories;
+
+public class ContactRepository(CafedebugContext context) : BaseRepository<Contact>(context), IContactRepository
 {
-    public class ContactRepository : BaseRepository<Contact>, IContactRepository
+    private readonly CafedebugContext _context = context;
+
+    public async Task<IEnumerable<Contact>> GetPagedAsync(string searchParam, int pageIndex = 0, int pageSize = 10)
     {
-        public ContactRepository(CafedebugContext context) : base(context)
-        {
-        }
+        var query = _context.Set<Contact>()
+            .AsNoTracking()
+            .Where(category => category.Name.Contains(searchParam))
+            .Skip(pageIndex * pageSize)
+            .Take(pageSize);
 
-        public async Task<IEnumerable<Contact>> GetPagedAsync(string searchParam, int pageIndex = 0, int pageSize = 10)
-        {
-            var query = _context.Set<Contact>()
-                .AsNoTracking()
-                .Where(category => category.Name.Contains(searchParam))
-                .Skip(pageIndex * pageSize)
-                .Take(pageSize);
-
-            return await query.ToListAsync();
-        }
+        return await query.ToListAsync();
     }
 }

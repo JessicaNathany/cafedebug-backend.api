@@ -1,38 +1,42 @@
-using Newtonsoft.Json.Linq;
+using cafedebug_backend.domain.Errors;
 
 namespace cafedebug_backend.domain.Shared;
 public class Result
 {
     public bool IsSuccess { get; }
-    public string Error { get; private set; }
+    public Error Error { get; }
+    public bool IsFailure => !IsSuccess;
     
-    protected Result(bool isSuccess, string error)
+    protected internal Result(bool isSuccess, Error error)
     {
-        if (isSuccess && error != string.Empty)
+        if (isSuccess && error != Error.None)
             throw new InvalidOperationException();
 
-        if (!isSuccess && error == string.Empty)
-            throw new InvalidOperationException("A failure must have an error message.");
+        if (!isSuccess && error == Error.None)
+            throw new InvalidOperationException();
 
         IsSuccess = isSuccess;
         Error = error;
     }
-
-    public static Result Success() => new(true, string.Empty);
-
-    public static Result Failure(string error) => new(false, error);
+    
+    public static Result Success() => new(true, Error.None);
+    public static Result<TValue> Success<TValue>(TValue value) => new(value, true, Error.None);
+    public static Result Failure(Error error) => new(false, error);
+    public static Result<TValue> Failure<TValue>(Error error) => new(default,false, error);
+    protected static Result<TValue> Create<TValue>(TValue? value) => new(value, true, Error.None);
 }
 
 public class Result<TValue> : Result
 {
-    public TValue Value { get; private set; }
+    private readonly TValue? _value;
 
-    protected internal Result(TValue value, bool isSuccess, string error) : base(isSuccess, error)
-    {
-        Value = value;
-    }
+    protected internal Result(TValue? value, bool isSuccess, Error error)
+        : base(isSuccess, error)
+        => _value = value;
 
-    public static Result<TValue> Success(TValue value) => new(value, true, string.Empty);
-    public static Result<TValue> Success() => new(default(TValue), true, string.Empty);
-    public static Result<TValue> Failure(string error) => new(default(TValue), false, error);
+    public TValue Value => IsSuccess
+        ? _value!
+        : throw new InvalidOperationException("The value of a failure result can not be accessed.");
+    
+    public static implicit operator Result<TValue>(TValue? value) => Create(value);
 }

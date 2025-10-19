@@ -1,4 +1,5 @@
 ﻿using cafedebug_backend.domain.Entities;
+using cafedebug_backend.domain.Episodes.Entities;
 using cafedebug_backend.domain.Interfaces.Services;
 
 namespace cafedebug.backend.application.Service

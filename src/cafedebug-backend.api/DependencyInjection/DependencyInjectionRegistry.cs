@@ -1,10 +1,14 @@
 ﻿using cafedebug.backend.application.Service;
 using cafedebug_backend.domain.Entities;
+using cafedebug_backend.domain.Episodes.Repositories;
 using cafedebug_backend.domain.Interfaces.JWT;
+using cafedebug_backend.domain.Interfaces.Repositories;
 using cafedebug_backend.domain.Interfaces.Respositories;
 using cafedebug_backend.domain.Interfaces.Services;
 using cafedebug_backend.domain.Jwt;
 using cafedebug_backend.infrastructure.Data.Repositories;
+using cafedebug.backend.application.Episodes;
+using cafedebug.backend.application.Episodes.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;

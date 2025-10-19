@@ -51,7 +51,7 @@ namespace cafedebug.backend.api.test.Controllers
             var userAdmin = new UserAdmin();
             userAdmin = null;
 
-            _userService.Setup(x => x.GetUserAdminByEmail(forgotPasswordRequest.Email)).Returns(Task.FromResult(Result<UserAdmin>.Success()));
+            _userService.Setup(x => x.GetUserAdminByEmail(forgotPasswordRequest.Email)).Returns(Task.FromResult(Result.Success<UserAdmin>(userAdmin)));
 
             // Act
             var result = await _accountController.ForgotPassword(forgotPasswordRequest);
@@ -77,7 +77,7 @@ namespace cafedebug.backend.api.test.Controllers
             };
 
             _userService.Setup(x => x.GetUserAdminByEmail(forgotPasswordRequest.Email))
-                .Returns(Task.FromResult(Result<UserAdmin>.Success(userAdmin)));
+                .Returns(Task.FromResult(Result.Success(userAdmin)));
 
             // Act
             var result = await _accountController.ForgotPassword(forgotPasswordRequest);
