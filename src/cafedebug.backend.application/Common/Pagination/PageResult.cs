@@ -1,4 +1,4 @@
-﻿namespace cafedebug.backend.application.Pagination
+﻿namespace cafedebug.backend.application.Common.Pagination
 {
     public class PageResult<TResponse>
     {
