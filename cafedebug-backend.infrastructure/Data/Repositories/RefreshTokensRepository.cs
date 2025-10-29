@@ -1,8 +1,5 @@
-﻿using cafedebug_backend.domain.Accounts;
-using cafedebug_backend.domain.Accounts.Repositories;
+﻿using cafedebug_backend.domain.Accounts.Repositories;
 using cafedebug_backend.domain.Accounts.Tokens;
-using cafedebug_backend.domain.Interfaces.Repositories;
-using cafedebug_backend.domain.Jwt;
 using Microsoft.EntityFrameworkCore;
 
 namespace cafedebug_backend.infrastructure.Data.Repositories;

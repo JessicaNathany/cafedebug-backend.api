@@ -1,9 +1,7 @@
 ﻿using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Accounts.Tokens;
-using cafedebug_backend.domain.Advertisements;
 using cafedebug_backend.domain.Audience;
 using cafedebug_backend.domain.Banners;
-using cafedebug_backend.domain.Jwt;
 using cafedebug_backend.domain.Podcasts;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +21,6 @@ public class CafedebugContext : DbContext
     public DbSet<Category> Categories { get; set; }
     public DbSet<Contact> Contacts { get; set; }
     public DbSet<UserAdmin> Users { get; set; }
-    public DbSet<Advertisement> Advertisements { get; set; }
     public DbSet<RefreshTokens> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
-using cafedebug_backend.domain.Banners;
-using cafedebug.backend.application.Banners;
 using cafedebug.backend.application.Banners.DTOs.Requests;
 using cafedebug.backend.application.Banners.DTOs.Responses;
 using cafedebug.backend.application.Banners.Services;
+using cafedebug_backend.domain.Banners;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
