@@ -1,31 +1,17 @@
-﻿using cafedebug_backend.domain.Accounts;
+﻿using cafedebug.backend.application.Service;
+using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Accounts.Repositories;
 using cafedebug_backend.domain.Accounts.Services;
-using cafedebug_backend.domain.Advertisements.Repositories;
 using cafedebug_backend.domain.Audience.Repositories;
 using cafedebug_backend.domain.Banners.Repositories;
 using cafedebug_backend.domain.Episodes.Repositories;
 using cafedebug_backend.domain.Interfaces.Repositories;
-using cafedebug_backend.domain.Interfaces.Respositories;
 using cafedebug_backend.domain.Jwt;
 using cafedebug_backend.domain.Messages.Email.Services;
 using cafedebug_backend.domain.Podcasts.Repositories;
 using cafedebug_backend.infrastructure.Data.Repositories;
 using cafedebug_backend.infrastructure.Email;
 using cafedebug_backend.infrastructure.Security;
-using cafedebug.backend.application.Accounts;
-using cafedebug.backend.application.Accounts.Interfaces;
-using cafedebug.backend.application.Accounts.Services;
-using cafedebug.backend.application.Advertisements.Interfaces;
-using cafedebug.backend.application.Advertisements.Services;
-using cafedebug.backend.application.Audience.Interfaces;
-using cafedebug.backend.application.Audience.Services;
-using cafedebug.backend.application.Banners;
-using cafedebug.backend.application.Banners.Interfaces;
-using cafedebug.backend.application.Podcasts.Interfaces.Categories;
-using cafedebug.backend.application.Podcasts.Interfaces.Episodes;
-using cafedebug.backend.application.Podcasts.Interfaces.Teams;
-using cafedebug.backend.application.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -44,7 +30,6 @@ public static class DependencyInjectionConfig
         service.AddScoped<IContactRepository, ContactRepository>();
         service.AddScoped<ITeamRepository, TeamRepository>();
         service.AddScoped<IUserRepository, UserRepository>();
-        service.AddScoped<IAdvertisementRepository, AdvertisementRepository>();
         service.AddScoped<IRefreshTokensRepository, RefreshTokensRepository>();
 
         #endregion

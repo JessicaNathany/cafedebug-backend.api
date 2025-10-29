@@ -1,8 +1,7 @@
-﻿using System.Linq.Expressions;
-using cafedebug_backend.domain.Interfaces.Repositories;
-using cafedebug_backend.domain.Shared;
+﻿using cafedebug_backend.domain.Shared;
 using cafedebug_backend.domain.Shared.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace cafedebug_backend.infrastructure.Data.Repositories;
 
