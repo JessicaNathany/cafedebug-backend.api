@@ -7,6 +7,8 @@ public interface IBaseRepository<TEntity> where TEntity : Entity
     Task SaveAsync(TEntity entity);
 
     Task UpdateAsync(TEntity entity);
+    
+    Task DeleteAsync(TEntity entity);
 
     Task DeleteAsync(int id);
 

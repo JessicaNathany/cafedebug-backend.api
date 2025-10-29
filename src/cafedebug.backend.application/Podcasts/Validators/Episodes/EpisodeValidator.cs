@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace cafedebug.backend.application.Podcasts.Validators.Episodes;
 
-public class CreateEpisodeValidator : AbstractValidator<CreateEpisodeRequest>
+public class EpisodeValidator : AbstractValidator<EpisodeRequest>
 {
-    public CreateEpisodeValidator()
+    public EpisodeValidator()
     {
         RuleFor(x => x.Title)
             .NotEmpty().WithMessage("Title is required")
@@ -47,8 +47,8 @@ public class CreateEpisodeValidator : AbstractValidator<CreateEpisodeRequest>
         RuleFor(x => x.Number)
             .GreaterThan(0).WithMessage("Episode number must be greater than 0");
 
-        RuleFor(x => x.CategoryCode)
-            .NotEmpty().WithMessage("Category code is required");
+        RuleFor(x => x.CategoryId)
+            .NotEmpty().WithMessage("Category id is required");
 
         RuleFor(x => x.DurationInSeconds)
             .GreaterThan(0).WithMessage("Duration must be greater than 0 seconds")

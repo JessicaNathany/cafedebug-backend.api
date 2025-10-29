@@ -14,6 +14,12 @@ public abstract class BaseRepository<TEntity>(CafedebugContext context) : IBaseR
         return await context.Set<TEntity>().CountAsync();
     }
 
+    public Task DeleteAsync(TEntity entity)
+    {
+        context.Set<TEntity>().Remove(entity);
+        return SaveChangesAsync();
+    }
+
     public async Task DeleteAsync(int id)
     {
         var entity = await context.Set<TEntity>().FirstOrDefaultAsync(x => x.Id == id);
@@ -21,7 +27,7 @@ public abstract class BaseRepository<TEntity>(CafedebugContext context) : IBaseR
             return;
 
         context.Set<TEntity>().Remove(entity);
-        await SaveAsync(entity);
+        await SaveChangesAsync();
     }
 
     public virtual async Task<IEnumerable<TEntity>> GetAllAsync(bool asNoTracking = false)

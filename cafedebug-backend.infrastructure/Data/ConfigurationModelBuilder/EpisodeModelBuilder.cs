@@ -51,7 +51,6 @@ public class EpisodeModelBuilder : IEntityTypeConfiguration<Episode>
             .HasColumnType("datetime");
 
         builder.Property(e => e.UpdatedAt)
-            .IsRequired()
             .HasColumnType("datetime");
 
         builder.Property(e => e.Active)

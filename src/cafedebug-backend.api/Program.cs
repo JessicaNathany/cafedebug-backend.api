@@ -28,10 +28,10 @@ var issuer = JWTConstants.JwtIssuer;
 var audience = JWTConstants.JwtAudience;
 var secretKey = JWTConstants.JWTSecret;
 
-//swagger configuration
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+//swagger configuration
+builder.Services.AddSwaggerConfiguration();
 
 // Add Application layer services (includes validators)
 builder.Services.AddApplicationServices();
@@ -59,28 +59,15 @@ builder.Services.AddControllers(options =>
 
 var app = builder.Build();
 
-// Add Serilog request logging
-app.UseSerilogRequestLogging(options =>
-{
-    options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
-    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
-    {
-        diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value);
-        diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
-        diagnosticContext.Set("RemoteIP", httpContext.Connection.RemoteIpAddress?.ToString());
-        diagnosticContext.Set("UserAgent", httpContext.Request.Headers.UserAgent.ToString());
-    };
-});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerSetup();
 }
 
+app.UseSerilog();
 app.UseAppHealthChecks();
-
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

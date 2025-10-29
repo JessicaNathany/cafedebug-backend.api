@@ -1,7 +1,7 @@
 ﻿using cafedebug_backend.domain.Podcasts;
 using cafedebug.backend.application.Podcasts.Interfaces.Teams;
 
-namespace cafedebug.backend.application.Podcasts.Services.Teams;
+namespace cafedebug.backend.application.Podcasts.Services;
 
 public class TeamService : ITeamService
 {

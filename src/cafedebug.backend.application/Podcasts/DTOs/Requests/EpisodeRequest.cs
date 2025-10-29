@@ -1,9 +1,8 @@
-﻿using cafedebug_backend.domain.Episodes;
-using cafedebug_backend.domain.Podcasts;
+﻿using cafedebug_backend.domain.Podcasts;
 
 namespace cafedebug.backend.application.Podcasts.DTOs.Requests;
 
-public sealed record CreateEpisodeRequest
+public sealed record EpisodeRequest
 {
     public string Title { get; init; }
     public string Description { get; init; }
@@ -14,7 +13,7 @@ public sealed record CreateEpisodeRequest
     public DateTime PublishedAt { get; init; }
     public bool Active { get; init; }
     public int Number { get; init; }
-    public Guid CategoryCode { get; init; }
+    public int CategoryId { get; init; }
     public int DurationInSeconds { get; init; }
     
     public Episode ToEpisode()
@@ -29,6 +28,7 @@ public sealed record CreateEpisodeRequest
             PublishedAt,
             Active,
             Number,
+            CategoryId,
             DurationInSeconds);
     }
 }

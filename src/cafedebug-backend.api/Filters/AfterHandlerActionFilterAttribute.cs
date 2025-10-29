@@ -14,6 +14,7 @@ public class AfterHandlerActionFilterAttribute : ActionFilterAttribute
     {
         _failureHandlers = new Dictionary<ErrorType, Action<ActionExecutedContext, Result>>
         {
+            {ErrorType.Unauthorized, HandlerError},
             {ErrorType.ValidationError, HandlerValidationError},
             {ErrorType.ResourceNotFound, HandlerNotFound},
             {ErrorType.ErrorWhenExecuting, HandlerError}

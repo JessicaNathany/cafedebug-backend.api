@@ -33,6 +33,7 @@ public class Episode : Entity
         DateTime publishedAt,
         bool active,
         int number,
+        int categoryId,
         int durationInSeconds)
     {
         Title = title;
@@ -44,6 +45,7 @@ public class Episode : Entity
         PublishedAt = publishedAt;
         Active = active;
         Number = number;
+        CategoryId = categoryId;
         DurationInSeconds = durationInSeconds;
         EndDateVerify(PublishedAt);
         Views = 0;
@@ -57,32 +59,29 @@ public class Episode : Entity
         string shortDescription,
         string url,
         string imageUrl,
+        List<string>? tags,
         DateTime publishedAt,
         bool active,
         int number,
-        int views,
-        int likes)
+        int categoryId,
+        int durationInSeconds)
     {
-        Title = title;
-        Description = description;
-        ShortDescription = shortDescription;
-        Url = url;
-        ImageUrl = imageUrl;
-        PublishedAt = publishedAt;
-        Active = active;
-        Number = number;
-        Views = views;
-        Likes = likes;
+       Title = title;
+       Description = description;
+       ShortDescription = shortDescription;
+       Url = url;
+       ImageUrl = imageUrl;
+       Tags = tags?.AsReadOnly();
+       PublishedAt = publishedAt;
+       Active = active;
+       Number = number;
+       CategoryId = categoryId;
+       DurationInSeconds = durationInSeconds;
     }
 
     private void EndDateVerify(DateTime publishedAt)
     {
         if (publishedAt == DateTime.Now.AddDays(-1))
             Active = false;
-    }
-    
-    public void AddCategory(Category category)
-    {
-        Category = category;
     }
 }
