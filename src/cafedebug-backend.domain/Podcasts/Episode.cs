@@ -73,6 +73,7 @@ public class Episode : Entity
        ImageUrl = imageUrl;
        Tags = tags?.AsReadOnly();
        PublishedAt = publishedAt;
+       UpdatedAt = DateTime.Now;
        Active = active;
        Number = number;
        CategoryId = categoryId;

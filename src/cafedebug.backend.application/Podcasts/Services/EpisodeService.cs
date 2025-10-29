@@ -68,6 +68,8 @@ public class EpisodeService(IEpisodeRepository episodeRepository, ICategoryRepos
             request.Number,
             request.CategoryId,
             request.DurationInSeconds);
+        
+        await episodeRepository.UpdateAsync(episode);
 
         var response = mapper.Map<EpisodeResponse>(episode);
         return Result.Success(response);

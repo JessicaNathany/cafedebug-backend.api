@@ -25,7 +25,8 @@ public class EpisodeModelBuilder : IEntityTypeConfiguration<Episode>
 
         builder.Property(e => e.ShortDescription)
             .IsRequired()
-            .HasColumnType("varchar(500)");
+            .HasColumnType("varchar(500)")
+            .HasColumnName("ResumeDescription");
 
         builder.Property(e => e.Url)
             .IsRequired()
@@ -44,7 +45,8 @@ public class EpisodeModelBuilder : IEntityTypeConfiguration<Episode>
 
         builder.Property(e => e.PublishedAt)
             .IsRequired()
-            .HasColumnType("datetime");
+            .HasColumnType("datetime")
+            .HasColumnName("PublicationDate");
 
         builder.Property(e => e.CreatedAt)
             .IsRequired()
@@ -54,7 +56,7 @@ public class EpisodeModelBuilder : IEntityTypeConfiguration<Episode>
             .HasColumnType("datetime");
 
         builder.Property(e => e.Active)
-            .HasColumnType("tinyint(1)");
+            .HasColumnType("bit");
 
         builder.Property(e => e.Number)
             .HasColumnType("int");
@@ -63,10 +65,12 @@ public class EpisodeModelBuilder : IEntityTypeConfiguration<Episode>
             .HasColumnType("int");
 
         builder.Property(e => e.Views)
-            .HasColumnType("int");
+            .HasColumnType("int")
+            .HasColumnName("View");
 
         builder.Property(e => e.Likes)
-            .HasColumnType("int");
+            .HasColumnType("int")
+            .HasColumnName("Like");
 
         builder.HasOne( e => e.Category)
             .WithMany()
