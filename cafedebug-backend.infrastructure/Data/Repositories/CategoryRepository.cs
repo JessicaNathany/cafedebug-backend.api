@@ -1,25 +1,22 @@
-﻿using cafedebug_backend.domain.Entities;
-using cafedebug_backend.domain.Interfaces.Respositories;
-using cafedebug_backend.infrastructure.Context;
+﻿using cafedebug_backend.domain.Episodes;
+using cafedebug_backend.domain.Episodes.Repositories;
+using cafedebug_backend.domain.Podcasts;
 using Microsoft.EntityFrameworkCore;
 
-namespace cafedebug_backend.infrastructure.Data.Repositories
+namespace cafedebug_backend.infrastructure.Data.Repositories;
+
+public class CategoryRepository(CafedebugContext context) : BaseRepository<Category>(context), ICategoryRepository
 {
-    public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
+    private readonly CafedebugContext _context = context;
+
+    public async Task<IEnumerable<Category>> GetPagedAsync(string searchParam, int pageIndex = 0, int pageSize = 10)
     {
-        public CategoryRepository(CafedebugContext context) : base(context)
-        {
-        }
+        var query = _context.Set<Category>()
+            .AsNoTracking()
+            .Where(category => category.Name.Contains(searchParam))
+            .Skip(pageIndex * pageSize)
+            .Take(pageSize);
 
-        public async Task<IEnumerable<Category>> GetPagedAsync(string searchParam, int pageIndex = 0, int pageSize = 10)
-        {
-            var query = _context.Set<Category>()
-                .AsNoTracking()
-                .Where(category => category.Name.Contains(searchParam))
-                .Skip(pageIndex * pageSize)
-                .Take(pageSize);
-
-            return await query.ToListAsync();
-        }
+        return await query.ToListAsync();
     }
 }

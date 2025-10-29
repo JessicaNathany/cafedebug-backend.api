@@ -1,33 +1,30 @@
-﻿using cafedebug_backend.domain.Entities;
+﻿using cafedebug_backend.domain.Banners;
+using cafedebug_backend.domain.Banners.Repositories;
+using cafedebug_backend.domain.Interfaces.Repositories;
 using cafedebug_backend.domain.Interfaces.Respositories;
-using cafedebug_backend.infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 
-namespace cafedebug_backend.infrastructure.Data.Repositories
+namespace cafedebug_backend.infrastructure.Data.Repositories;
+
+public class BannerRepository(CafedebugContext context) : BaseRepository<Banner>(context), IBannerRepository
 {
-    public class BannerRepository : BaseRepository<Banner>, IBannerRepository
+    private readonly CafedebugContext _context = context;
+    public async Task<Banner?> GetByNameAsync(string bannerName)
     {
-        public BannerRepository(CafedebugContext context) : base(context)
-        {
-        }
+        return await _context.Banners
+            .AsNoTracking()
+            .Where(banner => banner.Name.Contains(bannerName, StringComparison.InvariantCultureIgnoreCase))
+            .FirstOrDefaultAsync();
+    }
 
-        public async Task<Banner> GetByNameAsync(string bannerName)
-        {
-            return await _context.Banners
-                .AsNoTracking()
-                .Where(banner => banner.Name.Contains(bannerName, StringComparison.InvariantCultureIgnoreCase))
-                .FirstOrDefaultAsync();
-        }
+    public async Task<IEnumerable<Banner>> GetPagedAsync(int pageIndex = 0, int pageSize = 10)
+    {
+        var query = _context.Banners
+            .AsNoTracking()
+            .Where(banner => banner.Active && banner.StartDate.Date <= DateTime.Now.Date && banner.EndDate.Date >= DateTime.Now.Date)
+            .Skip(pageIndex * pageSize)
+            .Take(pageSize);
 
-        public async Task<IEnumerable<Banner>> GetPagedAsync(int pageIndex = 0, int pageSize = 10)
-        {
-            var query = _context.Banners
-                .AsNoTracking()
-                .Where(banner => banner.Active && banner.StartDate.Date <= DateTime.Now.Date && banner.EndDate.Date >= DateTime.Now.Date)
-                .Skip(pageIndex * pageSize)
-                .Take(pageSize);
-
-            return (IEnumerable<Banner>)await query.ToListAsync();
-        }
+        return (IEnumerable<Banner>)await query.ToListAsync();
     }
 }

@@ -1,71 +1,75 @@
-﻿using cafedebug_backend.domain.Entities;
-using cafedebug_backend.domain.Interfaces.Respositories;
-using cafedebug_backend.infrastructure.Context;
+﻿using System.Linq.Expressions;
+using cafedebug_backend.domain.Interfaces.Repositories;
+using cafedebug_backend.domain.Shared;
+using cafedebug_backend.domain.Shared.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace cafedebug_backend.infrastructure.Data.Repositories
+namespace cafedebug_backend.infrastructure.Data.Repositories;
+
+public abstract class BaseRepository<TEntity>(CafedebugContext context) : IBaseRepository<TEntity>
+    where TEntity : Entity
 {
-    public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : Entity
+    public async Task<int> CountAsync()
     {
-        protected readonly CafedebugContext _context;
-        protected readonly DbSet<TEntity> _dbSet;
+        return await context.Set<TEntity>().CountAsync();
+    }
 
-        public BaseRepository(CafedebugContext context)
-        {
-            _context = context;
-            _dbSet = _context.Set<TEntity>();
-        }
-        public async Task<int> CountAsync()
-        {
-            return await _dbSet.CountAsync();
-        }
+    public Task DeleteAsync(TEntity entity)
+    {
+        context.Set<TEntity>().Remove(entity);
+        return SaveChangesAsync();
+    }
 
-        public async Task DeleteAsync(int id)
-        {
-            var entity = await _dbSet.FirstOrDefaultAsync(x => x.Id == id);
+    public async Task DeleteAsync(int id)
+    {
+        var entity = await context.Set<TEntity>().FirstOrDefaultAsync(x => x.Id == id);
+        if (entity is null)
+            return;
 
-            _dbSet.Remove(entity);
-            await SaveAsync(entity);
-        }
+        context.Set<TEntity>().Remove(entity);
+        await SaveChangesAsync();
+    }
 
-        public virtual async Task<IEnumerable<TEntity>> GetAllAsync(bool asNoTracking = false)
-        {
-            // entity 8 migrar  _dbSet.Where(c => x.Id == id).ExecuteDelete() 
-            var query = _context.Set<TEntity>();
+    public virtual async Task<IEnumerable<TEntity>> GetAllAsync(bool asNoTracking = false)
+    {
+        // entity 8 migrar  _dbSet.Where(c => x.Id == id).ExecuteDelete() 
+        var query = context.Set<TEntity>();
 
-            if (asNoTracking)
-                return await query.AsNoTracking().ToListAsync();
+        if (asNoTracking)
+            return await query.AsNoTracking().ToListAsync();
 
-            return await query.ToListAsync();
-        }
+        return await query.ToListAsync();
+    }
 
-        public async Task<TEntity> GetByCodeAsync(Guid code)
-        {
-            return await _dbSet.FirstOrDefaultAsync(x => x.Code == code);
-        }
+    public async Task<TEntity?> GetByCodeAsync(Guid code)
+    {
+        return await context.Set<TEntity>().FirstOrDefaultAsync(x => x.Code == code);
+    }
 
-        public virtual async Task<TEntity> GetByIdAsync(int id)
-        {
-            return await _dbSet.FirstOrDefaultAsync(x => x.Id == id);
-        }
+    public virtual async Task<TEntity?> GetByIdAsync(int id)
+    {
+        return await context.Set<TEntity>().FirstOrDefaultAsync(x => x.Id == id);
+    }
 
-        public async Task<TEntity> SaveAsync(TEntity entity)
-        {
-            _dbSet.Add(entity);
-            await SaveChangesAsync();
+    public async Task SaveAsync(TEntity entity)
+    {
+        await context.Set<TEntity>().AddAsync(entity);
+        await SaveChangesAsync();
+    }
 
-            return entity;
-        }
+    public async Task<int> SaveChangesAsync()
+    {
+        return await context.SaveChangesAsync();
+    }
 
-        public async Task<int> SaveChangesAsync()
-        {
-            return await _context.SaveChangesAsync();
-        }
-
-        public async Task UpdateAsync(TEntity entity)
-        {
-            _context.Entry(entity).State = EntityState.Modified;
-            await SaveChangesAsync();
-        }
+    public async Task UpdateAsync(TEntity entity)
+    {
+        context.Entry(entity).State = EntityState.Modified;
+        await SaveChangesAsync();
+    }
+    
+    public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> expression)
+    {
+        return await context.Set<TEntity>().Where(expression).AsNoTracking().AnyAsync();
     }
 }
