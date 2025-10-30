@@ -69,5 +69,5 @@ TestResults/
 # Configuration files (keep templates, ignore actual configs)
 appsettings.Development.json
 appsettings.*.json
-!appsettings.Example.json
+!appsettings.json
 launchSettings.json
