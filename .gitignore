@@ -17,26 +17,57 @@ appsettings.json
 *.user
 *.suo
 *.userprefs
-/src/the-office.api/appsettings.json
-/src/the-office.api/appsettings.Development.json
-/src/the-office.api/appsettings.Development.json
-/src/the-office.api/appsettings.json
 
 # Default ignored files
 /shelf/
 /workspace.xml
-# Rider ignored files
-/contentModel.xml
-/.idea.the-office.api.iml
-/modules.xml
-/projectSettingsUpdater.xml
+
+# Visual Studio 2015/2017/2019/2022 cache/options directory
+.vs/
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+**/.idea/**/workspace.xml
+**/.idea/**/tasks.xml
+**/.idea/**/usage.statistics.xml
+**/.idea/**/dictionaries
+**/.idea/**/shelf
+
+# Rider specific
+.idea/**/contentModel.xml
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+.idea/**/dbnavigator.xml
+
+# Test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.trx
+*.coverage
+*.coveragexml
+coverage/
+TestResults/
+
 # Editor-based HTTP Client requests
 /httpRequests/
+
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
 /src/cafedebug-backend.api/appsettings.Development.json
-/src/cafedebug-backend.api/appsettings.Development.json
-/src/cafedebug-backend.api/appsettings.json
 /src/cafedebug-backend.api/Properties/launchSettings.json
-/src/cafedebug-backend.api/Properties/launchSettings.json
+
+# Configuration files (keep templates, ignore actual configs)
+appsettings.Development.json
+appsettings.*.json
+!appsettings.Example.json
+launchSettings.json
