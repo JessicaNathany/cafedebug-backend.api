@@ -1,6 +1,5 @@
 ﻿using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Accounts.Tokens;
-using cafedebug_backend.domain.Jwt;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
