@@ -3,7 +3,10 @@ using cafedebug_backend.domain.Episodes.Errors;
 using cafedebug_backend.domain.Episodes.Repositories;
 using cafedebug_backend.domain.Podcasts;
 using cafedebug_backend.domain.Podcasts.Errors;
+using cafedebug_backend.domain.Podcasts.Repositories;
 using cafedebug_backend.domain.Shared;
+using cafedebug.backend.application.Common.Mappings;
+using cafedebug.backend.application.Common.Pagination;
 using cafedebug.backend.application.Podcasts.DTOs.Requests;
 using cafedebug.backend.application.Podcasts.DTOs.Responses;
 using cafedebug.backend.application.Podcasts.Interfaces.Episodes;
@@ -90,16 +93,17 @@ public class EpisodeService(IEpisodeRepository episodeRepository, ICategoryRepos
         return Result.Success();
     }
 
-    /// <summary>
-    /// Retrieves all available episodes from the data source.
-    /// </summary>
-    /// <returns>A result containing a list of episode responses or failure information if retrieval is unsuccessful.</returns>
-    public async Task<Result<List<EpisodeResponse>>> GetAllAsync()
-    {
-        var episodes = await episodeRepository.GetAllAsync();
 
-        var response = mapper.Map<List<EpisodeResponse>>(episodes);
-        return Result.Success(response);
+    /// <summary>
+    /// Retrieves a paginated list of episodes based on the provided pagination request parameters.
+    /// </summary>
+    /// <param name="request">The pagination parameters including page number and page size.</param>
+    /// <returns>A result containing a paginated list of episode responses or failure information if the retrieval is not successful.</returns>
+    public async Task<Result<PagedResult<EpisodeResponse>>> GetAllAsync(PageRequest request)
+    {
+        var episodes = await episodeRepository.GetPageList(request.Page, request.PageSize, request.SortBy, request.Descending);
+        
+        return mapper.MapToPagedResult<EpisodeResponse>(episodes);
     }
 
     /// <summary>

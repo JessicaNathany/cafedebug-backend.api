@@ -1,7 +1,9 @@
 ﻿using cafedebug_backend.domain.Shared;
+using cafedebug.backend.application.Common.Pagination;
 using cafedebug.backend.application.Podcasts.DTOs.Requests;
 using cafedebug.backend.application.Podcasts.Interfaces.Episodes;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace cafedebug_backend.api.Controllers.Admin;
 
@@ -108,19 +110,20 @@ public class EpisodesController(IEpisodeService episodeService) : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves all podcast episodes.
+    /// Retrieves a paginated list of all podcast episodes.
     /// </summary>
     /// <remarks>
-    /// Fetches a complete list of podcast episodes available in the system.
-    /// Administrative privileges are required to access this endpoint.
+    /// Provides a collection of podcast episodes based on the pagination details provided in the request.
+    /// Only accessible by users with administrative privileges.
     /// </remarks>
-    /// <returns>A result containing the list of all podcast episodes.</returns>
-    /// <response code="200">Returns the list of episodes successfully.</response>
-    /// <response code="400">If the request is malformed.</response>
-    /// <response code="401">If the caller is unauthorized.</response>
-    /// <response code="403">If the caller does not have permission to perform this action.</response>
-    /// <response code="404">If no episodes are found.</response>
-    /// <response code="500">If an unexpected error occurs on the server.</response>
+    /// <param name="request">The pagination details, including the page number and size.</param>
+    /// <returns>A paginated result containing the list of podcast episodes.</returns>
+    /// <response code="200">Returns the paginated list of episodes.</response>
+    /// <response code="400">If the request contains invalid pagination details.</response>
+    /// <response code="401">If the user is not authenticated.</response>
+    /// <response code="403">If the user is unauthorized to access this resource.</response>
+    /// <response code="404">If episodes could not be found for the specified request parameters.</response>
+    /// <response code="500">If an unexpected server error occurs.</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -128,8 +131,8 @@ public class EpisodesController(IEpisodeService episodeService) : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<Result>> GetAll()
+    public async Task<ActionResult<Result>> GetAll([FromQuery]PageRequest request)
     {
-        return await episodeService.GetAllAsync();
+        return await episodeService.GetAllAsync(request);
     }
 }

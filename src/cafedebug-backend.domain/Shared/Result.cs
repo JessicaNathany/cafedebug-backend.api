@@ -7,7 +7,7 @@ public class Result
     public Error Error { get; }
     public bool IsFailure => !IsSuccess;
     
-    protected internal Result(bool isSuccess, Error error)
+    protected Result(bool isSuccess, Error error)
     {
         if (isSuccess && error != Error.None)
             throw new InvalidOperationException();
