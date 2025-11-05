@@ -1,8 +1,8 @@
-﻿using cafedebug.backend.application.Accounts.DTOs.Requests;
-using cafedebug_backend.domain.Accounts;
+﻿using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Accounts.Tokens;
+using cafedebug.backend.application.Accounts.DTOs.Requests;
 
-namespace cafedebug.backend.api.test.Mocks
+namespace cafedebug.backend.api.test.Shared.Mocks
 {
     public static class DataMocks
     {

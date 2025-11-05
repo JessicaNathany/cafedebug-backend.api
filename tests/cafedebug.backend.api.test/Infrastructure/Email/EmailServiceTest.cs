@@ -1,15 +1,14 @@
-﻿using cafedebug.backend.application.Service;
-using Microsoft.Extensions.Logging;
-using Moq;
-using Moq.AutoMock;
-using System.Net.Mail;
+﻿using System.Net.Mail;
 using cafedebug_backend.domain.Messages.Email.Request;
 using cafedebug_backend.domain.Messages.Email.Services;
 using cafedebug_backend.infrastructure.Constants;
 using cafedebug_backend.infrastructure.Email;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Moq.AutoMock;
 using Xunit;
 
-namespace cafedebug.backend.api.test.Services
+namespace cafedebug.backend.api.test.Infrastructure.Email
 {
     public class EmailServiceTest
     {

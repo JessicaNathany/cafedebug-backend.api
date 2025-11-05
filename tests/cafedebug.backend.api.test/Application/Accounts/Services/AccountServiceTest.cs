@@ -1,12 +1,12 @@
-﻿using cafedebug.backend.application.Accounts.Services;
-using cafedebug_backend.domain.Accounts;
+﻿using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Errors;
 using cafedebug_backend.domain.Messages.Email.Request;
 using cafedebug_backend.domain.Messages.Email.Services;
+using cafedebug.backend.application.Accounts.Services;
 using Moq.AutoMock;
 using Xunit;
 
-namespace cafedebug.backend.api.test.Services
+namespace cafedebug.backend.api.test.Application.Accounts.Services
 {
     public class AccountServiceTest
     {

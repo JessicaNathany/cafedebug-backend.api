@@ -1,8 +1,6 @@
 ﻿using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Accounts.Errors;
-using cafedebug.backend.application.Service;
 using cafedebug_backend.domain.Interfaces.Repositories;
-using cafedebug.backend.application.Accounts;
 using cafedebug.backend.application.Accounts.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
@@ -11,7 +9,7 @@ using Moq;
 using Moq.AutoMock;
 using Xunit;
 
-namespace cafedebug.backend.api.test.Services;
+namespace cafedebug.backend.api.test.Application.Accounts.Services;
 
 public class UserServiceTest
 {

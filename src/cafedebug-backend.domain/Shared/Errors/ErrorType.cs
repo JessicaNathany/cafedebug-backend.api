@@ -1,4 +1,4 @@
-namespace cafedebug_backend.domain.Errors;
+namespace cafedebug_backend.domain.Shared.Errors;
 
 public enum ErrorType
 {

@@ -85,4 +85,9 @@ public class Episode : Entity
         if (publishedAt == DateTime.Now.AddDays(-1))
             Active = false;
     }
+
+    public void SetCategory(Category category)
+    {
+        Category = category;
+    }
 }

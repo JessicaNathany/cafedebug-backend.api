@@ -1,4 +1,5 @@
 using cafedebug_backend.domain.Errors;
+using cafedebug_backend.domain.Shared.Errors;
 using cafedebug.backend.application.Common.DTOs.Response;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
