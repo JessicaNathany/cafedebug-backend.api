@@ -125,13 +125,6 @@ dotnet test
 
 ## Endpoints :clipboard: <br/>
 
-_AdvertisementsAdmin_
-
-- `GET /listar-anuncios` - retorna uma lista de anúncios.
-- `GET /listar-anuncios/{id}` - retorna um anúncio específico por ID.
-- `POST /novo-anuncio` - adiciona um novo anúncio.
-- `PUT /editar-anuncio/{id}` - edita um anúncio.
-
 _Auth_
 
 - `POST /api/auth/login` - autenticação do usuário retornando um token de validação.
