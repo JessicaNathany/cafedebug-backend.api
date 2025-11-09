@@ -1,11 +1,10 @@
-﻿using cafedebug.backend.api.test.Mocks;
-using cafedebug_backend.api.Controllers.Admin;
+﻿using cafedebug_backend.api.Controllers.Admin;
 using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Accounts.Errors;
 using cafedebug_backend.domain.Accounts.Services;
 using cafedebug_backend.domain.Accounts.Tokens;
-using cafedebug_backend.domain.Jwt;
 using cafedebug_backend.domain.Shared;
+using cafedebug.backend.api.test.Shared.Mocks;
 using cafedebug.backend.application.Accounts.DTOs.Requests;
 using cafedebug.backend.application.Accounts.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +12,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace cafedebug.backend.api.test.Controllers;
+namespace cafedebug.backend.api.test.Api.Controllers;
 
 public class AuthControllerTest
 {

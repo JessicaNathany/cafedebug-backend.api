@@ -36,6 +36,8 @@ public class EpisodeService(IEpisodeRepository episodeRepository, ICategoryRepos
         var category = await categoryRepository.GetByIdAsync(episode.CategoryId);
         if (category is null)
             return Result.Failure<EpisodeResponse>(CategoryError.NotFound(request.CategoryId));
+        
+        episode.SetCategory(category);
 
         await episodeRepository.SaveAsync(episode);
 
@@ -55,7 +57,7 @@ public class EpisodeService(IEpisodeRepository episodeRepository, ICategoryRepos
         if (episode is null)
             return Result.Failure<EpisodeResponse>(EpisodeError.NotFound(id));
 
-        var category = await categoryRepository.GetByIdAsync(episode.CategoryId);
+        var category = await categoryRepository.GetByIdAsync(request.CategoryId);
         if (category is null)
             return Result.Failure<EpisodeResponse>(CategoryError.NotFound(request.CategoryId));
 
@@ -71,6 +73,8 @@ public class EpisodeService(IEpisodeRepository episodeRepository, ICategoryRepos
             request.Number,
             request.CategoryId,
             request.DurationInSeconds);
+        
+        episode.SetCategory(category);
         
         await episodeRepository.UpdateAsync(episode);
 

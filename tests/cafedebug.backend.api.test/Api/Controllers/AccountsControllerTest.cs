@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace cafedebug.backend.api.test.Controllers
+namespace cafedebug.backend.api.test.Api.Controllers
 {
     public class AccountsControllerTest
     {

@@ -17,7 +17,7 @@ public sealed record EpisodeResponse : IMapFrom<Episode>
     public DateTime CreatedAt { get; set; }
     public bool Active { get; set; }
     public int Number { get; set; }
-    public CategoryResponse category { get; set; }
+    public CategoryResponse Category { get; set; }
     public int DurationInSeconds { get; set; }
     public int Views { get; set; }
     public int Likes { get; set; }

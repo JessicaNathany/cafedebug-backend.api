@@ -1,16 +1,16 @@
-﻿using cafedebug.backend.application.Accounts.Services;
-using cafedebug.backend.application.Banners.DTOs.Requests;
-using cafedebug.backend.application.Banners.Services;
-using cafedebug_backend.domain.Banners;
+﻿using cafedebug_backend.domain.Banners;
 using cafedebug_backend.domain.Banners.Errors;
 using cafedebug_backend.domain.Banners.Repositories;
+using cafedebug.backend.application.Accounts.Services;
+using cafedebug.backend.application.Banners.DTOs.Requests;
+using cafedebug.backend.application.Banners.Services;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.AutoMock;
 using Xunit;
 
-namespace cafedebug.backend.api.test.Services;
+namespace cafedebug.backend.api.test.Application.Banners.Services;
 
 public class BannerServiceTest
 {

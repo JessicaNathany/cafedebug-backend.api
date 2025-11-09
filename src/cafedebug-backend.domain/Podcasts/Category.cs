@@ -4,6 +4,6 @@ namespace cafedebug_backend.domain.Podcasts;
 
 public class Category : Entity
 {
-    private Category() { }
+    public Category() { }
     public string Name { get; set; }
 }

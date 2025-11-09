@@ -1,3 +1,5 @@
+using cafedebug_backend.domain.Shared.Errors;
+
 namespace cafedebug_backend.domain.Errors;
 
 public class Error : IEquatable<Error>

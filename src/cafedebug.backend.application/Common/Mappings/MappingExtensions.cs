@@ -10,6 +10,6 @@ public static class MappingExtensions
     {
         var items = mapper.Map<IReadOnlyList<TResponse>>(pagedResult);
         
-        return PagedResult<TResponse>.Create(items, pagedResult.Page, pagedResult.PageSize, pagedResult.PageCount, pagedResult.TotalCount);
+        return PagedResult<TResponse>.Create(items, pagedResult.Page, pagedResult.PageSize, pagedResult.PageCount, pagedResult.TotalCount, pagedResult.SortBy, pagedResult.Descending);
     }
 }
