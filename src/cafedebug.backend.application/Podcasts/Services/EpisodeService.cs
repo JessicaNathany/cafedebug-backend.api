@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using cafedebug_backend.domain.Episodes.Errors;
 using cafedebug_backend.domain.Episodes.Repositories;
 using cafedebug_backend.domain.Podcasts;
 using cafedebug_backend.domain.Podcasts.Errors;

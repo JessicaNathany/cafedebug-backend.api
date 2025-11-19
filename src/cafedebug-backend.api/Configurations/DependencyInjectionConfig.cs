@@ -1,15 +1,8 @@
 ﻿using cafedebug.backend.application.Service;
 using cafedebug_backend.domain.Accounts;
-using cafedebug_backend.domain.Accounts.Repositories;
 using cafedebug_backend.domain.Accounts.Services;
-using cafedebug_backend.domain.Audience.Repositories;
-using cafedebug_backend.domain.Banners.Repositories;
-using cafedebug_backend.domain.Episodes.Repositories;
-using cafedebug_backend.domain.Interfaces.Repositories;
 using cafedebug_backend.domain.Jwt;
 using cafedebug_backend.domain.Messages.Email.Services;
-using cafedebug_backend.domain.Podcasts.Repositories;
-using cafedebug_backend.infrastructure.Data.Repositories;
 using cafedebug_backend.infrastructure.Email;
 using cafedebug_backend.infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -22,18 +15,6 @@ public static class DependencyInjectionConfig
 {
     public static void ResolveDependencies(this IServiceCollection service)
     {
-        #region Repositories
-
-        service.AddScoped<IBannerRepository, BannerRepository>();
-        service.AddScoped<IEpisodeRepository, EpisodeRepository>();
-        service.AddScoped<ICategoryRepository, CategoryRepository>();
-        service.AddScoped<IContactRepository, ContactRepository>();
-        service.AddScoped<ITeamRepository, TeamRepository>();
-        service.AddScoped<IUserRepository, UserRepository>();
-        service.AddScoped<IRefreshTokensRepository, RefreshTokensRepository>();
-
-        #endregion
-
         #region Services
 
         service.AddScoped<IJWTService, JWTService>();
@@ -41,7 +22,7 @@ public static class DependencyInjectionConfig
         service.AddScoped<IEmailSender, SmtpEmailSender>();
 
         #endregion
-
+        
         #region Others
 
         AddAuthorizationConfiguration(service);
