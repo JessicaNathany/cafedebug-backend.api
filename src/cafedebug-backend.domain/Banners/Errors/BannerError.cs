@@ -5,6 +5,18 @@ namespace cafedebug_backend.domain.Banners.Errors;
 
 public static class BannerError
 {
-    public static Error NotFound(int id) => new(ErrorType.ResourceNotFound, $"Banner not found with id: {id}");
-    public static Error AlreadyExists => new(ErrorType.ExistingRegister, "Banner already exists");
+    public static Error AlreadyExists(string message)
+    {
+        return new Error(ErrorType.ExistingRegister, $"Already exists an banner with the title {message}");
+    }
+
+    public static Error NotFound(int bannerId)
+    {
+        return new Error(ErrorType.ResourceNotFound, $"Banner with id {bannerId} not found");
+    }
+
+    public static Error NotFound(string bannerName)
+    {
+        return new Error(ErrorType.ResourceNotFound, $"Banner with name {bannerName} not found");
+    }
 }

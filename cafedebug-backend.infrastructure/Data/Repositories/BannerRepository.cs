@@ -7,6 +7,7 @@ namespace cafedebug_backend.infrastructure.Data.Repositories;
 public class BannerRepository(CafedebugContext context) : BaseRepository<Banner>(context), IBannerRepository
 {
     private readonly CafedebugContext _context = context;
+    
     public async Task<Banner?> GetByNameAsync(string bannerName)
     {
         return await _context.Banners

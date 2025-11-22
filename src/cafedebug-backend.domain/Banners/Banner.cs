@@ -21,9 +21,14 @@ public class Banner : Entity
     public int Ordem { get; private set; }
 
     public Banner(
-        string name, string urlImage, string url, 
+        string name,
+        string urlImage, 
+        string url, 
         DateTime startDate, 
-        DateTime endDate, bool active, int ordem)
+        DateTime endDate,
+        DateTime updateDate,
+        bool active, 
+        int ordem)
     {
         Code = Guid.NewGuid();
         Name = name;
@@ -31,6 +36,7 @@ public class Banner : Entity
         Url = url;
         StartDate = startDate;
         EndDate = endDate;
+        UpdateDate = updateDate;
         Active = active;
         EndDateVerify(endDate);
         Ordem = ordem;
