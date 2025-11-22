@@ -1,120 +1,97 @@
-﻿using cafedebug.backend.application.Banners.Interfaces;
-using cafedebug.backend.application.Banners.Validators;
+﻿using AutoMapper;
+using cafedebug.backend.application.Banners.DTOs.Requests;
+using cafedebug.backend.application.Banners.DTOs.Responses;
+using cafedebug.backend.application.Banners.Interfaces;
+using cafedebug.backend.application.Common.Mappings;
+using cafedebug.backend.application.Common.Pagination;
 using cafedebug_backend.domain.Banners;
 using cafedebug_backend.domain.Banners.Errors;
 using cafedebug_backend.domain.Banners.Repositories;
+using cafedebug_backend.domain.Episodes.Errors;
 using cafedebug_backend.domain.Shared;
-using Microsoft.Extensions.Logging;
 
 namespace cafedebug.backend.application.Banners.Services;
 
-public class BannerService : IBannerService
+/// <summary>
+/// Service responsible for managing banners, including creation, updating, deletion, and retrieval operations.
+/// </summary>
+public class BannerService(IBannerRepository bannerRepository, IMapper mapper) : IBannerService
 {
-    private readonly IBannerRepository _bannerRepository;
-    private readonly ILogger<BannerService> _logger;
-
-    public BannerService(IBannerRepository bannerRepository, ILogger<BannerService> logger)
+    public async Task<Result<BannerResponse>> CreateAsync(BannerRequest request)
     {
-        _bannerRepository = bannerRepository;
-        _logger = logger;
+        var banner = request.ToBanner();
+
+        var exists = await bannerRepository.AnyAsync(e => e.Name == banner.Name);
+
+        if (exists)
+            return Result.Failure<BannerResponse>(BannerError.AlreadyExists(request.Name));
+
+        await bannerRepository.SaveAsync(banner);
+
+        var response = mapper.Map<BannerResponse>(banner);
+        return Result.Success(response);
     }
 
-    public async Task<Result<Banner>> CreateAsync(Banner banner)
+    public async Task<Result<BannerResponse>> UpdateAsync(BannerRequest request, int id)
     {
-        var bannerValidator = new BannerValidation();
-        var validationResult = bannerValidator.Validate(banner);
+        var banner = await bannerRepository.GetByIdAsync(id);
 
-        // if (!validationResult.IsValid)
-        // {
-        //     var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
-        //     _logger.LogWarning($"Banner is invalid. {errors}");
-        //     return Result.Failure<Banner>(validationResult.Errors[0].ErrorMessage);
-        // }
-
-        var bannerExist = await _bannerRepository.GetByNameAsync(banner.Name);
-
-        if (bannerExist != null)
-            return Result.Failure<Banner>(BannerError.AlreadyExists);
-
-        await _bannerRepository.SaveAsync(banner);
-        _logger.LogInformation($"Banner saved with success.");
-
-        return Result.Success(banner);
-    }
-
-    public async Task<Result<Banner>> UpdateAsync(Banner banner)
-    {
-        // if (banner is null)
-        // {
-        //     _logger.LogWarning($"Object Banner is cannot be null.");
-        //     return Result<Banner>.Failure("Banner cannot be null.");
-        // }
-
-        var bannerValidator = new BannerValidation();
-        var validationResult = bannerValidator.Validate(banner);
-
-        // if (!validationResult.IsValid)
-        // {
-        //     var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
-        //     _logger.LogWarning($"Banner is invalid. {errors}");
-        //     return Result<Banner>.Failure(validationResult.Errors[0].ErrorMessage);
-        // }
-
-        var bannerRepository = await _bannerRepository.GetByIdAsync(banner.Id);
-
-        if (bannerRepository is null)
-            return Result.Failure<Banner>(BannerError.NotFound(banner.Id));
+        if (banner is null)
+            return Result.Failure<BannerResponse>(EpisodeError.NotFound(id));
 
         banner.Update(
-            bannerRepository.Name,
-            bannerRepository.UrlImage,
-            bannerRepository.Url,
-            bannerRepository.StartDate,
-            bannerRepository.EndDate,
-            bannerRepository.UpdateDate,
-            bannerRepository.Active,
-            bannerRepository.Ordem);
+            request.Name,
+            request.UrlImage,
+            request.Url,
+            request.StartDate,
+            request.EndDate,
+            request.UpdateDate,
+            request.Active,
+            request.Order);
 
-        await _bannerRepository.UpdateAsync(banner);
-        _logger.LogInformation($"Banner updated with success.");
+        await bannerRepository.UpdateAsync(banner);
 
-        return Result.Success(banner);
+        var response = mapper.Map<BannerResponse>(banner);
+        return Result.Success(response);
     }
 
     public async Task<Result> DeleteAsync(int id)
     {
-        var banner = await _bannerRepository.GetByIdAsync(id);
+        var banner = await bannerRepository.GetByIdAsync(id);
 
         if (banner is null)
-        {
-            _logger.LogWarning($"Banner not found - banner id: {id}.");
-            return Result.Failure(BannerError.NotFound(id));
-        }
+            return Result.Failure<Banner>(BannerError.NotFound(id));
 
-        await _bannerRepository.DeleteAsync(id);
-        _logger.LogInformation($"Banner deleted with success.");
-
+        await bannerRepository.DeleteAsync(banner);
         return Result.Success();
     }
 
-    public async Task<Result<Banner>> GetByIdAsync(int id)
+    public async Task<Result<BannerResponse>> GetByIdAsync(int id)
     {
-        var banner = await _bannerRepository.GetByIdAsync(id);
+        var banner = await bannerRepository.GetByIdAsync(id);
 
         if (banner is null)
-        {
-            _logger.LogWarning($"Banner not found - banner id: {id}.");
-            return Result.Failure<Banner>(BannerError.NotFound(id));
-        }
+            return Result.Failure<BannerResponse>(BannerError.NotFound(id));
 
-        return Result.Success(banner);
+        var response = mapper.Map<BannerResponse>(banner);
+        return Result.Success(response);
     }
 
-    public async Task<Result<List<Banner>>> GetAllAsync()
+    public async Task<Result<PagedResult<BannerResponse>>> GetAllAsync(PageRequest request)
     {
-        var banners = await _bannerRepository.GetAllAsync();
+        var banners = await bannerRepository.GetPageList(request.Page, request.PageSize, request.SortBy, request.Descending);
 
+        return mapper.MapToPagedResult<BannerResponse>(banners);
+    }
 
-        return Result.Success(banners.ToList());
+    public async Task<Result<BannerResponse>> GetByNameAsync(string name)
+    {
+        var banner = await bannerRepository.GetByNameAsync(name);
+
+        if (banner is null)
+            return Result.Failure<BannerResponse>(BannerError.NotFound(name));
+
+        var response = mapper.Map<BannerResponse>(banner);
+        return Result.Success(response);
     }
 }
