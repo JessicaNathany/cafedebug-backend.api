@@ -35,6 +35,7 @@ public class EpisodesController(IEpisodeService episodeService) : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<Result>> Create([FromBody] EpisodeRequest request)
     {
+        // TODO: need to implement token validation. I'll do that next part
         return await episodeService.CreateAsync(request);
     }
 
@@ -49,6 +50,7 @@ public class EpisodesController(IEpisodeService episodeService) : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<Result>> Update(int id, [FromBody] EpisodeRequest request)
     {
+        // TODO: need to implement token validation. I'll do that next part
         return await episodeService.UpdateAsync(id, request);
     }
 
@@ -63,6 +65,7 @@ public class EpisodesController(IEpisodeService episodeService) : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<Result>> Delete(int id)
     {
+        // TODO: need to implement token validation. I'll do that next part
         return await episodeService.DeleteAsync(id);
     }
 

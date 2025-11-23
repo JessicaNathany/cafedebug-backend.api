@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using cafedebug.backend.application.Banners.DTOs.Requests;
+﻿using cafedebug.backend.application.Banners.DTOs.Requests;
 using cafedebug.backend.application.Banners.DTOs.Responses;
 using cafedebug.backend.application.Banners.Interfaces;
 using cafedebug.backend.application.Common.Mappings;
@@ -15,7 +14,7 @@ namespace cafedebug.backend.application.Banners.Services;
 /// <summary>
 /// Service responsible for managing banners, including creation, updating, deletion, and retrieval operations.
 /// </summary>
-public class BannerService(IBannerRepository bannerRepository, IMapper mapper) : IBannerService
+public class BannerService(IBannerRepository bannerRepository) : IBannerService
 {
     public async Task<Result<BannerResponse>> CreateAsync(BannerRequest request)
     {
@@ -28,7 +27,7 @@ public class BannerService(IBannerRepository bannerRepository, IMapper mapper) :
 
         await bannerRepository.SaveAsync(banner);
 
-        var response = mapper.Map<BannerResponse>(banner);
+        var response = MappingConfig.ToBanner(banner);
         return Result.Success(response);
     }
 
@@ -51,7 +50,7 @@ public class BannerService(IBannerRepository bannerRepository, IMapper mapper) :
 
         await bannerRepository.UpdateAsync(banner);
 
-        var response = mapper.Map<BannerResponse>(banner);
+        var response = MappingConfig.ToBanner(banner);
         return Result.Success(response);
     }
 
@@ -73,7 +72,7 @@ public class BannerService(IBannerRepository bannerRepository, IMapper mapper) :
         if (banner is null)
             return Result.Failure<BannerResponse>(BannerError.NotFound(id));
 
-        var response = mapper.Map<BannerResponse>(banner);
+        var response = MappingConfig.ToBanner(banner); 
         return Result.Success(response);
     }
 
@@ -81,7 +80,7 @@ public class BannerService(IBannerRepository bannerRepository, IMapper mapper) :
     {
         var banners = await bannerRepository.GetPageList(request.Page, request.PageSize, request.SortBy, request.Descending);
 
-        return mapper.MapToPagedResult<BannerResponse>(banners);
+        return banners.MapToPagedResult(banner => banner.ToBanner());
     }
 
     public async Task<Result<BannerResponse>> GetByNameAsync(string name)
@@ -91,7 +90,7 @@ public class BannerService(IBannerRepository bannerRepository, IMapper mapper) :
         if (banner is null)
             return Result.Failure<BannerResponse>(BannerError.NotFound(name));
 
-        var response = mapper.Map<BannerResponse>(banner);
+        var response = MappingConfig.ToBanner(banner);
         return Result.Success(response);
     }
 }
