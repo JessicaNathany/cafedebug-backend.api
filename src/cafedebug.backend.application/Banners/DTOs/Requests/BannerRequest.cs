@@ -30,7 +30,6 @@ public sealed record BannerRequest
             EndDate,
             UpdateDate,
             Active,
-            Order
-            );
+            Order);
     }
 }

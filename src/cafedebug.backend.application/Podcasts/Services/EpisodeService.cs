@@ -1,22 +1,21 @@
-﻿using AutoMapper;
+﻿using cafedebug.backend.application.Common.Mappings;
+using cafedebug.backend.application.Common.Pagination;
+using cafedebug.backend.application.Podcasts.DTOs.Requests;
+using cafedebug.backend.application.Podcasts.DTOs.Responses;
+using cafedebug.backend.application.Podcasts.Interfaces.Episodes;
 using cafedebug_backend.domain.Episodes.Errors;
 using cafedebug_backend.domain.Episodes.Repositories;
 using cafedebug_backend.domain.Podcasts;
 using cafedebug_backend.domain.Podcasts.Errors;
 using cafedebug_backend.domain.Podcasts.Repositories;
 using cafedebug_backend.domain.Shared;
-using cafedebug.backend.application.Common.Mappings;
-using cafedebug.backend.application.Common.Pagination;
-using cafedebug.backend.application.Podcasts.DTOs.Requests;
-using cafedebug.backend.application.Podcasts.DTOs.Responses;
-using cafedebug.backend.application.Podcasts.Interfaces.Episodes;
 
 namespace cafedebug.backend.application.Podcasts.Services;
 
 /// <summary>
 /// Service responsible for managing episodes, including creation, updating, deletion, and retrieval operations.
 /// </summary>
-public class EpisodeService(IEpisodeRepository episodeRepository, ICategoryRepository categoryRepository, IMapper mapper)
+public class EpisodeService(IEpisodeRepository episodeRepository, ICategoryRepository categoryRepository)
     : IEpisodeService
 {
     public async Task<Result<EpisodeResponse>> CreateAsync(EpisodeRequest request)
@@ -36,7 +35,7 @@ public class EpisodeService(IEpisodeRepository episodeRepository, ICategoryRepos
 
         await episodeRepository.SaveAsync(episode);
 
-        var response = mapper.Map<EpisodeResponse>(episode);
+        var response = MappingConfig.ToEpisode(episode);
         return Result.Success(response);
     }
 
@@ -67,7 +66,7 @@ public class EpisodeService(IEpisodeRepository episodeRepository, ICategoryRepos
         
         await episodeRepository.UpdateAsync(episode);
 
-        var response = mapper.Map<EpisodeResponse>(episode);
+        var response = MappingConfig.ToEpisode(episode);
         return Result.Success(response);
     }
 
@@ -85,7 +84,7 @@ public class EpisodeService(IEpisodeRepository episodeRepository, ICategoryRepos
     {
         var episodes = await episodeRepository.GetPageList(request.Page, request.PageSize, request.SortBy, request.Descending);
         
-        return mapper.MapToPagedResult<EpisodeResponse>(episodes);
+        return episodes.MapToPagedResult(episodes => episodes.ToEpisode());
     }
 
     public async Task<Result<EpisodeResponse>> GetByIdAsync(int id)
@@ -94,7 +93,8 @@ public class EpisodeService(IEpisodeRepository episodeRepository, ICategoryRepos
         if (episode is null)
             return Result.Failure<EpisodeResponse>(EpisodeError.NotFound(id));
 
-        var response = mapper.Map<EpisodeResponse>(episode);
+        var response = MappingConfig.ToEpisode(episode);
+        
         return Result.Success(response);
     }
 }

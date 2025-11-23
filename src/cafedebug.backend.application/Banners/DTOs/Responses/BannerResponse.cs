@@ -19,4 +19,6 @@ public class BannerResponse
     public string UpdateDate { get; set; }
 
     public string Active { get; set; }
+    
+    public int Order { get; set; }
 }

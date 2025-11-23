@@ -1,269 +1,253 @@
-﻿using cafedebug.backend.application.Banners.Services;
+﻿using cafedebug.backend.api.test.Shared;
+using cafedebug.backend.api.test.Shared.Mocks.Banners;
+using cafedebug.backend.api.test.Shared.Mocks.Podcasts;
+using cafedebug.backend.api.test.Shared.Setups;
+using cafedebug.backend.api.test.Shared.Setups.Podcasts;
+using cafedebug.backend.api.test.Shared.Verifications;
+using cafedebug.backend.api.test.Shared.Verifications.Podcasts;
+using cafedebug.backend.application.Banners.Services;
+using cafedebug_backend.domain.Banners;
 using cafedebug_backend.domain.Banners.Repositories;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
+using cafedebug_backend.domain.Shared.Errors;
+using FluentAssertions;
 using Moq;
-using Moq.AutoMock;
 using Xunit;
 
 namespace cafedebug.backend.api.test.Application.Banners.Services;
 
-public class BannerServiceTest
+[Collection("PodcastTests")]
+public class BannerServiceTest : BaseTest
 {
-    private readonly AutoMocker _autoMocker;
-    private readonly Mock<IBannerRepository> _bannerRepositoryMock;
-    private readonly Mock<IStringLocalizer> _localizerMock;
-    private readonly Mock<ILogger<BannerService>> _loggerMock;
+    private readonly BannerService _bannerService;
+    private readonly BannerTestDataMock _bannerTestDataMock;
+    private readonly BannerRepositoryMockSetup _bannerRepositoryMockSetup;
+    private readonly BannerRepositoryVerification _bannerVerifications;
 
     public BannerServiceTest()
     {
-        _autoMocker = new AutoMocker();
+        _bannerTestDataMock = new BannerTestDataMock(Fixture);
 
-        _bannerRepositoryMock = new Mock<IBannerRepository>();
-        _localizerMock = new Mock<IStringLocalizer>();
+        var bannerRepository = new Mock<IBannerRepository>();
+
+        _bannerService = new BannerService(bannerRepository.Object);
+        _bannerRepositoryMockSetup = new BannerRepositoryMockSetup(bannerRepository);
+        _bannerVerifications = new BannerRepositoryVerification(bannerRepository);
     }
+    [Fact]
+    public async Task CreateAsync_WithValidRequest_ReturnsSuccessResult()
+    {
+        // Arrange
+        var request = _bannerTestDataMock.CreateBannerRequest();
 
-    // TODO: testes will be refactored as soon as the Banner endpoint is ready
+        _bannerRepositoryMockSetup.BannerDoesNotExist();
+        
+
+        Banner? savedBanner = null;
+        _bannerRepositoryMockSetup.BannerSave(e => savedBanner = e);
+
+        // Act
+        var result = await _bannerService.CreateAsync(request);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
+
+        var response = result.Value;
+        response.Name.Should().Be(request.Name);
+
+        savedBanner.Should().NotBeNull();
+
+        _bannerVerifications.VerifyBannerSaved(Times.Once());
+    }
 
     [Fact]
-    public async Task Create_BannerIsNull_ShouldBe_Failure()
+    public async Task CreateAsync_WhenSaveThrowsException_PropagatesException()
     {
-        // TESTE será refatorado assim que o endpoint de Banner estiver pronto
-        //var service = _autoMocker.CreateInstance<BannerService>();
-        //await service.CreateAsync(null);
+        // Arrange
+        var request = _bannerTestDataMock.CreateBannerRequest();
+        var expectedException = new InvalidOperationException("DB down");
 
-        ////Act
-        //var result = await service.CreateAsync(null);
+        _bannerRepositoryMockSetup.BannerDoesNotExist();
+        _bannerRepositoryMockSetup.BannerSaveThrows(expectedException);
 
-        //// Assert
-        //Assert.False(result.IsSuccess);
-        //Assert.NotNull(result.Error);
-        //Assert.Equal("Banner cannot be null.", result.Error);
+        // Act
+        var act = async () => await _bannerService.CreateAsync(request);
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("DB down");
+        
+        _bannerVerifications.VerifyBannerSaved(Times.Once());
     }
-    
 
-    //[Fact]
-    //public async Task Create_ShouldBe_Success()
-    //{
-    //    var bannerRequest = new BannerRequest
-    //    {
-    //        Id = 1,
-    //        Name = "Banner Café Youtube",
-    //        StartDate = DateTime.Now,
-    //        EndDate = DateTime.Now.AddDays(7),
-    //        Url = "http://teste.com/image",
-    //        UrlImage = "http://teste.com/image",
-    //        Active = true,
-    //    };
+    [Fact]
+    public async Task CreateAsync_WhenBannerTitleAlreadyExists_ReturnsExistingRegisterError()
+    {
+        // Arrange
+        var request = _bannerTestDataMock.CreateBannerRequest();
+        _bannerRepositoryMockSetup.BannerExists();
 
-    //    var banner = new Banner(
-    //        bannerRequest.Name,
-    //        bannerRequest.UrlImage,
-    //        bannerRequest.Url,
-    //        bannerRequest.StartDate,
-    //        bannerRequest.EndDate,
-    //        bannerRequest.Active,
-    //        bannerRequest.Order);
+        // Act
+        var result = await _bannerService.CreateAsync(request);
 
-    //    _bannerRepositoryMock.Setup(x => x.SaveAsync(It.IsAny<Banner>())).Verifiable();
+        // Assert
+        result.IsFailure.Should().BeTrue();
+        result.Error.Code.Should().Be(nameof(ErrorType.ExistingRegister));
 
-    //    var service = _autoMocker.CreateInstance<BannerService>();
-    //    await service.CreateAsync(banner);
+        _bannerVerifications.VerifyBannerExistenceChecked(Times.Once());
+        _bannerVerifications.VerifyBannerRetrieved(It.IsAny<int>(), Times.Never());
+        _bannerVerifications.VerifyBannerSaved(Times.Never());
+    }
 
-    //    var result = await service.CreateAsync(banner);
+    [Fact]
+    public async Task UpdateAsync_WithValidRequest_ReturnsSuccessResult()
+    {
+        // Arrange
+        const int bannerId = 15;
+        var banner = _bannerTestDataMock.CreateBanner(bannerId);
+        var request = _bannerTestDataMock.CreateBannerRequest();
 
-    //    // Assert
-    //    Assert.True(result.IsSuccess);
-    //    Assert.NotNull(result.Value);
-    //}
-
-    //[Fact]
-    //public async Task Create_ShouldBe_ReturnException_BannerAlreadySameName()
-    //{
-    //    // TESTE será refatorado assim que o endpoint de Banner estiver pronto
-
-    //    //var bannerRequest = new BannerRequest
-    //    //{
-    //    //    Id = 1,
-    //    //    Name = "Banner Café Youtube",
-    //    //    StartDate = DateTime.Now,
-    //    //    EndDate = DateTime.Now.AddDays(7),
-    //    //    Url = "http://teste.com/image",
-    //    //    UrlImage = "http://teste.com/image",
-    //    //    Active = true,
-    //    //    Ordem = 1
-    //    //};
-
-    //    //var bannerExist = new Banner(
-    //    //   bannerRequest.Name,
-    //    //   "http://teste.com/image/youtube2",
-    //    //   "http://teste.com/2",
-    //    //   DateTime.Now.AddDays(-30),
-    //    //   DateTime.Now.AddDays(-5),
-    //    //   bannerRequest.Active,
-    //    //   bannerRequest.Ordem = 1);
-
-    //    //var looggerMock = Mock.Of<ILogger<BannerService>>();
-    //    //var stringLocalizerMock = Mock.Of<IStringLocalizer<UserService>>();
+        _bannerRepositoryMockSetup.GetBannerById(banner);
 
 
-    //    //_bannerRepositoryMock.Setup(x => x.SaveAsync(It.IsAny<Banner>()));
-            
-    //    //_bannerRepositoryMock.Setup(x => x.GetByNameAsync("Banner Café Youtube"))
-    //    //    .Returns(Task.FromResult(bannerExist));
+        _bannerRepositoryMockSetup.BannerUpdate();
 
-    //    //var service = new BannerService(_bannerRepositoryMock.Object, looggerMock);
-    //    //await service.CreateAsync(It.IsAny<Banner>());
+        // Act
+        var result = await _bannerService.UpdateAsync(request, bannerId);
 
-    //    //var result = await service.CreateAsync(bannerExist);
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
 
-    //    //// Assert
-    //    //Assert.False(result.IsSuccess);
-    //    //Assert.NotNull(result.Error);
-    //    //Assert.Equal($"Banner already exists {bannerRequest.Name}.", result.Error);
-    //}
+        var response = result.Value;
+        response.Name.Should().Be(request.Name);
 
-    //[Fact]
-    //public async Task Update_StartDateGreaterThanEndDate_ShouldBe_Failure()
-    //{
-    //    var bannerRequest = new BannerRequest
-    //    {
-    //        Id = 1,
-    //        Name = "Banner Café Youtube",
-    //        StartDate = DateTime.Now.AddDays(2),
-    //        EndDate = DateTime.Now,
-    //        Url = "http://teste.com/image",
-    //        UrlImage = "http://teste.com/image",
-    //        Active = true,
-    //        Order = 1
-    //    };
 
-    //    var banner = new Banner(
-    //        bannerRequest.Name,
-    //        bannerRequest.UrlImage,
-    //        bannerRequest.Url,
-    //        bannerRequest.StartDate,
-    //        bannerRequest.EndDate,
-    //        bannerRequest.Active,
-    //        bannerRequest.Order);
+        _bannerVerifications.VerifyBannerRetrieved(bannerId, Times.Once());
+        _bannerVerifications.VerifyBannerUpdated(Times.Once());
+    }
 
-    //    var service = _autoMocker.CreateInstance<BannerService>();
-    //    await service.UpdateAsync(banner);
+    [Fact]
+    public async Task UpdateAsync_WhenBannerNotFound_ReturnsResourceNotFoundError()
+    {
+        // Arrange
+        const int bannerId = 15;
+        var request = _bannerTestDataMock.CreateBannerRequest();
 
-    //    // Act
-    //    var result = await service.UpdateAsync(banner);
+        _bannerRepositoryMockSetup.GetBannerByIdNotFound(bannerId);
 
-    //    // Assert
-    //    Assert.False(result.IsSuccess);
-    //    Assert.NotNull(result.Error);
-    //}
+        // Act
+        var result = await _bannerService.UpdateAsync(request, bannerId);
 
-    //[Fact]
-    //public async Task Update_ShouldBe_Success()
-    //{
-    //    var bannerRequest = new BannerRequest
-    //    {
-    //        Id = 1,
-    //        Name = "Banner Café Youtube",
-    //        StartDate = DateTime.Now,
-    //        EndDate = DateTime.Now.AddDays(7),
-    //        Url = "http://teste.com/image",
-    //        UrlImage = "http://teste.com/image",
-    //        Active = true,
-    //        Order = 1
-    //    };
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Code.Should().Be(nameof(ErrorType.ResourceNotFound));
+    }
 
-    //    var bannerExist = new Banner(
-    //        bannerRequest.Name,
-    //        bannerRequest.UrlImage,
-    //        bannerRequest.Url,
-    //        bannerRequest.StartDate,
-    //        bannerRequest.EndDate,
-    //        bannerRequest.Active,
-    //        bannerRequest.Order);
-    //    bannerExist.Id = 1;    
+    [Fact]
+    public async Task DeleteAsync_WithValidRequest_ReturnsSuccessResult()
+    {
+        // Arrange
+        const int bannerId = 223;
+        var banner = _bannerTestDataMock.CreateBanner(bannerId);
 
-    //    var looggerMock = Mock.Of<ILogger<BannerService>>();
-    //    var stringLocalizerMock = Mock.Of<IStringLocalizer<UserService>>();
+        _bannerRepositoryMockSetup.GetBannerById(banner);
 
-    //    _bannerRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<int>())).Returns(Task.FromResult(bannerExist));
-    //    _bannerRepositoryMock.Setup(x => x.SaveAsync(It.IsAny<Banner>())).Verifiable();
+        // Act
+        var result = await _bannerService.DeleteAsync(bannerId);
 
-    //    //Act
-    //    var service = new BannerService(_bannerRepositoryMock.Object, looggerMock);
-    //    var result = await service.UpdateAsync(bannerExist);
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
 
-    //    // Assert
-    //    Assert.True(result.IsSuccess);
-    //    Assert.NotNull(result.Value);
-    //}
+        _bannerVerifications.VerifyBannerRetrieved(bannerId, Times.Once());
+        _bannerVerifications.VerifyBannerDeleted(banner, Times.Once());
+    }
 
-    ////[Fact]
-    ////public async Task Delete_BannerNotFound_ShouldBe_Failure()
-    ////{
-    ////    var bannerRequest = new BannerRequest
-    ////    {
-    ////        Id = 1,
-    ////        Name = "Banner Café Youtube",
-    ////        StartDate = DateTime.Now,
-    ////        EndDate = DateTime.Now.AddDays(7),
-    ////        Url = "http://teste.com/image",
-    ////        UrlImage = "http://teste.com/image",
-    ////        Active = true,
-    ////    };
+    [Fact]
+    public async Task DeleteAsync_WhenBannerNotFound_ReturnsResourceNotFoundError()
+    {
+        // Arrange
+        const int bannerId = 9999;
 
-    ////    _bannerRepositoryMock.Setup(b => b.GetByIdAsync(1, CancellationToken.None)).Returns(Task.FromResult<Banner>(null));
+        _bannerRepositoryMockSetup.GetBannerByIdNotFound(bannerId);
 
-    ////    var service = _autoMocker.CreateInstance<BannerService>();
-    ////    await service.DeleteAsync(bannerRequest.Id, CancellationToken.None);
+        // Act
+        var result = await _bannerService.DeleteAsync(bannerId);
 
-    ////    // Act
-    ////    var result = await service.DeleteAsync(bannerRequest.Id, CancellationToken.None);
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Code.Should().Be(nameof(ErrorType.ResourceNotFound));
+    }
 
-    ////    // Assert
-    ////    Assert.False(result.IsSuccess);
-    ////    Assert.NotNull(result.Error);
-    ////    Assert.Equal($"Banner not found {bannerRequest.Id}.", result.Error);
-    ////}
+    [Fact]
+    public async Task GetAllAsync_WithValidRequest_ReturnsSuccessResult()
+    {
+        // Arrange
+        var request = _bannerTestDataMock.CreatePageRequest();
+        var pagedResult = _bannerTestDataMock.CreateBannerPagedResult(request.Page, request.PageSize, request.SortBy, request.Descending);
 
-    //[Fact]
-    //public async Task Delete_BannerNotFound_ShouldBe_Success()
-    //{
-    //    var bannerRequest = new BannerRequest
-    //    {
-    //        Id = 1,
-    //        Name = "Banner Café Youtube",
-    //        StartDate = DateTime.Now,
-    //        EndDate = DateTime.Now.AddDays(7),
-    //        Url = "http://teste.com/image",
-    //        UrlImage = "http://teste.com/image",
-    //        Active = true,
-    //        Order = 1   
-    //    };
+        _bannerRepositoryMockSetup.BannerGetPageList(pagedResult, request);
 
-    //    var banner = new Banner(
-    //        bannerRequest.Name,
-    //        bannerRequest.UrlImage,
-    //        bannerRequest.Url,
-    //        bannerRequest.StartDate,
-    //        bannerRequest.EndDate,
-    //        bannerRequest.Active, 
-    //        bannerRequest.Order);
+        // Act
+        var result = await _bannerService.GetAllAsync(request);
 
-    //    _bannerRepositoryMock.Setup(b => b.GetByIdAsync(1)).ReturnsAsync(banner);
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().NotBeNull();
+        result.Value.Items.Should().NotBeNullOrEmpty();
+        result.Value.Items.Should().HaveCount(pagedResult.TotalCount);
+        result.Value.Page.Should().Be(request.Page);
+        result.Value.PageSize.Should().Be(request.PageSize);
+        result.Value.SortBy.Should().Be(request.SortBy);
+        result.Value.Descending.Should().Be(request.Descending);
 
-    //    var looggerMock = Mock.Of<ILogger<BannerService>>();
-    //    var userService = new BannerService(_bannerRepositoryMock.Object, looggerMock);
+        _bannerVerifications.VerifyBannerPageListRetrieved(request.Page, request.PageSize, request.SortBy, request.Descending, Times.Once());
+    }
 
-    //    var service = _autoMocker.CreateInstance<BannerService>();
-    //    await service.DeleteAsync(bannerRequest.Id);
+    [Fact]
+    public async Task GetAllAsync_WhenBannerIsEmpty_ReturnsSuccessResult()
+    {
+        // Arrange
+        var request = _bannerTestDataMock.CreatePageRequest();
+        var pagedResult = _bannerTestDataMock.CreateBannerPagedResult(request.Page, request.PageSize, request.SortBy, request.Descending, 0);
 
-    //    // Act
-    //    var result = await service.DeleteAsync(bannerRequest.Id);
+        _bannerRepositoryMockSetup.BannerGetPageList(pagedResult, request);
 
-    //    // Assert
-    //    Assert.False(result.IsSuccess);
-    //    Assert.NotNull(result.Error);
-    //    Assert.Equal(BannerError.NotFound(bannerRequest.Id).Message, result.Error.Message);
-    //}
+        // Act
+        var result = await _bannerService.GetAllAsync(request);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().NotBeNull();
+        result.Value.Items.Should().BeEmpty();
+        result.Value.Page.Should().Be(request.Page);
+        result.Value.PageSize.Should().Be(request.PageSize);
+        result.Value.SortBy.Should().Be(request.SortBy);
+        result.Value.Descending.Should().Be(request.Descending);
+
+        _bannerVerifications.VerifyBannerPageListRetrieved(request.Page, request.PageSize, request.SortBy, request.Descending, Times.Once());
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_WithValidRequest_ReturnsSuccessResult()
+    {
+        // Arrange
+        const int bannerId = 15;
+        var banner = _bannerTestDataMock.CreateBanner(bannerId);
+
+        _bannerRepositoryMockSetup.GetBannerById(banner);
+
+        // Act
+        var result = await _bannerService.GetByIdAsync(bannerId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().NotBeNull();
+
+        _bannerVerifications.VerifyBannerRetrieved(bannerId, Times.Once());
+    }
+
 }

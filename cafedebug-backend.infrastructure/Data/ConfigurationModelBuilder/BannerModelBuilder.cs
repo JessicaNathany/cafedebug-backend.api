@@ -35,7 +35,7 @@ public class BannerModelBuilder : IEntityTypeConfiguration<Banner>
         builder.Property(b => b.Active)
             .HasColumnType("bit");
 
-        builder.Property(b => b.Ordem)
+        builder.Property(b => b.Order)
             .HasColumnType("int");
 
         builder.ToTable("Banner");
