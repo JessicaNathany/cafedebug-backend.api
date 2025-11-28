@@ -1,50 +1,100 @@
 #!/bin/bash
-set -e
+set -euo pipefail
+
+# ============================================
+# CafeDebug Backend API - Docker Swarm Deployment Script
+# ============================================
 
 # --- Configuration ---
 STACK_NAME="cafedebug-stack"
-SERVICE_NAME="cafedebug-api"
-FULL_SERVICE_NAME="${STACK_NAME}_${SERVICE_NAME}"
+# Note: The service name usually includes the stack name prefix
+SERVICE_NAME_PART="cafedebug-api" 
+FULL_SERVICE_NAME="${STACK_NAME}_${SERVICE_NAME_PART}"
 BASE_IMAGE_NAME="ghcr.io/regisbarros/cafedebug-backend.api"
 
-# --- Script Logic ---
+# --- Helpers ---
+log() { echo -e "\033[1;32m[deploy]\033[0m $*"; }
+warn() { echo -e "\033[1;33m[deploy][WARN]\033[0m $*"; }
+fail() { echo -e "\033[1;31m[deploy][ERROR]\033[0m $*" 1>&2; exit 1; }
 
-# 1. Get the new image tag/version from the first argument (passed by CI/CD)
-NEW_TAG=$1
-if [ -z "$NEW_TAG" ]; then
-    echo "Error: No new image tag provided. Usage: $0 <new_image_tag>"
-    exit 1
-fi
-
-NEW_IMAGE_FULL="${BASE_IMAGE_NAME}:${NEW_TAG}"
-
-echo "Starting rolling update for ${FULL_SERVICE_NAME} using image: ${NEW_IMAGE_FULL}"
-
-# 2. Pull the new image locally
-# This verifies the image is available and prevents the update from hanging on a pull failure.
-echo "Pulling new image: ${NEW_IMAGE_FULL}"
-docker pull "$NEW_IMAGE_FULL"
-if [ $? -ne 0 ]; then
-    echo "❌ Error: Failed to pull new image ${NEW_IMAGE_FULL}"
-    exit 1
-fi
-
-# 3. Trigger the Rolling Update on the running Swarm service
-# Swarm reads the deployment, health check, and rollback configuration from the service.
-echo "Initiating rolling update on Swarm service..."
-docker service update \
-    --image "$NEW_IMAGE_FULL" \
-    --with-rollback \
-    --force \
-    "$FULL_SERVICE_NAME"
-
-# Check the exit status of the update command
-if [ $? -eq 0 ]; then
-    echo "✓ Successfully initiated rolling update"
-    echo "✓ Monitor with: docker service ps ${FULL_SERVICE_NAME}"
+# --- Load .env securely ---
+if [ -f .env ]; then
+    log "Loading environment variables from .env..."
+    # 'set -a' automatically exports all variables defined subsequently
+    set -a
+    # source the file, ignoring comments
+    source <(grep -v '^#' .env | sed 's/^export //')
+    set +a
 else
-    echo "❌ Error: Failed to initiate Docker Swarm service update"
-    exit 1
+    warn ".env file not found! Relying on existing environment variables."
 fi
 
-exit 0
+# --- Resolve Image Tag ---
+ARG_TAG="${1:-}"
+# Priority: Argument > Env Var > Fail
+export IMAGE_TAG="${ARG_TAG:-${IMAGE_TAG:-}}"
+
+if [ -z "${IMAGE_TAG}" ]; then
+    fail "IMAGE_TAG is not set. Usage: ./deploy.sh <tag>"
+fi
+
+NEW_IMAGE_FULL="${BASE_IMAGE_NAME}:${IMAGE_TAG}"
+
+log "------------------------------------------------"
+log "Target Stack   : ${STACK_NAME}"
+log "Target Service : ${FULL_SERVICE_NAME}"
+log "Deploying Image: ${NEW_IMAGE_FULL}"
+log "------------------------------------------------"
+
+# --- Pre-flight Checks ---
+# 1. Check Swarm
+if ! docker info --format '{{.Swarm.LocalNodeState}}' | grep -qE 'active|locked'; then
+    fail "Docker Swarm is not active. Run 'docker swarm init' first."
+fi
+
+# 2. Pull Image (Vital for minimal downtime)
+log "Pulling image to ensure availability..."
+docker pull "${NEW_IMAGE_FULL}" || fail "Could not pull image ${NEW_IMAGE_FULL}"
+
+# --- Deployment ---
+# We use 'stack deploy' because it handles YAML changes (ports, healthchecks, etc.)
+# AND image updates simultaneously.
+log "Deploying stack configuration..."
+
+if ! docker stack deploy --with-registry-auth -c docker-compose.yml "${STACK_NAME}"; then
+    fail "Stack deployment command failed."
+fi
+
+# --- Verification (The 'Wait' Loop) ---
+log "Deployment submitted. Waiting for rollout to stabilize..."
+
+# Wait for the service to converge
+# Note: 'docker service update --detach=false' exists, but 'stack deploy' is async.
+# We must manually verify the service state.
+
+ATTEMPTS=0
+MAX_ATTEMPTS=30 # 30 * 2s = 60 seconds wait (adjust based on your healthcheck start_period)
+
+while [ $ATTEMPTS -lt $MAX_ATTEMPTS ]; do
+    # Get the number of replicas that are actually 'running'
+    # We filter by the current image to ensure we aren't counting old containers shutting down
+    RUNNING_TASKS=$(docker service ps "${FULL_SERVICE_NAME}" \
+        --filter "desired-state=running" \
+        --filter "image=${NEW_IMAGE_FULL}" \
+        --format "{{.CurrentState}}" | grep -c "Running" || true)
+    
+    # Assuming 3 replicas as per your docker-compose
+    DESIRED_REPLICAS=$(docker service inspect "${FULL_SERVICE_NAME}" --format '{{.Spec.Mode.Replicated.Replicas}}')
+    
+    if [ "$RUNNING_TASKS" -ge "$DESIRED_REPLICAS" ]; then
+        log "SUCCESS: Service converged with $RUNNING_TASKS/$DESIRED_REPLICAS replicas running."
+        docker service ps "${FULL_SERVICE_NAME}" | head -n 6
+        exit 0
+    fi
+    
+    echo -n "."
+    sleep 2
+    ATTEMPTS=$((ATTEMPTS+1))
+done
+
+fail "Deployment timed out. Service did not reach desired state in 60 seconds."
