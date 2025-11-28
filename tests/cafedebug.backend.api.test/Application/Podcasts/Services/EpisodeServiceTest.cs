@@ -1,5 +1,4 @@
 using cafedebug_backend.domain.Episodes.Repositories;
-using cafedebug_backend.domain.Errors;
 using cafedebug_backend.domain.Podcasts;
 using cafedebug_backend.domain.Podcasts.Repositories;
 using cafedebug_backend.domain.Shared.Errors;

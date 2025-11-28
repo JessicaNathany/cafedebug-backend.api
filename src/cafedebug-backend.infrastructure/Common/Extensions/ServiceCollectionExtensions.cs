@@ -1,9 +1,7 @@
 using System.Reflection;
 using Amazon;
 using Amazon.S3;
-using cafedebug_backend.domain.Media.Services;
 using cafedebug_backend.infrastructure.Storage;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 

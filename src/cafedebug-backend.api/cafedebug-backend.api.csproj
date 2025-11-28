@@ -39,7 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\cafedebug-backend.infrastructure\cafedebug-backend.infrastructure.csproj" />
+    <ProjectReference Include="..\cafedebug-backend.infrastructure\cafedebug-backend.infrastructure.csproj" />
     <ProjectReference Include="..\cafedebug-backend.domain\cafedebug-backend.domain.csproj" />
     <ProjectReference Include="..\cafedebug.backend.application\cafedebug.backend.application.csproj" />
   </ItemGroup>
