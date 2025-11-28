@@ -44,7 +44,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Run tests
-        run: dotnet test tests/cafedebug.backend.api.test/cafedebug.backend.api.test.csproj --no-build --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverageFormat=cobertura /p:CoverageFilename=coverage.xml
+        run: dotnet test tests/cafedebug.backend.api.test/cafedebug.backend.api.test.csproj --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverageFormat=cobertura /p:CoverageFilename=coverage.xml
 
       - name: Upload test results
         if: always()
