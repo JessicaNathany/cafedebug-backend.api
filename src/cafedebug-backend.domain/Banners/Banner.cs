@@ -18,12 +18,17 @@ public class Banner : Entity
 
     public bool Active { get; private set; }
 
-    public int Ordem { get; private set; }
+    public int Order { get; private set; }
 
     public Banner(
-        string name, string urlImage, string url, 
+        string name,
+        string urlImage, 
+        string url, 
         DateTime startDate, 
-        DateTime endDate, bool active, int ordem)
+        DateTime endDate,
+        DateTime updateDate,
+        bool active, 
+        int ordem)
     {
         Code = Guid.NewGuid();
         Name = name;
@@ -31,14 +36,19 @@ public class Banner : Entity
         Url = url;
         StartDate = startDate;
         EndDate = endDate;
+        UpdateDate = updateDate;
         Active = active;
         EndDateVerify(endDate);
-        Ordem = ordem;
+        Order = ordem;
     }
 
-    public void Update(string name, string urlImage, 
-        string url, DateTime startDate, 
-        DateTime endDate, DateTime? updateDate, 
+    public void Update(
+        string name, 
+        string urlImage, 
+        string url, 
+        DateTime startDate, 
+        DateTime endDate,
+        DateTime? updateDate, 
         bool active, int ordem)
     {
         Name = name;
@@ -49,7 +59,7 @@ public class Banner : Entity
         UpdateDate = updateDate;
         Active = active;
         EndDateVerify(endDate);
-        Ordem = ordem;
+        Order = ordem;
     }
     public void EndDateVerify(DateTime endDate)
     {

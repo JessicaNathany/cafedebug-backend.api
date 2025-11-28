@@ -1,11 +1,8 @@
-﻿using cafedebug_backend.domain.Podcasts;
-using cafedebug.backend.application.Common.Mappings;
+﻿namespace cafedebug.backend.application.Podcasts.DTOs.Responses;
 
-namespace cafedebug.backend.application.Podcasts.DTOs.Responses;
-
-public sealed record EpisodeResponse : IMapFrom<Episode>
+public sealed record EpisodeResponse
 {
-    public int id { get; set; }
+    public int Id { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }
     public string ShortDescription { get; set; }
@@ -18,6 +15,7 @@ public sealed record EpisodeResponse : IMapFrom<Episode>
     public bool Active { get; set; }
     public int Number { get; set; }
     public CategoryResponse Category { get; set; }
+    public int CategoryId { get; set; }
     public int DurationInSeconds { get; set; }
     public int Views { get; set; }
     public int Likes { get; set; }

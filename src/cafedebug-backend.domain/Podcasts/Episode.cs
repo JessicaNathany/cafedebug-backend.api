@@ -79,7 +79,6 @@ public class Episode : Entity
        CategoryId = categoryId;
        DurationInSeconds = durationInSeconds;
     }
-
     private void EndDateVerify(DateTime publishedAt)
     {
         if (publishedAt == DateTime.Now.AddDays(-1))
