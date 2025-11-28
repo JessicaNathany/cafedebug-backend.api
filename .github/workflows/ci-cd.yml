@@ -107,7 +107,7 @@ jobs:
     name: Publish (push-image)
     runs-on: ubuntu-latest
     needs: package
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/feature/'))
     steps:
       - name: Download built image artifact
         uses: actions/download-artifact@v4
@@ -134,7 +134,7 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     needs: publish
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/feature/'))
     permissions:
       contents: write
     steps:
