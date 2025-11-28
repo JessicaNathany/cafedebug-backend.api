@@ -4,10 +4,21 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Framework-dotnet-blue"/> 
-  <img src="https://img.shields.io/badge/Framework%20version-dotnet%206-blue"/>
+  <img src="https://img.shields.io/badge/Framework%20version-dotnet%209-blue"/>
   <img src="https://img.shields.io/badge/Language-C%23-blue"/> 
-  <img src="https://img.shields.io/badge/Status-development-green"/>  
-   <img src=" https://img.shields.io/badge/Status-development-green"/>  
+  <img src="https://img.shields.io/badge/Status-development-green"/>
+</p>
+
+<p align="center">
+  <a href="https://github.com/RegisBarros/cafedebug-backend.api/actions/workflows/ci-cd.yml">
+    <img src="https://github.com/RegisBarros/cafedebug-backend.api/actions/workflows/ci-cd.yml/badge.svg?branch=main" alt="CI/CD Pipeline Status"/>
+  </a>
+  <a href="https://github.com/RegisBarros/cafedebug-backend.api/releases">
+    <img src="https://img.shields.io/github/v/release/RegisBarros/cafedebug-backend.api?include_prereleases" alt="Latest Release"/>
+  </a>
+  <a href="https://github.com/RegisBarros/cafedebug-backend.api/packages">
+    <img src="https://img.shields.io/badge/registry-GHCR-blue" alt="GitHub Container Registry"/>
+  </a>
 </p>
 
  <h4 align="center"> 
