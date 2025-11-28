@@ -1,0 +1,67 @@
+name: Rollback Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Previous image tag to rollback to (e.g., main-abc1234)'
+        required: true
+        type: string
+      reason:
+        description: 'Reason for rollback'
+        required: false
+        type: string
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  rollback:
+    name: Rollback
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate image tag format
+        id: validate
+        run: |
+          IMAGE_TAG="${{ github.event.inputs.image_tag }}"
+          if [[ ! "$IMAGE_TAG" =~ ^[a-z0-9]+-[a-z0-9]{7}$ ]]; then
+            echo "❌ Invalid image tag format. Expected format: branch-sha7 (e.g., main-abc1234)"
+            exit 1
+          fi
+          echo "Image tag is valid: $IMAGE_TAG"
+
+      - name: Rollback to AWS EC2 via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_EC2_HOST }}
+          username: ${{ secrets.AWS_EC2_USER }}
+          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          port: ${{ secrets.AWS_EC2_PORT }}
+          script: |
+            set -e
+            cd ${{ secrets.DOCKER_COMPOSE_PATH }}
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            bash scripts/deploy.sh "${{ github.event.inputs.image_tag }}"
+
+      - name: Rollback notification
+        if: success()
+        run: |
+          echo "✓ Rollback successful!"
+          echo "  Image Tag: ${{ github.event.inputs.image_tag }}"
+          echo "  Reason: ${{ github.event.inputs.reason || 'Not provided' }}"
+          echo "  Triggered by: ${{ github.actor }}"
+
+      - name: Rollback failed notification
+        if: failure()
+        run: |
+          echo "❌ Rollback failed!"
+          echo "  Image Tag: ${{ github.event.inputs.image_tag }}"
+          echo "  Triggered by: ${{ github.actor }}"
+          exit 1

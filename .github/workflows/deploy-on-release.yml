@@ -1,0 +1,47 @@
+name: Deploy on Release
+
+on:
+  release:
+    types: [published]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.target_commitish }}
+
+      - name: Resolve image tag from release
+        id: image
+        run: |
+          RELEASE_TAG="${{ github.event.release.tag_name }}"
+          echo "release_tag=${RELEASE_TAG}" >> $GITHUB_OUTPUT
+          # Use commitish to build image tag; adjust if you use different tagging
+          COMMIT="${{ github.event.release.target_commitish }}"
+          COMMIT_SHORT=$(echo $COMMIT | cut -c1-7)
+          IMAGE_TAG="main-${COMMIT_SHORT}"
+          echo "tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+          echo "Using image tag: ${IMAGE_TAG}"
+
+      - name: Deploy to AWS EC2 via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_EC2_HOST }}
+          username: ${{ secrets.AWS_EC2_USER }}
+          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          port: ${{ secrets.AWS_EC2_PORT }}
+          script: |
+            set -e
+            cd ${{ secrets.DOCKER_COMPOSE_PATH }}
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            bash scripts/deploy.sh "${{ steps.image.outputs.tag }}"
