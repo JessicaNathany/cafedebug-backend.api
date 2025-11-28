@@ -11,12 +11,15 @@
 
 <p align="center">
   <a href="https://github.com/RegisBarros/cafedebug-backend.api/actions/workflows/ci-cd.yml">
-    <img src="https://github.com/RegisBarros/cafedebug-backend.api/actions/workflows/ci-cd.yml/badge.svg?branch=main" alt="CI/CD Pipeline Status"/>
+    <img src="https://github.com/RegisBarros/cafedebug-backend.api/actions/workflows/ci-cd.yml/badge.svg" alt="CI/CD Pipeline Status"/>
+  </a>
+  <a href="https://github.com/RegisBarros/cafedebug-backend.api/actions/workflows/deploy-on-release.yml">
+    <img src="https://github.com/RegisBarros/cafedebug-backend.api/actions/workflows/deploy-on-release.yml/badge.svg" alt="Deploy Status"/>
   </a>
   <a href="https://github.com/RegisBarros/cafedebug-backend.api/releases">
-    <img src="https://img.shields.io/github/v/release/RegisBarros/cafedebug-backend.api?include_prereleases" alt="Latest Release"/>
+    <img src="https://img.shields.io/github/v/release/RegisBarros/cafedebug-backend.api" alt="Latest Release"/>
   </a>
-  <a href="https://github.com/RegisBarros/cafedebug-backend.api/packages">
+  <a href="https://github.com/RegisBarros/cafedebug-backend.api/pkgs/container/cafedebug-backend.api">
     <img src="https://img.shields.io/badge/registry-GHCR-blue" alt="GitHub Container Registry"/>
   </a>
 </p>
