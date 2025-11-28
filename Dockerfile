@@ -26,6 +26,10 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
+# Set environment variables
+ENV ASPNETCORE_URLS=http://+:80
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
+
 # Set non-root user
 USER appuser
 
