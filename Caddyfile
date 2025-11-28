@@ -12,18 +12,7 @@
         health_status 200
 
         # Connection pooling for better performance
-        policy least_request
-
-        # Timeout configurations
-        timeout 30s
-
-        # Error handling and retries
-        transport http {
-            dial_timeout 10s
-            response_header_timeout 30s
-            keep_alive 90s
-            max_idle_conns 100
-        }
+        lb_policy least_conn
     }
 
     # Security headers
@@ -43,15 +32,6 @@
             time_format iso8601
         }
     }
-
-    # Rate limiting (optional - uncomment to enable)
-    # rate_limit {
-    #     zone dynamic {
-    #         key {remote_ip}
-    #         events 100
-    #         window 1m
-    #     }
-    # }
 }
 
 # Development configuration (uncomment for local development)

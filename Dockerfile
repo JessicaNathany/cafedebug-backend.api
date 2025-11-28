@@ -6,7 +6,7 @@ WORKDIR /src
 COPY ["src/cafedebug-backend.api/cafedebug-backend.api.csproj", "src/cafedebug-backend.api/"]
 COPY ["src/cafedebug-backend.domain/cafedebug-backend.domain.csproj", "src/cafedebug-backend.domain/"]
 COPY ["src/cafedebug.backend.application/cafedebug.backend.application.csproj", "src/cafedebug.backend.application/"]
-COPY ["cafedebug-backend.infrastructure/cafedebug-backend.infrastructure.csproj", "cafedebug-backend.infrastructure/"]
+COPY ["src/cafedebug-backend.infrastructure/cafedebug-backend.infrastructure.csproj", "src/cafedebug-backend.infrastructure/"]
 
 RUN dotnet restore "src/cafedebug-backend.api/cafedebug-backend.api.csproj"
 
