@@ -88,6 +88,18 @@ Edite o arquivo `appsettings.Development.json` e substitua os placeholders:
         "Uri": "http://localhost:5000/health"
       }
     ]
+  },
+  "Storage": {
+    "AWS": {
+      "S3": {
+        "Bucket": "cafedebug-images",
+        "ServiceUrl": "http://localhost:9000",
+        "BaseUrl": "http://localhost:9000/cafedebug-uploads",
+        "Region": null,
+        "ForcePathStyle": true,
+        "UseHttp": true
+      }
+    }
   }
 }
 ```
@@ -96,15 +108,22 @@ Edite o arquivo `appsettings.Development.json` e substitua os placeholders:
 
 #### Valores necessários:
 
-| Placeholder | Descrição | Exemplo |
-|------------|-----------|---------|
-| `{connection-string}` | String de conexão MySQL | `Server=localhost;Port=3306;Database=cafedebug;User=root;Password=senha;` |
-| `{issuer}` | Emissor do token JWT | `https://api.cafedebug.com.br` |
-| `{audience}` | Audiência do token JWT | `https://cafedebug.com.br` |
-| `{signing-key}` | Chave secreta para assinar tokens (mínimo 32 caracteres) | Use uma string aleatória forte |
-| `{valid-for-minutes}` | Tempo de validade do access token em minutos | `15` |
-| `{refresh-token-valid-for-minutes}` | Tempo de validade do refresh token em minutos | `10080` (7 dias) |
-| `{health-check-uri}` | URI do health check | `http://localhost:5000/health` |
+| Placeholder                         | Descrição                                                                                | Exemplo                                                                   |
+|-------------------------------------|------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
+| `{connection-string}`               | String de conexão MySQL                                                                  | `Server=localhost;Port=3306;Database=cafedebug;User=root;Password=senha;` |
+| `{issuer}`                          | Emissor do token JWT                                                                     | `https://api.cafedebug.com.br`                                            |
+| `{audience}`                        | Audiência do token JWT                                                                   | `https://cafedebug.com.br`                                                |
+| `{signing-key}`                     | Chave secreta para assinar tokens (mínimo 32 caracteres)                                 | Use uma string aleatória forte                                            |
+| `{valid-for-minutes}`               | Tempo de validade do access token em minutos                                             | `15`                                                                      |
+| `{refresh-token-valid-for-minutes}` | Tempo de validade do refresh token em minutos                                            | `10080` (7 dias)                                                          |
+| `{health-check-uri}`                | URI do health check                                                                      | `http://localhost:5000/health`                                            |
+| `{bucket}`                          | Nome do bucket do S3                                                                     | `cafedebug-images`                                                        |
+| `{s3-url}`                          | Url da AWS S3 ou do MinIO                                                                | `http://localhost:9000/cafedebug-uploads`                                 |
+| `{region}`                          | Região do serviço AWS (se aplicável). MinIO usar sempre `null`                           | `us-east-1` ou `null`                                                     |
+| `{force-path-style}`                | Se `true`, acessa o bucket como caminho da URL (`host/bucket`). MinIO usar sempre `true` | `true` ou `false`                                                         |
+| `{use-http}`                        | Se `true`, usa HTTP ao invés de HTTPS. MinIO usar sempre `true`                          | `true` ou `false`                                                         |
+| `{service-url}`                     | Url do serviço do MinIO.                                                                 | `http://localhost:9000`                                                   |
+
 
 ### 4. Restaure as dependências
 ```bash

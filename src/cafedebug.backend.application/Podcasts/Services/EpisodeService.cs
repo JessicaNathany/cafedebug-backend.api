@@ -1,4 +1,4 @@
-﻿using cafedebug.backend.application.Common.Mappings;
+using cafedebug.backend.application.Common.Mappings;
 using cafedebug.backend.application.Common.Pagination;
 using cafedebug.backend.application.Podcasts.DTOs.Requests;
 using cafedebug.backend.application.Podcasts.DTOs.Responses;

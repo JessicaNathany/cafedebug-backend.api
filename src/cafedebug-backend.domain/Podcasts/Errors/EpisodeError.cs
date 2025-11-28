@@ -1,7 +1,7 @@
 using cafedebug_backend.domain.Errors;
 using cafedebug_backend.domain.Shared.Errors;
 
-namespace cafedebug_backend.domain.Episodes.Errors;
+namespace cafedebug_backend.domain.Podcasts.Errors;
 
 public static class EpisodeError
 {

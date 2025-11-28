@@ -1,7 +1,9 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using cafedebug_backend.api.Configurations;
 using cafedebug_backend.api.Filters;
 using cafedebug_backend.api.Infrastructure.HealthChecks;
+using cafedebug_backend.infrastructure.Common.Extensions;
 using cafedebug_backend.infrastructure.Constants;
 using cafedebug.backend.application.Common.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -36,6 +38,9 @@ builder.Services.AddSwaggerConfiguration();
 // Add Application layer services (includes validators)
 builder.Services.AddApplicationServices();
 
+// Add Infrastructure layer services
+builder.Services.AddInfrastructureServices();
+
 // Health Checks
 builder.Services.AddHealthChecksConfiguration(builder.Configuration);
 
@@ -55,6 +60,7 @@ builder.Services.AddControllers(options =>
     {
         options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
     });
 
 var app = builder.Build();
