@@ -7,13 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Accounts\DTOs\Responses\**" />
+    <Compile Remove="Common\DTOs\Requests\**" />
     <Compile Remove="Mappings\**" />
+    <EmbeddedResource Remove="Accounts\DTOs\Responses\**" />
+    <EmbeddedResource Remove="Common\DTOs\Requests\**" />
     <EmbeddedResource Remove="Mappings\**" />
+    <None Remove="Accounts\DTOs\Responses\**" />
+    <None Remove="Common\DTOs\Requests\**" />
     <None Remove="Mappings\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="15.0.1" />
     <PackageReference Include="FluentValidation" Version="12.0.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />
@@ -27,11 +32,6 @@
   <ItemGroup>
     <ProjectReference Include="..\cafedebug-backend.infrastructure\cafedebug-backend.infrastructure.csproj" />
     <ProjectReference Include="..\cafedebug-backend.domain\cafedebug-backend.domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Accounts\DTOs\Responses\" />
-    <Folder Include="Common\DTOs\Requests\" />
   </ItemGroup>
 
 </Project>

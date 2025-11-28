@@ -1,78 +1,42 @@
-﻿using AutoMapper;
-using cafedebug.backend.application.Banners.DTOs.Responses;
+﻿using cafedebug.backend.application.Banners.DTOs.Responses;
 using cafedebug.backend.application.Banners.Interfaces;
+using cafedebug.backend.application.Common.Pagination;
+using cafedebug_backend.domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace cafedebug_backend.api.Controllers.Public
 {
     [ApiController]
     [Produces("application/json")]
-    [Route("api/banner")]
-    public class BannersController : ControllerBase
+    [Route("api/v1/public/banners")]
+    [Tags("Public - Banners")]
+    public class BannersController(IBannerService bannerService) : ControllerBase
     {
-        private readonly IBannerService _bannerService;
-        private readonly IMapper _mapper;
-
-        public BannersController(IBannerService bannerService, IMapper mapper)
+        [HttpGet]
+        [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<Result>> GetAllAsync([FromQuery] PageRequest request)
         {
-            _bannerService = bannerService;
-            _mapper = mapper;
+            return await bannerService.GetAllAsync(request);
         }
 
-        [HttpGet]
-        [Route("banners")]
+        [HttpGet("{id}")]
         [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<Result>> GetByIdAsync(int id)
         {
-            try
-            {
-                var episodes = await _bannerService.GetAllAsync();
-
-                if (!episodes.IsSuccess)
-                    return BadRequest(episodes.Error);
-
-                var bannerResponse = _mapper.Map<BannerResponse>(episodes.Value);
-
-                return Ok(bannerResponse);
-            }
-            catch (NullReferenceException)
-            {
-                throw;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return await bannerService.GetByIdAsync(id);
         }
 
-        [HttpGet]
-        [Route("buscar-banner/{id}")]
+        [HttpGet("{bannerName}")]
         [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<ActionResult<Result>> GetByNameAsync(string bannerName)
         {
-            try
-            {
-                var episode = await _bannerService.GetByIdAsync(id);
-
-                if (!episode.IsSuccess)
-                    return BadRequest(episode.Error);
-
-                var bannerResponse = _mapper.Map<BannerResponse>(episode.Value);
-
-                return Ok(bannerResponse);
-            }
-            catch (NullReferenceException)
-            {
-                throw;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return await bannerService.GetByNameAsync(bannerName);
         }
     }
 }

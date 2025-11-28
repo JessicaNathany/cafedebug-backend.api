@@ -1,12 +1,12 @@
-using cafedebug_backend.domain.Episodes.Repositories;
-using cafedebug_backend.domain.Podcasts;
-using cafedebug_backend.domain.Podcasts.Repositories;
-using cafedebug_backend.domain.Shared.Errors;
 using cafedebug.backend.api.test.Shared;
 using cafedebug.backend.api.test.Shared.Mocks.Podcasts;
 using cafedebug.backend.api.test.Shared.Setups.Podcasts;
 using cafedebug.backend.api.test.Shared.Verifications.Podcasts;
 using cafedebug.backend.application.Podcasts.Services;
+using cafedebug_backend.domain.Episodes.Repositories;
+using cafedebug_backend.domain.Podcasts;
+using cafedebug_backend.domain.Podcasts.Repositories;
+using cafedebug_backend.domain.Shared.Errors;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -33,7 +33,7 @@ public class EpisodeServiceTest : BaseTest
         var episodeRepository = new Mock<IEpisodeRepository>();
         var categoryRepository = new Mock<ICategoryRepository>();
         
-        _episodeService = new EpisodeService(episodeRepository.Object, categoryRepository.Object, Mapper);
+        _episodeService = new EpisodeService(episodeRepository.Object, categoryRepository.Object);
         _categoryRepositoryVerifications = new CategoryRepositoryVerifications(categoryRepository);
         _episodeRepositoryVerifications = new EpisodeRepositoryVerifications(episodeRepository);
         _episodeRepositoryMockSetup = new EpisodeRepositoryMockSetup(episodeRepository);
