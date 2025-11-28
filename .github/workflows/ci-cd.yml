@@ -83,6 +83,8 @@ jobs:
           BRANCH=$(echo ${{ github.ref }} | awk -F"/" '{print $3}')
           IMAGE_TAG="${BRANCH}-${TAG:0:7}"
           IMAGE_REF="${{ env.REGISTRY }}/${{ github.repository }}:${IMAGE_TAG}"
+          # Convert to lowercase for Docker compatibility
+          IMAGE_REF=$(echo "$IMAGE_REF" | tr '[:upper:]' '[:lower:]')
           echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
           echo "image_ref=${IMAGE_REF}" >> $GITHUB_OUTPUT
           echo "Computed image: ${IMAGE_REF}"
@@ -129,7 +131,7 @@ jobs:
           docker push "$IMAGE_REF"
 
   create-release:
-    name: Release (create draft)
+    name: Release
     runs-on: ubuntu-latest
     needs: publish
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
