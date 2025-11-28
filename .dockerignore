@@ -1,3 +1,9 @@
+bin/
+obj/
+.git
+.github
+tests/
+*.md
 **/.classpath
 **/.dockerignore
 **/.env
