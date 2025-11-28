@@ -5,6 +5,8 @@ on:
     branches: [ main, feature/** ]
   pull_request:
     branches: [ main ]
+  release:
+    types: [ published ]
 
 env:
   DOTNET_VERSION: '9.0.x'
@@ -86,22 +88,68 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  deploy:
+  create-release:
     needs: docker-build-and-push
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    environment: production
+    permissions:
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Extract image tag
+      - name: Generate version tag
+        id: version
+        run: |
+          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+          VERSION="v$(date +%Y.%m.%d)-${GITHUB_RUN_NUMBER}"
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Release version: ${VERSION}"
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          release_name: Release ${{ steps.version.outputs.version }}
+          body: |
+            ## Release Information
+            - **Build Number**: ${{ github.run_number }}
+            - **Commit**: ${{ github.sha }}
+            - **Branch**: main
+            - **Author**: ${{ github.actor }}
+            - **Timestamp**: $(date -u +'%Y-%m-%dT%H:%M:%SZ')
+            
+            ## Image Details
+            - **Registry**: ghcr.io
+            - **Image**: ${{ github.repository }}
+            - **Tag**: main-${{ github.sha }}
+            
+            To deploy this release, approve the deployment in GitHub Actions.
+          draft: false
+          prerelease: false
+
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'published'
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.target_commitish }}
+
+      - name: Extract image tag from release
         id: image
         run: |
-          TAG="${{ github.sha }}"
-          BRANCH=$(echo ${{ github.ref }} | cut -d'/' -f3)
-          IMAGE_TAG="${BRANCH}-${TAG:0:7}"
+          RELEASE_TAG="${{ github.event.release.tag_name }}"
+          # Extract commit from release tag or use the target commitish
+          COMMIT="${{ github.event.release.target_commitish }}"
+          COMMIT_SHORT=$(echo $COMMIT | cut -c1-7)
+          IMAGE_TAG="main-${COMMIT_SHORT}"
           echo "tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+          echo "release_tag=${RELEASE_TAG}" >> $GITHUB_OUTPUT
           echo "Image tag: ${IMAGE_TAG}"
 
       - name: Deploy to AWS EC2
@@ -119,3 +167,5 @@ jobs:
             
             # Run the deployment script with image tag
             bash scripts/deploy.sh "${{ steps.image.outputs.tag }}"
+            
+            echo "✓ Deployment completed for release: ${{ steps.image.outputs.release_tag }}"
