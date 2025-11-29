@@ -6,7 +6,7 @@ using cafedebug.backend.application.Common.Pagination;
 using cafedebug_backend.domain.Banners;
 using cafedebug_backend.domain.Banners.Errors;
 using cafedebug_backend.domain.Banners.Repositories;
-using cafedebug_backend.domain.Episodes.Errors;
+using cafedebug_backend.domain.Podcasts.Errors;
 using cafedebug_backend.domain.Shared;
 
 namespace cafedebug.backend.application.Banners.Services;

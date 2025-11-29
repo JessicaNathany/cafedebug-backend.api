@@ -1,0 +1,159 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  DOTNET_VERSION: '9.0.x'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build solution
+        run: dotnet build --no-restore --configuration Release
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Run tests
+        run: dotnet test tests/cafedebug.backend.api.test/cafedebug.backend.api.test.csproj --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverageFormat=cobertura /p:CoverageFilename=coverage.xml
+
+      # - name: Upload test results
+      #   if: always()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: test-results
+      #     path: '**/test-results.trx'
+
+      # - name: Publish test report
+      #   if: always()
+      #   uses: dorny/test-reporter@v1
+      #   with:
+      #     name: Test Results
+      #     path: '**/test-results.trx'
+      #     reporter: 'dotnet-trx'
+
+  package:
+    name: Package (image-build)
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    outputs:
+      image-tag: ${{ steps.set_tag.outputs.image_tag }}
+      image-ref: ${{ steps.set_tag.outputs.image_ref }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Compute image tag
+        id: set_tag
+        run: |
+          TAG="${{ github.sha }}"
+          BRANCH=$(echo ${{ github.ref }} | awk -F"/" '{print $3}')
+          IMAGE_TAG="${BRANCH}-${TAG:0:7}"
+          IMAGE_REF="${{ env.REGISTRY }}/${{ github.repository }}:${IMAGE_TAG}"
+          # Convert to lowercase for Docker compatibility
+          IMAGE_REF=$(echo "$IMAGE_REF" | tr '[:upper:]' '[:lower:]')
+          echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+          echo "image_ref=${IMAGE_REF}" >> $GITHUB_OUTPUT
+          echo "Computed image: ${IMAGE_REF}"
+
+      - name: Build image and save to tar
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: ${{ steps.set_tag.outputs.image_ref }}
+          outputs: type=docker,dest=./image.tar
+
+      - name: Upload built image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-image
+          path: image.tar
+
+  publish:
+    name: Publish (push-image)
+    runs-on: ubuntu-latest
+    needs: package
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Download built image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: built-image
+
+      - name: Load image
+        run: |
+          docker load --input image.tar
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push image
+        run: |
+          IMAGE_REF="${{ needs.package.outputs.image-ref }}"
+          docker push "$IMAGE_REF"
+
+  create-release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: publish
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create Release (draft)
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: Release v${{ github.run_number }}
+          body: |
+            ## Release Information
+            - **Build Number**: ${{ github.run_number }}
+            - **Commit**: ${{ github.sha }}
+            - **Branch**: main
+            - **Author**: ${{ github.actor }}
+          draft: true
+          prerelease: false

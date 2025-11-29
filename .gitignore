@@ -71,3 +71,6 @@ appsettings.Development.json
 appsettings.*.json
 !appsettings.json
 launchSettings.json
+.DS_Store
+.env
+docker-compose.local.yml

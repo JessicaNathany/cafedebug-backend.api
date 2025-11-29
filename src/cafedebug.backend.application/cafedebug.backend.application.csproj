@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\cafedebug-backend.infrastructure\cafedebug-backend.infrastructure.csproj" />
+    <ProjectReference Include="..\cafedebug-backend.infrastructure\cafedebug-backend.infrastructure.csproj" />
     <ProjectReference Include="..\cafedebug-backend.domain\cafedebug-backend.domain.csproj" />
   </ItemGroup>
 

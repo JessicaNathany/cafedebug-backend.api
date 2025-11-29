@@ -1,0 +1,48 @@
+# Caddy Configuration for CafeDebug API
+# Modern reverse proxy with automatic HTTPS and better Docker Swarm support
+
+# Production configuration with HTTPS
+{$DOMAIN:localhost} {
+    # Reverse proxy to API service
+    reverse_proxy cafedebug-api:80 {
+        # Health check configuration
+        health_uri /health
+        health_interval 10s
+        health_timeout 5s
+        health_status 200
+
+        # Connection pooling for better performance
+        lb_policy least_conn
+    }
+
+    # Security headers
+    header X-Content-Type-Options nosniff
+    header X-Frame-Options DENY
+    header X-XSS-Protection "1; mode=block"
+    header Referrer-Policy "strict-origin-when-cross-origin"
+    header Permissions-Policy "geolocation=(), microphone=(), camera=()"
+
+    # Compression for better performance
+    encode gzip
+
+    # Logging configuration
+    log {
+        output stdout
+        format json {
+            time_format iso8601
+        }
+    }
+}
+
+# Development configuration (uncomment for local development)
+# localhost {
+#     reverse_proxy cafedebug-api:80 {
+#         health_uri /health
+#         health_interval 10s
+#     }
+#     
+#     log {
+#         output stdout
+#         format console
+#     }
+# }

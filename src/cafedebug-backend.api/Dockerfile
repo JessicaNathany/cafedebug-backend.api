@@ -1,13 +1,16 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 COPY ["src/cafedebug-backend.api/cafedebug-backend.api.csproj", "src/cafedebug-backend.api/"]
+COPY ["src/cafedebug-backend.domain/cafedebug-backend.domain.csproj", "src/cafedebug-backend.domain/"]
+COPY ["src/cafedebug.backend.application/cafedebug.backend.application.csproj", "src/cafedebug.backend.application/"]
+COPY ["cafedebug-backend.infrastructure/cafedebug-backend.infrastructure.csproj", "cafedebug-backend.infrastructure/"]
 RUN dotnet restore "src/cafedebug-backend.api/cafedebug-backend.api.csproj"
 COPY . .
 WORKDIR "/src/src/cafedebug-backend.api"

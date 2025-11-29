@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cafedebug-backend.domain", "src\cafedebug-backend.domain\cafedebug-backend.domain.csproj", "{B4800ACB-4241-475E-B42B-F70E9B4CEE14}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cafedebug-backend.infrastructure", "cafedebug-backend.infrastructure\cafedebug-backend.infrastructure.csproj", "{CB22F7F3-F3E5-45C0-9182-0514A29BC1F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cafedebug-backend.infrastructure", "src\cafedebug-backend.infrastructure\cafedebug-backend.infrastructure.csproj", "{CB22F7F3-F3E5-45C0-9182-0514A29BC1F9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F3701FE9-0C98-4C96-8866-B61476A21B14}"
 EndProject

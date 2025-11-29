@@ -1,0 +1,91 @@
+version: '3.9'
+
+services:
+  caddy:
+    image: caddy:2.7-alpine
+    container_name: cafedebug-caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    env_file:
+      - .env
+    environment:
+      - DOMAIN=${CADDY_DOMAIN:-localhost}
+    networks:
+      - cafedebug-network
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+  cafedebug-api:
+    image: ghcr.io/regisbarros/cafedebug-backend.api:${IMAGE_TAG:-latest}
+    expose:
+      - "80"
+    env_file:
+      - .env
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - DOTNET_CLI_TELEMETRY_OPTOUT=1
+    networks:
+      - cafedebug-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 1
+        delay: 15s # Increased slightly to allow app startup
+        failure_action: rollback
+        order: start-first
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1024M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  cafedebug-network:
+    driver: overlay
