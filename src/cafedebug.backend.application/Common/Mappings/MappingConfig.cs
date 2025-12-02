@@ -19,7 +19,7 @@ public static class MappingConfig
             Url = banner.Url,
             StartDate = banner.StartDate.ToShortDateString(),
             EndDate = banner.EndDate.ToShortDateString(),
-            UpdateDate = banner.UpdateDate.ToString(),
+            UpdateDate = banner.UpdatedAt.ToString(),
             Active = banner.Active.ToString(),
             Order = banner.Order
         };

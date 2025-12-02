@@ -5,28 +5,22 @@ namespace cafedebug_backend.domain.Banners;
 public class Banner : Entity
 {
     public string Name { get; private set; }
-
     public string UrlImage { get; private set; }
-
     public string? Url { get; private set; }
-
     public DateTime StartDate { get; private set; }
-
     public DateTime EndDate { get; private set; }
-
-    public DateTime? UpdateDate { get; private set; }
-
+    public DateTime? UpdatedAt { get; private set; }
+    public DateTime CreatedAt { get; private set; }
     public bool Active { get; private set; }
-
     public int Order { get; private set; }
 
+    public Banner() { }
     public Banner(
         string name,
         string urlImage, 
         string url, 
         DateTime startDate, 
         DateTime endDate,
-        DateTime updateDate,
         bool active, 
         int ordem)
     {
@@ -36,7 +30,7 @@ public class Banner : Entity
         Url = url;
         StartDate = startDate;
         EndDate = endDate;
-        UpdateDate = updateDate;
+        CreatedAt = DateTime.Now;
         Active = active;
         EndDateVerify(endDate);
         Order = ordem;
@@ -48,15 +42,15 @@ public class Banner : Entity
         string url, 
         DateTime startDate, 
         DateTime endDate,
-        DateTime? updateDate, 
-        bool active, int ordem)
+        bool active, 
+        int ordem)
     {
         Name = name;
         UrlImage = urlImage;
         Url = url;
         StartDate = startDate;
         EndDate = endDate;
-        UpdateDate = updateDate;
+        UpdatedAt = DateTime.Now;
         Active = active;
         EndDateVerify(endDate);
         Order = ordem;
