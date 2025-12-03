@@ -93,13 +93,13 @@ jobs:
             echo "Home directory: $HOME"
             echo "Current directory: $(pwd)"
             echo "Checking target path..."
-            echo "Target: ${{ vars.DOCKER_COMPOSE_PATH }}"
+            echo "Target directory: ${{ vars.DOCKER_COMPOSE_PATH }}"
             
             # Check if we can create directories
-            if [ -w "$(dirname ${{ vars.DOCKER_COMPOSE_PATH }})" ]; then
+            if [ -w "$(dirname ${{ vars.DOCKER_COMPOSE_PATH }})" ] || [ -w "${{ vars.DOCKER_COMPOSE_PATH }}" ]; then
               echo "✓ Write permission OK"
             else
-              echo "✗ No write permission to $(dirname ${{ vars.DOCKER_COMPOSE_PATH }})"
+              echo "✗ No write permission to ${{ vars.DOCKER_COMPOSE_PATH }}"
               exit 1
             fi
             
@@ -114,7 +114,8 @@ jobs:
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
           port: ${{ vars.AWS_EC2_PORT }}
           script: |
-            mkdir -p ${{ vars.DOCKER_COMPOSE_PATH }}/scripts
+            mkdir -p "${{ vars.DOCKER_COMPOSE_PATH }}/scripts"
+            echo "Created directory: ${{ vars.DOCKER_COMPOSE_PATH }}/scripts"
 
       - name: Copy Config & Scripts to EC2
         uses: appleboy/scp-action@master
@@ -139,7 +140,7 @@ jobs:
           port: ${{ vars.AWS_EC2_PORT }}
           script: |
             set -e
-            cd ${{ vars.DOCKER_COMPOSE_PATH }}
+            cd "${{ vars.DOCKER_COMPOSE_PATH }}"
             
             # Fix permissions for the newly copied files
             chmod 600 .env
@@ -161,7 +162,7 @@ jobs:
           port: ${{ vars.AWS_EC2_PORT }}
           script: |
             set -e
-            cd ${{ vars.DOCKER_COMPOSE_PATH }}
+            cd "${{ vars.DOCKER_COMPOSE_PATH }}"
             
             echo "Verifying deployment..."
             
