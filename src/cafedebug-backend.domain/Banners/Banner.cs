@@ -14,7 +14,7 @@ public class Banner : Entity
     public bool Active { get; private set; }
     public int Order { get; private set; }
 
-    public Banner() { }
+    private Banner() { }
     public Banner(
         string name,
         string urlImage, 
@@ -24,7 +24,6 @@ public class Banner : Entity
         bool active, 
         int ordem)
     {
-        Code = Guid.NewGuid();
         Name = name;
         UrlImage = urlImage;
         Url = url;
