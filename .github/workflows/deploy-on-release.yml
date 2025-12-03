@@ -44,31 +44,31 @@ jobs:
           ASPNETCORE_ENVIRONMENT=Production
           
           # Caddy Configuration
-          CADDY_DOMAIN=${{ secrets.CADDY_DOMAIN }}
+          CADDY_DOMAIN=${{ vars.CADDY_DOMAIN }}
           
           # Database Configuration
-          DB_CONNECTION_STRING=${{ secrets.DB_CONNECTION }}
+          DB_CONNECTION_STRING=${{ vars.DB_CONNECTION }}
           
           # JWT Configuration
-          JWT_ISSUER=${{ secrets.JWT_ISSUER }}
-          JWT_AUDIENCE=${{ secrets.JWT_AUDIENCE }}
-          JWT_SIGNING_KEY=${{ secrets.JWT_SIGNING_KEY }}
+          JWT_ISSUER=${{ vars.JWT_ISSUER }}
+          JWT_AUDIENCE=${{ vars.JWT_AUDIENCE }}
+          JWT_SIGNING_KEY=${{ vars.JWT_SIGNING_KEY }}
           JWT_VALID_MINUTES=15
           JWT_REFRESH_TOKEN_VALID_MINUTES=10080
           
           # AWS S3 Storage
-          AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}
-          AWS_S3_REGION=${{ secrets.AWS_S3_REGION }}
-          AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_S3_BASE_URL=${{ secrets.AWS_S3_BASE_URL }}
+          AWS_S3_BUCKET=${{ vars.AWS_S3_BUCKET }}
+          AWS_S3_REGION=${{ vars.AWS_S3_REGION }}
+          AWS_ACCESS_KEY_ID=${{ vars.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY=${{ vars.AWS_SECRET_ACCESS_KEY }}
+          AWS_S3_BASE_URL=${{ vars.AWS_S3_BASE_URL }}
           
           # Email/SMTP Configuration
-          SMTP_SERVER=${{ secrets.SMTP_SERVER }}
-          SMTP_PORT=${{ secrets.SMTP_PORT }}
-          SMTP_USERNAME=${{ secrets.SMTP_USERNAME }}
-          SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
-          SMTP_FROM_EMAIL=${{ secrets.SMTP_FROM_EMAIL }}
+          SMTP_SERVER=${{ vars.SMTP_SERVER }}
+          SMTP_PORT=${{ vars.SMTP_PORT }}
+          SMTP_USERNAME=${{ vars.SMTP_USERNAME }}
+          SMTP_PASSWORD=${{ vars.SMTP_PASSWORD }}
+          SMTP_FROM_EMAIL=${{ vars.SMTP_FROM_EMAIL }}
           EOF
           chmod 600 .env
           
@@ -82,34 +82,34 @@ jobs:
       - name: Prepare Remote Directory
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.AWS_EC2_HOST }}
-          username: ${{ secrets.AWS_EC2_USER }}
+          host: ${{ vars.AWS_EC2_HOST }}
+          username: ${{ vars.AWS_EC2_USER }}
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
-          port: ${{ secrets.AWS_EC2_PORT }}
+          port: ${{ vars.AWS_EC2_PORT }}
           script: |
-            mkdir -p ${{ secrets.DOCKER_COMPOSE_PATH }}/scripts
+            mkdir -p ${{ vars.DOCKER_COMPOSE_PATH }}/scripts
 
       - name: Copy Config & Scripts to EC2
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.AWS_EC2_HOST }}
-          username: ${{ secrets.AWS_EC2_USER }}
+          host: ${{ vars.AWS_EC2_HOST }}
+          username: ${{ vars.AWS_EC2_USER }}
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
-          port: ${{ secrets.AWS_EC2_PORT }}
+          port: ${{ vars.AWS_EC2_PORT }}
           source: ".env,docker-compose.yml,Caddyfile,scripts/"
-          target: "${{ secrets.DOCKER_COMPOSE_PATH }}"
+          target: "${{ vars.DOCKER_COMPOSE_PATH }}"
           strip_components: 0
 
       - name: Execute Deployment
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.AWS_EC2_HOST }}
-          username: ${{ secrets.AWS_EC2_USER }}
+          host: ${{ vars.AWS_EC2_HOST }}
+          username: ${{ vars.AWS_EC2_USER }}
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
-          port: ${{ secrets.AWS_EC2_PORT }}
+          port: ${{ vars.AWS_EC2_PORT }}
           script: |
             set -e
-            cd ${{ secrets.DOCKER_COMPOSE_PATH }}
+            cd ${{ vars.DOCKER_COMPOSE_PATH }}
             
             # Fix permissions for the newly copied files
             chmod 600 .env
@@ -125,13 +125,13 @@ jobs:
       - name: Verify Deployment
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.AWS_EC2_HOST }}
-          username: ${{ secrets.AWS_EC2_USER }}
+          host: ${{ vars.AWS_EC2_HOST }}
+          username: ${{ vars.AWS_EC2_USER }}
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
-          port: ${{ secrets.AWS_EC2_PORT }}
+          port: ${{ vars.AWS_EC2_PORT }}
           script: |
             set -e
-            cd ${{ secrets.DOCKER_COMPOSE_PATH }}
+            cd ${{ vars.DOCKER_COMPOSE_PATH }}
             
             echo "Verifying deployment..."
             
