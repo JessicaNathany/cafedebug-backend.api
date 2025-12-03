@@ -10,6 +10,10 @@ public class BannerModelBuilder : IEntityTypeConfiguration<Banner>
     {
         builder.HasKey(b => b.Id);
 
+        builder.Property(b => b.Code)
+            .IsRequired()
+            .HasColumnType("char(36)");
+
         builder.Property(b => b.Name)
             .IsRequired()
             .HasColumnType("varchar(50)");
@@ -29,7 +33,11 @@ public class BannerModelBuilder : IEntityTypeConfiguration<Banner>
             .IsRequired()
             .HasColumnType("datetime");
 
-        builder.Property(b => b.UpdateDate)
+        builder.Property(b => b.UpdatedAt)
+            .HasColumnType("datetime");
+
+        builder.Property(b => b.CreatedAt)
+            .IsRequired()
             .HasColumnType("datetime");
 
         builder.Property(b => b.Active)
