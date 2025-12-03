@@ -79,6 +79,33 @@ jobs:
           fi
           echo "✓ .env file created successfully"
 
+      - name: Test SSH Connectivity
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.AWS_EC2_HOST }}
+          username: ${{ vars.AWS_EC2_USER }}
+          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          port: ${{ vars.AWS_EC2_PORT }}
+          script: |
+            echo "=== SSH Connection Test ==="
+            echo "Connected to: $(hostname)"
+            echo "User: $(whoami)"
+            echo "Home directory: $HOME"
+            echo "Current directory: $(pwd)"
+            echo "Checking target path..."
+            echo "Target: ${{ vars.DOCKER_COMPOSE_PATH }}"
+            
+            # Check if we can create directories
+            if [ -w "$(dirname ${{ vars.DOCKER_COMPOSE_PATH }})" ]; then
+              echo "✓ Write permission OK"
+            else
+              echo "✗ No write permission to $(dirname ${{ vars.DOCKER_COMPOSE_PATH }})"
+              exit 1
+            fi
+            
+            # Check SSH key info
+            echo "SSH connection successful!"
+
       - name: Prepare Remote Directory
         uses: appleboy/ssh-action@master
         with:
@@ -96,9 +123,12 @@ jobs:
           username: ${{ vars.AWS_EC2_USER }}
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
           port: ${{ vars.AWS_EC2_PORT }}
+          timeout: 60s
+          command_timeout: 10m
           source: ".env,docker-compose.yml,Caddyfile,scripts/"
           target: "${{ vars.DOCKER_COMPOSE_PATH }}"
           strip_components: 0
+          rm: false
 
       - name: Execute Deployment
         uses: appleboy/ssh-action@master
