@@ -26,9 +26,8 @@ jobs:
       - name: Resolve image tag
         id: image
         run: |
-          # Calculate the Short SHA to match your Build Workflow
-          COMMIT="${{ github.event.release.target_commitish }}"
-          COMMIT_SHORT=$(echo $COMMIT | cut -c1-7)
+          # Use the actual commit SHA from the checkout
+          COMMIT_SHORT=$(echo ${{ github.sha }} | cut -c1-7)
           # Ensure this format matches what your CI pushes!
           IMAGE_TAG="main-${COMMIT_SHORT}"
           
