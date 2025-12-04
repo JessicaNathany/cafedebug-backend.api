@@ -201,5 +201,4 @@ jobs:
             echo "Recent logs:"
             docker service logs --tail 20 cafedebug-stack_cafedebug-api || true
             
-            echo "✓ Deployment verification complete"
-            
+            echo "✓ Deployment verification complete"        
