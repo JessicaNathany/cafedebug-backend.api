@@ -122,30 +122,30 @@ jobs:
         run: |
           # Read .env
           {
-            echo "env_content<<ENVEOF"
+            echo "env_content<<EOF_ENV_FILE_a8f3c2e1"
             cat .env
-            echo "ENVEOF"
+            echo "EOF_ENV_FILE_a8f3c2e1"
           } >> $GITHUB_OUTPUT
           
           # Read docker-compose.yml
           {
-            echo "compose_content<<COMPOSEEOF"
+            echo "compose_content<<EOF_COMPOSE_FILE_b9d4e3f2"
             cat docker-compose.yml
-            echo "COMPOSEEOF"
+            echo "EOF_COMPOSE_FILE_b9d4e3f2"
           } >> $GITHUB_OUTPUT
           
           # Read Caddyfile
           {
-            echo "caddy_content<<CADDYEOF"
+            echo "caddy_content<<EOF_CADDY_FILE_c1e5f4g3"
             cat Caddyfile
-            echo "CADDYEOF"
+            echo "EOF_CADDY_FILE_c1e5f4g3"
           } >> $GITHUB_OUTPUT
           
           # Read deploy.sh
           {
-            echo "deploy_content<<DEPLOYEOF"
+            echo "deploy_content<<EOF_DEPLOY_FILE_d2f6g5h4"
             cat scripts/deploy.sh
-            echo "DEPLOYEOF"
+            echo "EOF_DEPLOY_FILE_d2f6g5h4"
           } >> $GITHUB_OUTPUT
           
           echo "✓ Read all files for transfer"
@@ -162,28 +162,28 @@ jobs:
             TARGET="${{ vars.DOCKER_COMPOSE_PATH }}"
             
             # Write .env file
-            cat > "$TARGET/.env" << 'ENVEOF'
+            cat > "$TARGET/.env" << 'EOF_ENV_FILE_a8f3c2e1'
             ${{ steps.read_files.outputs.env_content }}
-            ENVEOF
+            EOF_ENV_FILE_a8f3c2e1
             chmod 600 "$TARGET/.env"
             echo "✓ Copied .env"
             
             # Write docker-compose.yml
-            cat > "$TARGET/docker-compose.yml" << 'COMPOSEEOF'
+            cat > "$TARGET/docker-compose.yml" << 'EOF_COMPOSE_FILE_b9d4e3f2'
             ${{ steps.read_files.outputs.compose_content }}
-            COMPOSEEOF
+            EOF_COMPOSE_FILE_b9d4e3f2
             echo "✓ Copied docker-compose.yml"
             
             # Write Caddyfile
-            cat > "$TARGET/Caddyfile" << 'CADDYEOF'
+            cat > "$TARGET/Caddyfile" << 'EOF_CADDY_FILE_c1e5f4g3'
             ${{ steps.read_files.outputs.caddy_content }}
-            CADDYEOF
+            EOF_CADDY_FILE_c1e5f4g3
             echo "✓ Copied Caddyfile"
             
             # Write deploy.sh
-            cat > "$TARGET/scripts/deploy.sh" << 'DEPLOYEOF'
+            cat > "$TARGET/scripts/deploy.sh" << 'EOF_DEPLOY_FILE_d2f6g5h4'
             ${{ steps.read_files.outputs.deploy_content }}
-            DEPLOYEOF
+            EOF_DEPLOY_FILE_d2f6g5h4
             chmod +x "$TARGET/scripts/deploy.sh"
             echo "✓ Copied and made deploy.sh executable"
             
