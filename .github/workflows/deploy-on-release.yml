@@ -59,8 +59,6 @@ jobs:
           # AWS S3 Storage
           AWS_S3_BUCKET=${{ vars.AWS_S3_BUCKET }}
           AWS_S3_REGION=${{ vars.AWS_S3_REGION }}
-          AWS_ACCESS_KEY_ID=${{ vars.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY=${{ vars.AWS_SECRET_ACCESS_KEY }}
           AWS_S3_BASE_URL=${{ vars.AWS_S3_BASE_URL }}
           
           # Email/SMTP Configuration
