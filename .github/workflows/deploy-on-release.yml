@@ -10,7 +10,7 @@ env:
 
 jobs:
   deploy:
-    name: Deploy to EC2
+    name: Deploy to Prod
     runs-on: ubuntu-latest
     environment: production
     permissions:
