@@ -120,35 +120,12 @@ jobs:
       - name: Read files for transfer
         id: read_files
         run: |
-          # Read .env
-          {
-            echo "env_content<<EOF_ENV_FILE_a8f3c2e1"
-            cat .env
-            echo "EOF_ENV_FILE_a8f3c2e1"
-          } >> $GITHUB_OUTPUT
-          
-          # Read docker-compose.yml
-          {
-            echo "compose_content<<EOF_COMPOSE_FILE_b9d4e3f2"
-            cat docker-compose.yml
-            echo "EOF_COMPOSE_FILE_b9d4e3f2"
-          } >> $GITHUB_OUTPUT
-          
-          # Read Caddyfile
-          {
-            echo "caddy_content<<EOF_CADDY_FILE_c1e5f4g3"
-            cat Caddyfile
-            echo "EOF_CADDY_FILE_c1e5f4g3"
-          } >> $GITHUB_OUTPUT
-          
-          # Read deploy.sh
-          {
-            echo "deploy_content<<EOF_DEPLOY_FILE_d2f6g5h4"
-            cat scripts/deploy.sh
-            echo "EOF_DEPLOY_FILE_d2f6g5h4"
-          } >> $GITHUB_OUTPUT
-          
-          echo "✓ Read all files for transfer"
+          # Base64 encode files to avoid delimiter issues
+          echo "env_b64=$(cat .env | base64 -w 0)" >> $GITHUB_OUTPUT
+          echo "compose_b64=$(cat docker-compose.yml | base64 -w 0)" >> $GITHUB_OUTPUT
+          echo "caddy_b64=$(cat Caddyfile | base64 -w 0)" >> $GITHUB_OUTPUT
+          echo "deploy_b64=$(cat scripts/deploy.sh | base64 -w 0)" >> $GITHUB_OUTPUT
+          echo "✓ Read and encoded all files for transfer"
       
       - name: Transfer files via SSH
         uses: appleboy/ssh-action@master
@@ -161,29 +138,21 @@ jobs:
             set -e
             TARGET="${{ vars.DOCKER_COMPOSE_PATH }}"
             
-            # Write .env file
-            cat > "$TARGET/.env" << 'EOF_ENV_FILE_a8f3c2e1'
-            ${{ steps.read_files.outputs.env_content }}
-            EOF_ENV_FILE_a8f3c2e1
+            # Decode and write .env file
+            echo '${{ steps.read_files.outputs.env_b64 }}' | base64 -d > "$TARGET/.env"
             chmod 600 "$TARGET/.env"
             echo "✓ Copied .env"
             
-            # Write docker-compose.yml
-            cat > "$TARGET/docker-compose.yml" << 'EOF_COMPOSE_FILE_b9d4e3f2'
-            ${{ steps.read_files.outputs.compose_content }}
-            EOF_COMPOSE_FILE_b9d4e3f2
+            # Decode and write docker-compose.yml
+            echo '${{ steps.read_files.outputs.compose_b64 }}' | base64 -d > "$TARGET/docker-compose.yml"
             echo "✓ Copied docker-compose.yml"
             
-            # Write Caddyfile
-            cat > "$TARGET/Caddyfile" << 'EOF_CADDY_FILE_c1e5f4g3'
-            ${{ steps.read_files.outputs.caddy_content }}
-            EOF_CADDY_FILE_c1e5f4g3
+            # Decode and write Caddyfile
+            echo '${{ steps.read_files.outputs.caddy_b64 }}' | base64 -d > "$TARGET/Caddyfile"
             echo "✓ Copied Caddyfile"
             
-            # Write deploy.sh
-            cat > "$TARGET/scripts/deploy.sh" << 'EOF_DEPLOY_FILE_d2f6g5h4'
-            ${{ steps.read_files.outputs.deploy_content }}
-            EOF_DEPLOY_FILE_d2f6g5h4
+            # Decode and write deploy.sh
+            echo '${{ steps.read_files.outputs.deploy_b64 }}' | base64 -d > "$TARGET/scripts/deploy.sh"
             chmod +x "$TARGET/scripts/deploy.sh"
             echo "✓ Copied and made deploy.sh executable"
             
