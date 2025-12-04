@@ -44,7 +44,6 @@ public class BannerService(IBannerRepository bannerRepository) : IBannerService
             request.Url,
             request.StartDate,
             request.EndDate,
-            request.UpdateDate,
             request.Active,
             request.Order);
 

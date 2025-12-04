@@ -14,12 +14,13 @@ public static class MappingConfig
         return new BannerResponse
         {
             Id = banner.Id,
+            Code = banner.Code,
             Name = banner.Name,
             UrlImage = banner.UrlImage,
             Url = banner.Url,
-            StartDate = banner.StartDate.ToShortDateString(),
-            EndDate = banner.EndDate.ToShortDateString(),
-            UpdateDate = banner.UpdateDate.ToString(),
+            StartDate = banner.StartDate.ToString("yyyy-MM-dd"), 
+            EndDate = banner.EndDate.ToString("yyyy-MM-dd"),     
+            UpdateDate = banner.UpdatedAt?.ToString("yyyy-MM-dd HH:mm:ss") ?? string.Empty,
             Active = banner.Active.ToString(),
             Order = banner.Order
         };
@@ -36,12 +37,16 @@ public static class MappingConfig
              Url = episode.Url,
              ImageUrl = episode.ImageUrl,
              Tags = episode.Tags,
-             PublishedAt = episode.PublishedAt,
+             PublishedAt = episode.PublishedAt, 
+             UpdatedAt = episode.UpdatedAt,     
+             CreatedAt = episode.CreatedAt,    
              Active = episode.Active,
              Number = episode.Number,
              Category = episode.Category?.ToCategory(),
              CategoryId = episode.CategoryId,
-             DurationInSeconds = episode.DurationInSeconds
+             DurationInSeconds = episode.DurationInSeconds,
+             Views = episode.Views,     
+             Likes = episode.Likes     
          };
     }
 

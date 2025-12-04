@@ -108,6 +108,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: package
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Download built image artifact
         uses: actions/download-artifact@v4
