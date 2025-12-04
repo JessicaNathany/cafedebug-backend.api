@@ -117,7 +117,40 @@ jobs:
             mkdir -p "${{ vars.DOCKER_COMPOSE_PATH }}/scripts"
             echo "Created directory: ${{ vars.DOCKER_COMPOSE_PATH }}/scripts"
 
-      - name: Verify Remote Directory
+      - name: Read files for transfer
+        id: read_files
+        run: |
+          # Read .env
+          {
+            echo "env_content<<ENVEOF"
+            cat .env
+            echo "ENVEOF"
+          } >> $GITHUB_OUTPUT
+          
+          # Read docker-compose.yml
+          {
+            echo "compose_content<<COMPOSEEOF"
+            cat docker-compose.yml
+            echo "COMPOSEEOF"
+          } >> $GITHUB_OUTPUT
+          
+          # Read Caddyfile
+          {
+            echo "caddy_content<<CADDYEOF"
+            cat Caddyfile
+            echo "CADDYEOF"
+          } >> $GITHUB_OUTPUT
+          
+          # Read deploy.sh
+          {
+            echo "deploy_content<<DEPLOYEOF"
+            cat scripts/deploy.sh
+            echo "DEPLOYEOF"
+          } >> $GITHUB_OUTPUT
+          
+          echo "✓ Read all files for transfer"
+      
+      - name: Transfer files via SSH
         uses: appleboy/ssh-action@master
         with:
           host: ${{ vars.AWS_EC2_HOST }}
@@ -125,44 +158,36 @@ jobs:
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
           port: ${{ vars.AWS_EC2_PORT }}
           script: |
-            echo "Checking existing files in ${{ vars.DOCKER_COMPOSE_PATH }}..."
-            ls -lah "${{ vars.DOCKER_COMPOSE_PATH }}" || echo "Directory is empty or doesn't exist yet"
-      
-      - name: Copy .env file
-        run: |
-          cat .env | ssh -i <(echo "${{ secrets.AWS_EC2_SSH_KEY }}") \
-            -o StrictHostKeyChecking=no \
-            -p ${{ vars.AWS_EC2_PORT }} \
-            ${{ vars.AWS_EC2_USER }}@${{ vars.AWS_EC2_HOST }} \
-            "cat > ${{ vars.DOCKER_COMPOSE_PATH }}/.env && chmod 600 ${{ vars.DOCKER_COMPOSE_PATH }}/.env"
-          echo "✓ Copied .env"
-      
-      - name: Copy docker-compose.yml
-        run: |
-          cat docker-compose.yml | ssh -i <(echo "${{ secrets.AWS_EC2_SSH_KEY }}") \
-            -o StrictHostKeyChecking=no \
-            -p ${{ vars.AWS_EC2_PORT }} \
-            ${{ vars.AWS_EC2_USER }}@${{ vars.AWS_EC2_HOST }} \
-            "cat > ${{ vars.DOCKER_COMPOSE_PATH }}/docker-compose.yml"
-          echo "✓ Copied docker-compose.yml"
-      
-      - name: Copy Caddyfile
-        run: |
-          cat Caddyfile | ssh -i <(echo "${{ secrets.AWS_EC2_SSH_KEY }}") \
-            -o StrictHostKeyChecking=no \
-            -p ${{ vars.AWS_EC2_PORT }} \
-            ${{ vars.AWS_EC2_USER }}@${{ vars.AWS_EC2_HOST }} \
-            "cat > ${{ vars.DOCKER_COMPOSE_PATH }}/Caddyfile"
-          echo "✓ Copied Caddyfile"
-      
-      - name: Copy deploy script
-        run: |
-          cat scripts/deploy.sh | ssh -i <(echo "${{ secrets.AWS_EC2_SSH_KEY }}") \
-            -o StrictHostKeyChecking=no \
-            -p ${{ vars.AWS_EC2_PORT }} \
-            ${{ vars.AWS_EC2_USER }}@${{ vars.AWS_EC2_HOST }} \
-            "cat > ${{ vars.DOCKER_COMPOSE_PATH }}/scripts/deploy.sh && chmod +x ${{ vars.DOCKER_COMPOSE_PATH }}/scripts/deploy.sh"
-          echo "✓ Copied deploy.sh and made it executable"
+            set -e
+            TARGET="${{ vars.DOCKER_COMPOSE_PATH }}"
+            
+            # Write .env file
+            cat > "$TARGET/.env" << 'ENVEOF'
+            ${{ steps.read_files.outputs.env_content }}
+            ENVEOF
+            chmod 600 "$TARGET/.env"
+            echo "✓ Copied .env"
+            
+            # Write docker-compose.yml
+            cat > "$TARGET/docker-compose.yml" << 'COMPOSEEOF'
+            ${{ steps.read_files.outputs.compose_content }}
+            COMPOSEEOF
+            echo "✓ Copied docker-compose.yml"
+            
+            # Write Caddyfile
+            cat > "$TARGET/Caddyfile" << 'CADDYEOF'
+            ${{ steps.read_files.outputs.caddy_content }}
+            CADDYEOF
+            echo "✓ Copied Caddyfile"
+            
+            # Write deploy.sh
+            cat > "$TARGET/scripts/deploy.sh" << 'DEPLOYEOF'
+            ${{ steps.read_files.outputs.deploy_content }}
+            DEPLOYEOF
+            chmod +x "$TARGET/scripts/deploy.sh"
+            echo "✓ Copied and made deploy.sh executable"
+            
+            echo "All files transferred successfully!"
 
       - name: Execute Deployment
         uses: appleboy/ssh-action@master
