@@ -77,17 +77,20 @@ MAX_ATTEMPTS=30 # 30 * 2s = 60 seconds wait (adjust based on your healthcheck st
 
 while [ $ATTEMPTS -lt $MAX_ATTEMPTS ]; do
     # Get the number of replicas that are actually 'running'
-    # We filter by the current image to ensure we aren't counting old containers shutting down
+    # Note: docker service ps doesn't support image filter, so we check running state only
     RUNNING_TASKS=$(docker service ps "${FULL_SERVICE_NAME}" \
         --filter "desired-state=running" \
-        --filter "image=${NEW_IMAGE_FULL}" \
         --format "{{.CurrentState}}" | grep -c "Running" || true)
     
-    # Assuming 3 replicas as per your docker-compose
+    # Get desired replica count
     DESIRED_REPLICAS=$(docker service inspect "${FULL_SERVICE_NAME}" --format '{{.Spec.Mode.Replicated.Replicas}}')
     
-    if [ "$RUNNING_TASKS" -ge "$DESIRED_REPLICAS" ]; then
+    # Check if the service image matches what we deployed
+    CURRENT_IMAGE=$(docker service inspect "${FULL_SERVICE_NAME}" --format '{{.Spec.TaskTemplate.ContainerSpec.Image}}')
+    
+    if [ "$RUNNING_TASKS" -ge "$DESIRED_REPLICAS" ] && [[ "$CURRENT_IMAGE" == *"${IMAGE_TAG}"* ]]; then
         log "SUCCESS: Service converged with $RUNNING_TASKS/$DESIRED_REPLICAS replicas running."
+        log "Deployed image: $CURRENT_IMAGE"
         docker service ps "${FULL_SERVICE_NAME}" | head -n 6
         exit 0
     fi
