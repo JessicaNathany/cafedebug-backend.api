@@ -10,7 +10,7 @@ env:
 
 jobs:
   deploy:
-    name: Deploy to EC2
+    name: Deploy to Prod
     runs-on: ubuntu-latest
     environment: production
     permissions:
@@ -26,9 +26,8 @@ jobs:
       - name: Resolve image tag
         id: image
         run: |
-          # Calculate the Short SHA to match your Build Workflow
-          COMMIT="${{ github.event.release.target_commitish }}"
-          COMMIT_SHORT=$(echo $COMMIT | cut -c1-7)
+          # Use the actual commit SHA from the checkout
+          COMMIT_SHORT=$(echo ${{ github.sha }} | cut -c1-7)
           # Ensure this format matches what your CI pushes!
           IMAGE_TAG="main-${COMMIT_SHORT}"
           
@@ -44,31 +43,29 @@ jobs:
           ASPNETCORE_ENVIRONMENT=Production
           
           # Caddy Configuration
-          CADDY_DOMAIN=${{ secrets.CADDY_DOMAIN }}
+          CADDY_DOMAIN=${{ vars.CADDY_DOMAIN }}
           
           # Database Configuration
-          DB_CONNECTION_STRING=${{ secrets.DB_CONNECTION }}
+          DB_CONNECTION_STRING=${{ vars.DB_CONNECTION }}
           
           # JWT Configuration
-          JWT_ISSUER=${{ secrets.JWT_ISSUER }}
-          JWT_AUDIENCE=${{ secrets.JWT_AUDIENCE }}
-          JWT_SIGNING_KEY=${{ secrets.JWT_SIGNING_KEY }}
+          JWT_ISSUER=${{ vars.JWT_ISSUER }}
+          JWT_AUDIENCE=${{ vars.JWT_AUDIENCE }}
+          JWT_SIGNING_KEY=${{ vars.JWT_SIGNING_KEY }}
           JWT_VALID_MINUTES=15
           JWT_REFRESH_TOKEN_VALID_MINUTES=10080
           
           # AWS S3 Storage
-          AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}
-          AWS_S3_REGION=${{ secrets.AWS_S3_REGION }}
-          AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_S3_BASE_URL=${{ secrets.AWS_S3_BASE_URL }}
+          AWS_S3_BUCKET=${{ vars.AWS_S3_BUCKET }}
+          AWS_S3_REGION=${{ vars.AWS_S3_REGION }}
+          AWS_S3_BASE_URL=${{ vars.AWS_S3_BASE_URL }}
           
           # Email/SMTP Configuration
-          SMTP_SERVER=${{ secrets.SMTP_SERVER }}
-          SMTP_PORT=${{ secrets.SMTP_PORT }}
-          SMTP_USERNAME=${{ secrets.SMTP_USERNAME }}
-          SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
-          SMTP_FROM_EMAIL=${{ secrets.SMTP_FROM_EMAIL }}
+          SMTP_SERVER=${{ vars.SMTP_SERVER }}
+          SMTP_PORT=${{ vars.SMTP_PORT }}
+          SMTP_USERNAME=${{ vars.SMTP_USERNAME }}
+          SMTP_PASSWORD=${{ vars.SMTP_PASSWORD }}
+          SMTP_FROM_EMAIL=${{ vars.SMTP_FROM_EMAIL }}
           EOF
           chmod 600 .env
           
@@ -79,41 +76,99 @@ jobs:
           fi
           echo "✓ .env file created successfully"
 
+      - name: Test SSH Connectivity
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.AWS_EC2_HOST }}
+          username: ${{ vars.AWS_EC2_USER }}
+          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          port: ${{ vars.AWS_EC2_PORT }}
+          script: |
+            echo "=== SSH Connection Test ==="
+            echo "Connected to: $(hostname)"
+            echo "User: $(whoami)"
+            echo "Home directory: $HOME"
+            echo "Current directory: $(pwd)"
+            echo "Checking target path..."
+            echo "Target directory: ${{ vars.DOCKER_COMPOSE_PATH }}"
+            
+            # Check if we can create directories
+            if [ -w "$(dirname ${{ vars.DOCKER_COMPOSE_PATH }})" ] || [ -w "${{ vars.DOCKER_COMPOSE_PATH }}" ]; then
+              echo "✓ Write permission OK"
+            else
+              echo "✗ No write permission to ${{ vars.DOCKER_COMPOSE_PATH }}"
+              exit 1
+            fi
+            
+            # Check SSH key info
+            echo "SSH connection successful!"
+
       - name: Prepare Remote Directory
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.AWS_EC2_HOST }}
-          username: ${{ secrets.AWS_EC2_USER }}
+          host: ${{ vars.AWS_EC2_HOST }}
+          username: ${{ vars.AWS_EC2_USER }}
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
-          port: ${{ secrets.AWS_EC2_PORT }}
+          port: ${{ vars.AWS_EC2_PORT }}
           script: |
-            mkdir -p ${{ secrets.DOCKER_COMPOSE_PATH }}/scripts
+            mkdir -p "${{ vars.DOCKER_COMPOSE_PATH }}/scripts"
+            echo "Created directory: ${{ vars.DOCKER_COMPOSE_PATH }}/scripts"
 
-      - name: Copy Config & Scripts to EC2
-        uses: appleboy/scp-action@master
+      - name: Read files for transfer
+        id: read_files
+        run: |
+          # Base64 encode files to avoid delimiter issues
+          echo "env_b64=$(cat .env | base64 -w 0)" >> $GITHUB_OUTPUT
+          echo "compose_b64=$(cat docker-compose.yml | base64 -w 0)" >> $GITHUB_OUTPUT
+          echo "caddy_b64=$(cat Caddyfile | base64 -w 0)" >> $GITHUB_OUTPUT
+          echo "deploy_b64=$(cat scripts/deploy.sh | base64 -w 0)" >> $GITHUB_OUTPUT
+          echo "✓ Read and encoded all files for transfer"
+      
+      - name: Transfer files via SSH
+        uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.AWS_EC2_HOST }}
-          username: ${{ secrets.AWS_EC2_USER }}
+          host: ${{ vars.AWS_EC2_HOST }}
+          username: ${{ vars.AWS_EC2_USER }}
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
-          port: ${{ secrets.AWS_EC2_PORT }}
-          source: ".env,docker-compose.yml,Caddyfile,scripts/"
-          target: "${{ secrets.DOCKER_COMPOSE_PATH }}"
-          strip_components: 0
+          port: ${{ vars.AWS_EC2_PORT }}
+          script: |
+            set -e
+            TARGET="${{ vars.DOCKER_COMPOSE_PATH }}"
+            
+            # Decode and write .env file
+            echo '${{ steps.read_files.outputs.env_b64 }}' | base64 -d > "$TARGET/.env"
+            chmod 600 "$TARGET/.env"
+            echo "✓ Copied .env"
+            
+            # Decode and write docker-compose.yml
+            echo '${{ steps.read_files.outputs.compose_b64 }}' | base64 -d > "$TARGET/docker-compose.yml"
+            echo "✓ Copied docker-compose.yml"
+            
+            # Decode and write Caddyfile
+            echo '${{ steps.read_files.outputs.caddy_b64 }}' | base64 -d > "$TARGET/Caddyfile"
+            echo "✓ Copied Caddyfile"
+            
+            # Decode and write deploy.sh
+            echo '${{ steps.read_files.outputs.deploy_b64 }}' | base64 -d > "$TARGET/scripts/deploy.sh"
+            chmod +x "$TARGET/scripts/deploy.sh"
+            echo "✓ Copied and made deploy.sh executable"
+            
+            echo "All files transferred successfully!"
 
       - name: Execute Deployment
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.AWS_EC2_HOST }}
-          username: ${{ secrets.AWS_EC2_USER }}
+          host: ${{ vars.AWS_EC2_HOST }}
+          username: ${{ vars.AWS_EC2_USER }}
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
-          port: ${{ secrets.AWS_EC2_PORT }}
+          port: ${{ vars.AWS_EC2_PORT }}
           script: |
             set -e
-            cd ${{ secrets.DOCKER_COMPOSE_PATH }}
+            cd "${{ vars.DOCKER_COMPOSE_PATH }}"
             
-            # Fix permissions for the newly copied files
-            chmod 600 .env
-            chmod +x scripts/deploy.sh
+            # Verify files were copied
+            echo "Checking copied files..."
+            ls -lah .env docker-compose.yml Caddyfile scripts/deploy.sh
             
             # Login to Registry
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -125,13 +180,13 @@ jobs:
       - name: Verify Deployment
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.AWS_EC2_HOST }}
-          username: ${{ secrets.AWS_EC2_USER }}
+          host: ${{ vars.AWS_EC2_HOST }}
+          username: ${{ vars.AWS_EC2_USER }}
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
-          port: ${{ secrets.AWS_EC2_PORT }}
+          port: ${{ vars.AWS_EC2_PORT }}
           script: |
             set -e
-            cd ${{ secrets.DOCKER_COMPOSE_PATH }}
+            cd "${{ vars.DOCKER_COMPOSE_PATH }}"
             
             echo "Verifying deployment..."
             
@@ -146,4 +201,4 @@ jobs:
             echo "Recent logs:"
             docker service logs --tail 20 cafedebug-stack_cafedebug-api || true
             
-            echo "✓ Deployment verification complete"
+            echo "✓ Deployment verification complete"        
