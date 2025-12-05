@@ -10,7 +10,7 @@ STACK_NAME="cafedebug-stack"
 # Note: The service name usually includes the stack name prefix
 SERVICE_NAME_PART="cafedebug-api" 
 FULL_SERVICE_NAME="${STACK_NAME}_${SERVICE_NAME_PART}"
-BASE_IMAGE_NAME="ghcr.io/regisbarros/cafedebug-backend.api"
+BASE_IMAGE_NAME="ghcr.io/jessicanathany/cafedebug-backend.api"
 
 # --- Helpers ---
 log() { echo -e "\033[1;32m[deploy]\033[0m $*"; }
