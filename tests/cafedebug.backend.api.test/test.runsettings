@@ -5,8 +5,8 @@
           <!-- List of environment variables we want to set-->
           <SMTP_PASSWORD>admin@22</SMTP_PASSWORD>
           <SMTP_SERVER>smtp.gmail.com</SMTP_SERVER>
-		  <SMTP_FROM>faleconosco.cafedebug@gmail.com</SMTP_FROM>
-		  <SMTP_PORT>587</SMTP_PORT>
+		      <SMTP_FROM_EMAIL>faleconosco.cafedebug@gmail.com</SMTP_FROM_EMAIL>
+		      <SMTP_PORT>587</SMTP_PORT>
       </EnvironmentVariables>
   </RunConfiguration>
 </RunSettings>
