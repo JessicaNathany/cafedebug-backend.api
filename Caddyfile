@@ -4,7 +4,7 @@
 # Production configuration with HTTPS
 {$DOMAIN:localhost} {
     # Reverse proxy to API service
-    reverse_proxy cafedebug-api:80 {
+    reverse_proxy cafedebug-api:8080 {
         # Health check configuration
         health_uri /health
         health_interval 10s
@@ -36,7 +36,7 @@
 
 # Development configuration (uncomment for local development)
 # localhost {
-#     reverse_proxy cafedebug-api:80 {
+#     reverse_proxy cafedebug-api:8080 {
 #         health_uri /health
 #         health_interval 10s
 #     }

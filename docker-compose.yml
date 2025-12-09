@@ -43,13 +43,13 @@ services:
           memory: 128M
 
   cafedebug-api:
-    image: ghcr.io/regisbarros/cafedebug-backend.api:${IMAGE_TAG:-latest}
+    image: ghcr.io/jessicanathany/cafedebug-backend.api:${IMAGE_TAG:-latest}
     expose:
-      - "80"
+      - "8080"
     env_file:
       - .env
     environment:
-      - ASPNETCORE_URLS=http://+:80
+      - ASPNETCORE_URLS=http://+:8080
       - DOTNET_CLI_TELEMETRY_OPTOUT=1
     networks:
       - cafedebug-network
@@ -59,7 +59,7 @@ services:
         max-size: "20m"
         max-file: "5"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 30s
       timeout: 10s
       retries: 3

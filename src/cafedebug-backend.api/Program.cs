@@ -6,8 +6,11 @@ using cafedebug_backend.api.Infrastructure.HealthChecks;
 using cafedebug_backend.infrastructure.Common.Extensions;
 using cafedebug_backend.infrastructure.Constants;
 using cafedebug.backend.application.Common.Extensions;
+using DotNetEnv;
 using Microsoft.AspNetCore.Mvc;
-using Serilog;
+
+// Load the .env file
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 

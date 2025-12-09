@@ -15,7 +15,7 @@ public class SmtpEmailSender : IEmailSender
                    EnableSsl = true,
                    UseDefaultCredentials = false,
                    Credentials = new NetworkCredential(
-                       Environment.GetEnvironmentVariable("SMTP_FROM"),
+                       Environment.GetEnvironmentVariable("SMTP_USERNAME"),
                        Environment.GetEnvironmentVariable("SMTP_PASSWORD"))
                })
         {
