@@ -41,7 +41,7 @@ public class EmailService : IEmailService
             IsBodyHtml = true,
             Priority = MailPriority.High,
             Body = $"<html><body><h2>{emailRequest.MessageType}</h2><br /><p>Nome: {emailRequest.Name} </b></p><p>Mensagem: {emailRequest.MessageBody} </p><p>Email: {emailRequest.EmailFrom} </p></body></html>",
-            From = new MailAddress(Environment.GetEnvironmentVariable("SMTP_FROM"), Environment.GetEnvironmentVariable("SMTP_NAME"), Encoding.UTF8)
+            From = new MailAddress(Environment.GetEnvironmentVariable("SMTP_FROM_EMAIL"), Environment.GetEnvironmentVariable("SMTP_FROM_NAME"), Encoding.UTF8)
         };
 
         message.To.Add(new MailAddress(emailRequest.EmailTo));
@@ -64,7 +64,7 @@ public class EmailService : IEmailService
                 IsBodyHtml = true,
                 Priority = MailPriority.High,
                 Body = $"<html><body><h2>{emailRequest.MessageType}</h2><br /></p><p>Mensagem: Você solicitou a recuperação de senha, clique no link {url} para resetar sua senha </p></body></html>",
-                From = new MailAddress(Environment.GetEnvironmentVariable("SMTP_FROM"), Environment.GetEnvironmentVariable("SMTP_NAME"), Encoding.UTF8)
+                From = new MailAddress(Environment.GetEnvironmentVariable("SMTP_FROM_EMAIL"), Environment.GetEnvironmentVariable("SMTP_FROM_NAME"), Encoding.UTF8)
             };
 
             message.To.Add(new MailAddress(emailRequest.EmailTo));

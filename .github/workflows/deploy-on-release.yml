@@ -46,19 +46,22 @@ jobs:
           CADDY_DOMAIN=${{ vars.CADDY_DOMAIN }}
           
           # Database Configuration
-          DB_CONNECTION_STRING=${{ vars.DB_CONNECTION }}
+          ConnectionStrings__CafedebugConnectionStringMySQL=${{ vars.DB_CONNECTION }}
           
           # JWT Configuration
-          JWT_ISSUER=${{ vars.JWT_ISSUER }}
-          JWT_AUDIENCE=${{ vars.JWT_AUDIENCE }}
-          JWT_SIGNING_KEY=${{ vars.JWT_SIGNING_KEY }}
-          JWT_VALID_MINUTES=15
-          JWT_REFRESH_TOKEN_VALID_MINUTES=10080
+          JwtSettings__Issuer=${{ vars.JWT_ISSUER }}
+          JwtSettings__Audience=${{ vars.JWT_AUDIENCE }}
+          JwtSettings__SigningKey=${{ vars.JWT_SIGNING_KEY }}
+          JwtSettings__ValidForMinutes=15
+          JwtSettings__RefreshTokenValidForMinutes=10080
           
           # AWS S3 Storage
-          AWS_S3_BUCKET=${{ vars.AWS_S3_BUCKET }}
-          AWS_S3_REGION=${{ vars.AWS_S3_REGION }}
-          AWS_S3_BASE_URL=${{ vars.AWS_S3_BASE_URL }}
+          Storage__AWS__S3__Bucket=${{ vars.AWS_S3_BUCKET }}
+          Storage__AWS__S3__Region=${{ vars.AWS_S3_REGION }}
+          Storage__AWS__S3__BaseUrl=${{ vars.AWS_S3_BASE_URL }}
+          Storage__AWS__S3__ServiceUrl=null
+          Storage__AWS__S3__ForcePathStyle=false
+          Storage__AWS__S3__UseHttp=false
           
           # Email/SMTP Configuration
           SMTP_SERVER=${{ vars.SMTP_SERVER }}
@@ -66,6 +69,11 @@ jobs:
           SMTP_USERNAME=${{ vars.SMTP_USERNAME }}
           SMTP_PASSWORD=${{ vars.SMTP_PASSWORD }}
           SMTP_FROM_EMAIL=${{ vars.SMTP_FROM_EMAIL }}
+          SMTP_FROM_NAME=${{ vars.SMTP_FROM_NAME }}
+
+          # Health Check Configuration
+          HealthChecksUI__HealthChecks__0__Uri=http://localhost:80/health
+
           EOF
           chmod 600 .env
           
