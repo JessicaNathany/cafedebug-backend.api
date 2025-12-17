@@ -2,7 +2,7 @@
 # Modern reverse proxy with automatic HTTPS and better Docker Swarm support
 
 # Production configuration with HTTPS
-{$DOMAIN:localhost} {
+{$DOMAIN} {
     # Reverse proxy to API service
     reverse_proxy cafedebug-api:8080 {
         # Health check configuration
@@ -23,7 +23,7 @@
     header Permissions-Policy "geolocation=(), microphone=(), camera=()"
 
     # Compression for better performance
-    encode gzip
+    encode zstd gzip
 
     # Logging configuration
     log {

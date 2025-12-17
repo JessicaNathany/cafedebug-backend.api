@@ -24,7 +24,7 @@ services:
         max-size: "10m"
         max-file: "3"
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8081/"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "--header", "Host: ${CADDY_DOMAIN:-localhost}", "http://localhost:80/health"]
       interval: 30s
       timeout: 10s
       retries: 3
