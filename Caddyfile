@@ -6,10 +6,10 @@
     # Reverse proxy to API service
     reverse_proxy cafedebug-api:8080 {
         # Health check configuration
-        health_uri /health
-        health_interval 10s
-        health_timeout 5s
-        health_status 200
+        # health_uri /health
+        # health_interval 10s
+        # health_timeout 5s
+        # health_status 200
 
         # Connection pooling for better performance
         lb_policy least_conn
