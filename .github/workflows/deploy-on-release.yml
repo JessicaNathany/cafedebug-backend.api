@@ -179,12 +179,15 @@ jobs:
             ls -lah .env docker-compose.yml Caddyfile scripts/deploy.sh
             
             # Login to Registry
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
             
             # Run the deploy script
             # We pass the tag, but the script also loads it from .env (redundancy is fine)
             bash scripts/deploy.sh "${{ steps.image.outputs.tag }}"
 
+            # Logout from registry 
+            docker logout ghcr.io
+            
       - name: Verify Deployment
         uses: appleboy/ssh-action@master
         with:
