@@ -73,7 +73,7 @@ jobs:
           SMTP_FROM_NAME=${{ vars.SMTP_FROM_NAME }}
 
           # Health Check Configuration
-          HealthChecksUI__HealthChecks__0__Uri=http://localhost:80/health
+          HealthChecksUI__HealthChecks__0__Uri=http://localhost:8080/health
 
           EOF
           chmod 600 .env
