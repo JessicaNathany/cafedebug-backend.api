@@ -74,7 +74,7 @@ jobs:
 
           # Health Check Endpoint Configuration
           HealthChecksUI__HealthChecks__0__Name="Cafe Debug API Health"
-          HealthChecksUI__HealthChecks__0__Uri="http://127.0.0.1:8080/health"
+          HealthChecksUI__HealthChecks__0__Uri="http://localhost:8080/health"
 
           # Health Check UI Configuration Settings
           HealthChecksUI__EvaluationTimeInSeconds=600
