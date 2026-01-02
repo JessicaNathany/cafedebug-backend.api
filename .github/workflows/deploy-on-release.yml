@@ -72,14 +72,6 @@ jobs:
           SMTP_FROM_EMAIL=${{ vars.SMTP_FROM_EMAIL }}
           SMTP_FROM_NAME=${{ vars.SMTP_FROM_NAME }}
 
-          # Health Check Endpoint Configuration
-          HealthChecksUI__HealthChecks__0__Name="Cafe Debug API Health"
-          HealthChecksUI__HealthChecks__0__Uri="http://localhost:8080/health"
-
-          # Health Check UI Configuration Settings
-          HealthChecksUI__EvaluationTimeInSeconds=600
-          HealthChecksUI__MinimumSecondsBetweenFailureNotifications=60
-
           EOF
           chmod 600 .env
           
