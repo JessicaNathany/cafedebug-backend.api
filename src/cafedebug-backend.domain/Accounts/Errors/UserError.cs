@@ -5,7 +5,18 @@ namespace cafedebug_backend.domain.Accounts.Errors;
 
 public static class UserError
 {
-    public static Error NotFound => new(ErrorType.ResourceNotFound, "User not found");
-    public static Error AlreadyExists => new(ErrorType.ExistingRegister, "User already exists");
-    public static Error InvalidPassword => new(ErrorType.ValidationError, "Invalid password");
+    public static Error NotFound(string email)
+    {
+        return new Error(ErrorType.ResourceNotFound, $"User not found. {email}");
+    }
+
+    public static Error UserAlreadyExists()
+    {
+        return new Error(ErrorType.ResourceNotFound, $"User already exists.");
+    }
+
+    public static Error InvalidPassword()
+    {
+        return new Error(ErrorType.ResourceNotFound, $"Invalid password");
+    }
 }

@@ -31,23 +31,25 @@ public class UserService : IUserService
 
     public async Task<Result<UserAdmin>> GetByLoginAndPasswordAsync(string email, string password)
     {
-        var user = await _userRepository.GetByEmailAsync(email);
+        //var user = await _userRepository.GetByEmailAsync(email);
 
-        if (user is null)
-        {
-            _logger.LogWarning($"User with {email} not found!");
-            return Result.Failure<UserAdmin>(UserError.NotFound);
-        }
+        //if (user is null)
+        //{
+        //    _logger.LogWarning($"User with {email} not found!");
+        //    return Result.Failure<UserAdmin>(UserError.NotFound);
+        //}
 
-        var verificationResult = _passwordHasher.VerifyHashedPassword(user, user.HashedPassword, password);
+        //var verificationResult = _passwordHasher.VerifyHashedPassword(user, user.HashedPassword, password);
 
-        if (verificationResult != PasswordVerificationResult.Success)
-        {
-            _logger.LogWarning($"Password verification failed for user  {email}");
-            return Result.Failure<UserAdmin>(UserError.InvalidPassword);
-        }
+        //if (verificationResult != PasswordVerificationResult.Success)
+        //{
+        //    _logger.LogWarning($"Password verification failed for user  {email}");
+        //    return Result.Failure<UserAdmin>(UserError.InvalidPassword);
+        //}
 
-        return Result.Success(user);
+        //return Result.Success(user);
+
+        throw new NotImplementedException();
     }
 
     public async Task<Result<UserAdmin>> CreateAsync(string email, string password)
@@ -97,76 +99,86 @@ public class UserService : IUserService
         //     return Result<UserAdmin>.Failure("User admin cannot be null.");
         // }
 
-        var userAdminRepository = await _userRepository.GetByIdAsync(userAdmin.Id);
+        //var userAdminRepository = await _userRepository.GetByIdAsync(userAdmin.Id);
 
-        if (userAdminRepository is null)
-        {
-            _logger.LogWarning($"User admin not found.");
-            return Result.Failure<UserAdmin>(UserError.NotFound);
-        }
+        //if (userAdminRepository is null)
+        //{
+        //    _logger.LogWarning($"User admin not found.");
+        //    return Result.Failure<UserAdmin>(UserError.NotFound);
+        //}
 
-        await _userRepository.UpdateAsync(userAdmin);
-        _logger.LogInformation($"User updated with success.");
+        //await _userRepository.UpdateAsync(userAdmin);
+        //_logger.LogInformation($"User updated with success.");
 
-        return Result.Success(userAdmin);
+        //return Result.Success(userAdmin);
+
+        throw new NotImplementedException();
     }
 
     public async Task<Result<UserAdmin>> GetByIdAsync(int id)
     {
-        var user = await _userRepository.GetByIdAsync(id);
+        //var user = await _userRepository.GetByIdAsync(id);
 
-        if (user is null)
-        {
-            _logger.LogWarning($"User admin not found.");
-            return Result.Failure<UserAdmin>(UserError.NotFound);
-        }
+        //if (user is null)
+        //{
+        //    _logger.LogWarning($"User admin not found.");
+        //    return Result.Failure<UserAdmin>(UserError.NotFound);
+        //}
 
-        return Result.Success(user);
+        //return Result.Success(user);
+
+        throw new NotImplementedException();
     }
 
     public async Task<Result> DeleteAsync(int id)
     {
-        var user = await _userRepository.GetByIdAsync(id);
+        //var user = await _userRepository.GetByIdAsync(id);
 
-        if (user is null)
-        {
-            _logger.LogWarning($"User admin not found.");
-            return Result.Failure<UserAdmin>(UserError.NotFound);
-        }
+        //if (user is null)
+        //{
+        //    _logger.LogWarning($"User admin not found.");
+        //    return Result.Failure<UserAdmin>(UserError.NotFound);
+        //}
 
-        await _userRepository.DeleteAsync(user.Id);
-        _logger.LogInformation($"User deleted with success.");
+        //await _userRepository.DeleteAsync(user.Id);
+        //_logger.LogInformation($"User deleted with success.");
 
-        return Result.Success();
+        //return Result.Success();
+
+        throw new NotImplementedException();
     }
 
     public async Task<Result<UserAdmin>> GetByEmailAsync(string email, string password)
     {
-        var user = await _userRepository.GetByEmailAsync(email);
+        //var user = await _userRepository.GetByEmailAsync(email);
 
-        if (user is null)
-        {
-            _logger.LogWarning($"User admin not found.");
-            return Result.Failure<UserAdmin>(UserError.NotFound);
-        }
+        //if (user is null)
+        //{
+        //    _logger.LogWarning($"User admin not found.");
+        //    return Result.Failure<UserAdmin>(UserError.NotFound);
+        //}
 
-        if (!CheckPassword(password, user.HashedPassword))
-        {
-            _logger.LogWarning($"Password invalid.");
-            return Result.Failure<UserAdmin>(UserError.InvalidPassword);
-        }
+        //if (!CheckPassword(password, user.HashedPassword))
+        //{
+        //    _logger.LogWarning($"Password invalid.");
+        //    return Result.Failure<UserAdmin>(UserError.InvalidPassword);
+        //}
 
-        return Result.Success(user);
+        //return Result.Success(user);
+
+        throw new NotImplementedException();
     }
 
     public async Task<Result<UserAdmin>> GetUserAdminByEmail(string email)
     {
-        var userAdmin = await _userRepository.GetByEmailAsync(email);
-        
-        if (userAdmin is null)
-            return Result.Failure<UserAdmin>(UserError.NotFound);
-        
-        return Result.Success(userAdmin);
+        //var userAdmin = await _userRepository.GetByEmailAsync(email);
+
+        //if (userAdmin is null)
+        //    return Result.Failure<UserAdmin>(UserError.NotFound);
+
+        //return Result.Success(userAdmin);
+
+        throw new NotImplementedException();
     }
 
     private bool CheckPassword(string password, string passwordHash)

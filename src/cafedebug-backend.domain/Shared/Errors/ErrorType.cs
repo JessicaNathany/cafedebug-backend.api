@@ -10,6 +10,9 @@ public enum ErrorType
     ValidationError,
     ExistingRegister,
     ErrorWhenExecuting,
-    Unauthorized,
-    Forbidden
+    ResourceUnauthorized,
+    Forbidden,
+    InvalidToken,
+    BadRequest,
+    TokenGenerationFailed
 }

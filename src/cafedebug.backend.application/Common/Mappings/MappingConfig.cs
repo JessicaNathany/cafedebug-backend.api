@@ -2,6 +2,7 @@
 using cafedebug.backend.application.Banners.DTOs.Responses;
 using cafedebug.backend.application.Podcasts.DTOs.Responses;
 using cafedebug_backend.domain.Accounts;
+using cafedebug_backend.domain.Accounts.Tokens;
 using cafedebug_backend.domain.Banners;
 using cafedebug_backend.domain.Podcasts;
 
@@ -67,6 +68,21 @@ public static class MappingConfig
     public static UserAdminResponse ToUserAdmin(this UserAdmin user)
     {
         throw new NotImplementedException();
+    }
+
+    public static JWTTokenResponse ToToken(this JWTToken token)
+    {
+        return new JWTTokenResponse
+        {
+            AccessToken = token.AccessToken,
+            TokenType = token.TokenType,
+            ExpiresIn = token.ExpiresIn,
+            RefreshToken = new RefreshTokenResponse
+            {
+                Token = token.RefreshToken.Token,
+                ExpirationDate = token.RefreshToken.ExpirationDate
+            }
+        };
     }
 }
 

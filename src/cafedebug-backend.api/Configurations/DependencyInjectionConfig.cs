@@ -7,13 +7,15 @@ using cafedebug_backend.infrastructure.Email;
 using cafedebug_backend.infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Serilog;
 using Microsoft.IdentityModel.Tokens;
 
 namespace cafedebug_backend.api.Configurations;
 
 public static class DependencyInjectionConfig
 {
-    public static void ResolveDependencies(this IServiceCollection service)
+    
+    public static void ResolveDependencies(this IServiceCollection service, IConfiguration configuration)
     {
         #region Services
 
@@ -25,31 +27,62 @@ public static class DependencyInjectionConfig
         
         #region Others
 
-        AddAuthorizationConfiguration(service);
+        AddAuthorizationConfiguration(service, configuration);
 
         #endregion
     }
 
-    private static IServiceCollection AddAuthorizationConfiguration(this IServiceCollection service)
+    private static IServiceCollection AddAuthorizationConfiguration(this IServiceCollection service, IConfiguration configuration)
     {
-        service.AddSingleton<JwtSettings>();
+        var jwtSettings = new JwtSettings();
+        configuration.GetSection("JwtSettings").Bind(jwtSettings);
+        
+        var signingKey = configuration["JwtSettings:SigningKey"];
+        jwtSettings.ConfigureSigningCredentials(signingKey);
+        
+        service.AddSingleton(jwtSettings);
         service.AddScoped<IPasswordHasher<UserAdmin>, PasswordHasher<UserAdmin>>();
 
-        var jwtSettings = service.BuildServiceProvider().GetRequiredService<JwtSettings>();
+        service.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.RequireHttpsMetadata = false; 
+            options.SaveToken = true;
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,              
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                RequireExpirationTime = true,         
+                ValidIssuer = jwtSettings.Issuer,
+                ValidAudience = jwtSettings.Audience,
+                IssuerSigningKey = jwtSettings.SigningCredentials.Key,
+                ClockSkew = TimeSpan.Zero             
+            };
 
-        service.AddAuthentication(x =>
-        {
-            x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(jwtBearerOptions => jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateActor = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings.Issuer,
-            ValidAudience = jwtSettings.Audience,
-            IssuerSigningKey = jwtSettings.SigningCredentials.Key
+            options.Events = new JwtBearerEvents
+            {
+                OnAuthenticationFailed = context =>
+                {
+                    Console.WriteLine($"JWT Auth Failed: {context.Exception.Message}");
+                    return Task.CompletedTask;
+                },
+                OnTokenValidated = context =>
+                {
+                    Console.WriteLine("JWT Token Validated Successfully"); // to implement _logg
+                    return Task.CompletedTask;
+                },
+                OnChallenge = context =>
+                {
+                    Console.WriteLine("JWT Challenge triggered");
+                    return Task.CompletedTask;
+                }
+            };
         });
 
         service.AddAuthorization();

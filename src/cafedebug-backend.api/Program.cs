@@ -1,10 +1,9 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using cafedebug_backend.api.Configurations;
 using cafedebug_backend.api.Filters;
 using cafedebug_backend.api.Infrastructure.HealthChecks;
 using cafedebug_backend.infrastructure.Common.Extensions;
-using cafedebug_backend.infrastructure.Constants;
 using cafedebug.backend.application.Common.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
@@ -19,16 +18,11 @@ builder.Logging.AddDebug();
 // Add Serilog
 builder.Host.AddSerilogConfiguration(builder.Configuration);
 
-// Register Dependencies
-builder.Services.ResolveDependencies();
+// Register Dependencies service and jwt
+builder.Services.ResolveDependencies(builder.Configuration);
 
 // database configuration
 builder.Services.AddDatabaseConfiguration(builder.Configuration, builder.Environment.IsDevelopment());
-
-// get constants
-var issuer = JWTConstants.JwtIssuer;
-var audience = JWTConstants.JwtAudience;
-var secretKey = JWTConstants.JWTSecret;
 
 builder.Services.AddControllers();
 
@@ -38,13 +32,12 @@ builder.Services.AddSwaggerConfiguration();
 // Add Application layer services (includes validators)
 builder.Services.AddApplicationServices();
 
-// Add Infrastructure layer services
+//Add Infrastructure layer services
 builder.Services.AddInfrastructureServices();
 
 // Health Checks
 builder.Services.AddHealthChecksConfiguration(builder.Configuration);
 
-// Suppress automatic model state validation
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
@@ -65,7 +58,6 @@ builder.Services.AddControllers(options =>
 
 var app = builder.Build();
 
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -75,8 +67,9 @@ if (app.Environment.IsDevelopment())
 app.UseSerilog();
 app.UseAppHealthChecks();
 app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
 
+app.UseAuthentication();  
+app.UseAuthorization();   
+
+app.MapControllers();
 app.Run();
