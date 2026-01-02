@@ -2,7 +2,7 @@
 # Modern reverse proxy with automatic HTTPS and better Docker Swarm support
 
 # Production configuration with HTTPS
-{$DOMAIN} {
+http://{$DOMAIN}, https://{$DOMAIN} {
     # Reverse proxy to API service
     reverse_proxy cafedebug-api:8080 {
         # Health check configuration
