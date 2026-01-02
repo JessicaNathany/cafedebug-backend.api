@@ -39,8 +39,8 @@ services:
           cpus: '0.5'
           memory: 256M
         reservations:
-          cpus: '0.25'
-          memory: 128M
+          cpus: '0.1'
+          memory: 64M
 
   cafedebug-api:
     image: ghcr.io/regisbarros/cafedebug-backend.api:${IMAGE_TAG:-latest}
@@ -66,7 +66,7 @@ services:
       start_period: 40s
     
     deploy:
-      replicas: 3
+      replicas: 1
       update_config:
         parallelism: 1
         delay: 15s # Increased slightly to allow app startup
@@ -76,11 +76,11 @@ services:
         condition: on-failure
       resources:
         limits:
-          cpus: '1'
-          memory: 1024M
+          cpus: '0.5'
+          memory: 512M
         reservations:
-          cpus: '0.25'
-          memory: 256M
+          cpus: '0.1'
+          memory: 128M
 
 volumes:
   caddy_data:
