@@ -15,7 +15,7 @@ public static class HealthChecksConfig
         services
             .AddHealthChecksUI(setup =>
             {
-                setup.MaximumHistoryEntriesPerEndpoint(50);
+                setup.MaximumHistoryEntriesPerEndpoint(25);
             })
             .AddInMemoryStorage();
         
