@@ -16,7 +16,6 @@ public static class HealthChecksConfig
             .AddHealthChecksUI(setup =>
             {
                 setup.MaximumHistoryEntriesPerEndpoint(50);
-                setup.AddHealthCheckEndpoint("Cafe Debug API Health Check", "/health");
             })
             .AddInMemoryStorage();
         
