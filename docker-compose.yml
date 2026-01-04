@@ -43,7 +43,7 @@ services:
           memory: 64M
 
   cafedebug-api:
-    image: ghcr.io/regisbarros/cafedebug-backend.api:${IMAGE_TAG:-latest}
+    image: ghcr.io/${IMAGE_NAME}:${IMAGE_TAG:-latest}
     expose:
       - "8080"
     env_file:
