@@ -93,7 +93,7 @@ while [ $ATTEMPTS -lt $MAX_ATTEMPTS ]; do
     if [ "$RUNNING_TASKS" -ge "$DESIRED_REPLICAS" ] && [[ "$CURRENT_IMAGE" == *"${IMAGE_TAG}"* ]]; then
         log "SUCCESS: Service converged with $RUNNING_TASKS/$DESIRED_REPLICAS replicas running."
         log "Deployed image: $CURRENT_IMAGE"
-        docker service ps "${FULL_SERVICE_NAME}" | head -n 6
+        docker service ps "${FULL_SERVICE_NAME}" | head -n 6 || true
         exit 0
     fi
     
