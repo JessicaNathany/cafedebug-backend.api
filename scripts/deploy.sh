@@ -10,8 +10,6 @@ STACK_NAME="cafedebug-stack"
 # Note: The service name usually includes the stack name prefix
 SERVICE_NAME_PART="cafedebug-api" 
 FULL_SERVICE_NAME="${STACK_NAME}_${SERVICE_NAME_PART}"
-# IMAGE_NAME comes from .env (set by GitHub Actions or manually)
-BASE_IMAGE_NAME="ghcr.io/${IMAGE_NAME}"
 
 # --- Helpers ---
 log() { echo -e "\033[1;32m[deploy]\033[0m $*"; }
@@ -29,6 +27,9 @@ if [ -f .env ]; then
 else
     warn ".env file not found! Relying on existing environment variables."
 fi
+
+# IMAGE_NAME comes from .env (set by GitHub Actions or manually)
+BASE_IMAGE_NAME="ghcr.io/${IMAGE_NAME}"
 
 # --- Resolve Image Tag ---
 ARG_TAG="${1:-}"
