@@ -10,7 +10,6 @@ STACK_NAME="cafedebug-stack"
 # Note: The service name usually includes the stack name prefix
 SERVICE_NAME_PART="cafedebug-api" 
 FULL_SERVICE_NAME="${STACK_NAME}_${SERVICE_NAME_PART}"
-BASE_IMAGE_NAME="ghcr.io/jessicanathany/cafedebug-backend.api"
 
 # --- Helpers ---
 log() { echo -e "\033[1;32m[deploy]\033[0m $*"; }
@@ -20,7 +19,7 @@ fail() { echo -e "\033[1;31m[deploy][ERROR]\033[0m $*" 1>&2; exit 1; }
 # --- Load .env securely ---
 if [ -f .env ]; then
     log "Loading environment variables from .env..."
-    # 'set -a' automatically exports all variables defined subsequently
+    # 'set -a' automatically exports all variables defined subsequently 
     set -a
     # source the file, ignoring comments
     source <(grep -v '^#' .env | sed 's/^export //')
@@ -28,6 +27,9 @@ if [ -f .env ]; then
 else
     warn ".env file not found! Relying on existing environment variables."
 fi
+
+# IMAGE_NAME comes from .env (set by GitHub Actions or manually)
+BASE_IMAGE_NAME="ghcr.io/${IMAGE_NAME}"
 
 # --- Resolve Image Tag ---
 ARG_TAG="${1:-}"
@@ -91,7 +93,7 @@ while [ $ATTEMPTS -lt $MAX_ATTEMPTS ]; do
     if [ "$RUNNING_TASKS" -ge "$DESIRED_REPLICAS" ] && [[ "$CURRENT_IMAGE" == *"${IMAGE_TAG}"* ]]; then
         log "SUCCESS: Service converged with $RUNNING_TASKS/$DESIRED_REPLICAS replicas running."
         log "Deployed image: $CURRENT_IMAGE"
-        docker service ps "${FULL_SERVICE_NAME}" | head -n 6
+        docker service ps "${FULL_SERVICE_NAME}" | head -n 6 || true
         exit 0
     fi
     
