@@ -108,28 +108,23 @@ jobs:
             # Check SSH key info
             echo "SSH connection successful!"
 
-      - name: Prepare Remote Directory
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ vars.AWS_EC2_HOST }}
-          username: ${{ vars.AWS_EC2_USER }}
-          key: ${{ secrets.AWS_EC2_SSH_KEY }}
-          port: ${{ vars.AWS_EC2_PORT }}
-          script: |
-            mkdir -p "${{ vars.DOCKER_COMPOSE_PATH }}/scripts"
-            echo "Created directory: ${{ vars.DOCKER_COMPOSE_PATH }}/scripts"
-
       - name: Read files for transfer
         id: read_files
         run: |
-          # Base64 encode files to avoid delimiter issues
-          echo "env_b64=$(cat .env | base64 -w 0)" >> $GITHUB_OUTPUT
+          # Read .env content as multiline output (no base64)
+          {
+            echo 'env_content<<ENV_DELIMITER'
+            cat .env
+            echo 'ENV_DELIMITER'
+          } >> $GITHUB_OUTPUT
+          
+          # Base64 encode other files to avoid delimiter issues
           echo "compose_b64=$(cat docker-compose.yml | base64 -w 0)" >> $GITHUB_OUTPUT
           echo "caddy_b64=$(cat Caddyfile | base64 -w 0)" >> $GITHUB_OUTPUT
           echo "deploy_b64=$(cat scripts/deploy.sh | base64 -w 0)" >> $GITHUB_OUTPUT
-          echo "✓ Read and encoded all files for transfer"
+          echo "✓ Read all files for transfer"
       
-      - name: Transfer files via SSH
+      - name: Prepare directory and transfer all files via SSH
         uses: appleboy/ssh-action@master
         with:
           host: ${{ vars.AWS_EC2_HOST }}
@@ -140,8 +135,14 @@ jobs:
             set -e
             TARGET="${{ vars.DOCKER_COMPOSE_PATH }}"
             
-            # Decode and write .env file
-            echo '${{ steps.read_files.outputs.env_b64 }}' | base64 -d > "$TARGET/.env"
+            # Create directory structure
+            mkdir -p "$TARGET/scripts"
+            echo "✓ Created directory: $TARGET/scripts"
+            
+            # Write .env file directly (no base64)
+            cat > "$TARGET/.env" << 'ENV_EOF'
+            ${{ steps.read_files.outputs.env_content }}
+            ENV_EOF
             chmod 600 "$TARGET/.env"
             echo "✓ Copied .env"
             
