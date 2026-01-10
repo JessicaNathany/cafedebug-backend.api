@@ -128,7 +128,7 @@ jobs:
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
           port: ${{ vars.AWS_EC2_PORT }}
           source: ".env,docker-compose.yml,Caddyfile,scripts/deploy.sh"
-          target: ${{ vars.DOCKER_COMPOSE_PATH }}
+          target: "${{ vars.DOCKER_COMPOSE_PATH }}/"
           strip_components: 0 # Do not strip any path components
           overwrite: true
       
