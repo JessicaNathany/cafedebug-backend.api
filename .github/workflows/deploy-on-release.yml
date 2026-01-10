@@ -107,24 +107,8 @@ jobs:
             
             # Check SSH key info
             echo "SSH connection successful!"
-
-      - name: Read files for transfer
-        id: read_files
-        run: |
-          # Read .env content as multiline output (no base64)
-          {
-            echo 'env_content<<ENV_DELIMITER'
-            cat .env
-            echo 'ENV_DELIMITER'
-          } >> $GITHUB_OUTPUT
-          
-          # Base64 encode other files to avoid delimiter issues
-          echo "compose_b64=$(cat docker-compose.yml | base64 -w 0)" >> $GITHUB_OUTPUT
-          echo "caddy_b64=$(cat Caddyfile | base64 -w 0)" >> $GITHUB_OUTPUT
-          echo "deploy_b64=$(cat scripts/deploy.sh | base64 -w 0)" >> $GITHUB_OUTPUT
-          echo "✓ Read all files for transfer"
       
-      - name: Prepare directory and transfer all files via SSH
+      - name: Create target directory structure
         uses: appleboy/ssh-action@master
         with:
           host: ${{ vars.AWS_EC2_HOST }}
@@ -133,33 +117,44 @@ jobs:
           port: ${{ vars.AWS_EC2_PORT }}
           script: |
             set -e
-            TARGET="${{ vars.DOCKER_COMPOSE_PATH }}"
+            mkdir -p ${{ vars.DOCKER_COMPOSE_PATH }}/scripts
+            echo "✓ Created directory structure: ${{ vars.DOCKER_COMPOSE_PATH }}/scripts"
+
+      - name: Transfer all files to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ vars.AWS_EC2_HOST }}
+          username: ${{ vars.AWS_EC2_USER }}
+          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          port: ${{ vars.AWS_EC2_PORT }}
+          source: ".env,docker-compose.yml,Caddyfile,scripts/deploy.sh"
+          target: ${{ vars.DOCKER_COMPOSE_PATH }}
+          strip_components: 0 # Do not strip any path components
+          overwrite: true
+      
+      - name: Set file permissions
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.AWS_EC2_HOST }}
+          username: ${{ vars.AWS_EC2_USER }}
+          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          port: ${{ vars.AWS_EC2_PORT }}
+          script: |
+            set -e
+            cd ${{ vars.DOCKER_COMPOSE_PATH }}
             
-            # Create directory structure
-            mkdir -p "$TARGET/scripts"
-            echo "✓ Created directory: $TARGET/scripts"
+            # Secure .env file
+            chmod 600 .env
+            echo "✓ Set .env permissions to 600"
             
-            # Write .env file directly (no base64)
-            cat > "$TARGET/.env" << 'ENV_EOF'
-            ${{ steps.read_files.outputs.env_content }}
-            ENV_EOF
-            chmod 600 "$TARGET/.env"
-            echo "✓ Copied .env"
+            # Make deploy script executable
+            chmod +x scripts/deploy.sh
+            echo "✓ Made deploy.sh executable"
             
-            # Decode and write docker-compose.yml
-            echo '${{ steps.read_files.outputs.compose_b64 }}' | base64 -d > "$TARGET/docker-compose.yml"
-            echo "✓ Copied docker-compose.yml"
-            
-            # Decode and write Caddyfile
-            echo '${{ steps.read_files.outputs.caddy_b64 }}' | base64 -d > "$TARGET/Caddyfile"
-            echo "✓ Copied Caddyfile"
-            
-            # Decode and write deploy.sh
-            echo '${{ steps.read_files.outputs.deploy_b64 }}' | base64 -d > "$TARGET/scripts/deploy.sh"
-            chmod +x "$TARGET/scripts/deploy.sh"
-            echo "✓ Copied and made deploy.sh executable"
-            
-            echo "All files transferred successfully!"
+            # Verify files were transferred
+            echo ""
+            echo "Transferred files:"
+            ls -lah .env docker-compose.yml Caddyfile scripts/deploy.sh
 
       - name: Execute Deployment
         uses: appleboy/ssh-action@master
