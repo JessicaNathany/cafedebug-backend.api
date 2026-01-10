@@ -27,8 +27,6 @@ jobs:
         run: |
           # Use the actual commit SHA from the checkout
           COMMIT_SHORT=$(echo ${{ github.sha }} | cut -c1-7)
-          # Ensure this format matches what your CI pushes!
-          # IMAGE_TAG="main-${COMMIT_SHORT}" # Example for main branch prefix
           IMAGE_TAG="${COMMIT_SHORT}"
           
           echo "tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
