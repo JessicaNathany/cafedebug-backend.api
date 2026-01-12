@@ -13,4 +13,6 @@ public interface IJWTService
     Task<Result<JWTToken>> RefreshTokenAsync(string refreshToken);
 
     Task<Result<JWTTokenResponse>> GenerateToken(string email, string password);
+
+    Task<JWTTokenResponse> GenerateAccesTokenAndRefreshtoken(UserAdmin userAdmin);
 }

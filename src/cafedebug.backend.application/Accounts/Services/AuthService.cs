@@ -4,6 +4,8 @@ using cafedebug.backend.application.Common.Mappings;
 using cafedebug_backend.domain.Accounts.Errors;
 using cafedebug_backend.domain.Accounts.Services;
 using cafedebug_backend.domain.Shared;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace cafedebug.backend.application.Accounts.Services;
 
@@ -17,16 +19,26 @@ public class AuthService(IUserService userService, IJWTService jwtService) : IAu
         if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             return Result.Failure<JWTTokenResponse>(AuthError.EmptyCredentials());
 
-        var user = await userService.GetByEmailAsync(email, password);
-        if (!user.IsSuccess)
+        var userResult = await userService.GetUserAdminByEmail(email);
+        
+        if (!userResult.IsSuccess)
             return Result.Failure<JWTTokenResponse>(AuthError.InvalidCredentials());
 
-        var token = await jwtService.GenerateAccesTokenAndRefreshtoken(user.Value);
-        if (token is null)
-            return Result.Failure<JWTTokenResponse>(AuthError.TokenGenerationFailed(user.Value.Id));
+        var checkedPassword = CheckPassword(password, userResult.Value.HashedPassword);
 
-        var response = MappingConfig.ToToken(token);
-        return Result.Success(response);
+        if (!checkedPassword)
+            return Result.Failure<JWTTokenResponse>(AuthError.InvalidCredentials());
+
+        var user = userResult.Value;
+
+        //var tokenResult = await jwtService.GenerateAccesTokenAndRefreshtoken(user);
+
+        //if (!tokenResult.IsSuccess)
+        //    return Result.Failure<JWTTokenResponse>(AuthError.TokenGenerationFailed(user.Id));
+
+        //return Result.Success(token);
+
+        throw new NotImplementedException();
     }
 
     public async Task<Result<JWTTokenResponse>> RefreshTokenAsync(string refreshToken)
@@ -45,13 +57,41 @@ public class AuthService(IUserService userService, IJWTService jwtService) : IAu
 
         var userResult = await userService.GetByIdAsync(storedRefreshToken.UserId);
         if (!userResult.IsSuccess)
-            return Result.Failure<JWTTokenResponse>(UserError.NotFound);
+            return Result.Failure<JWTTokenResponse>(UserError.NotFound());
 
-        var newToken = await jwtService.RefreshTokenAsync(storedRefreshToken, userResult.Value);
+        var newTokenResult = await jwtService.RefreshTokenAsync(storedRefreshToken.Token);
+        
+        var newToken = newTokenResult.IsSuccess ? newTokenResult.Value : null;
+
         if (newToken is null)
             return Result.Failure<JWTTokenResponse>(AuthError.RefreshTokenGenerationFailed());
       
         var response = MappingConfig.ToToken(newToken);
         return Result.Success(response);
+    }
+    private bool CheckPassword(string password, string passwordHash)
+    {
+        var passwordHashGenerated = GenerateSHA256(password);
+
+        if (passwordHashGenerated == passwordHash)
+            return true;
+
+        return false;
+    }
+
+    private string GenerateSHA256(string password)
+    {
+        using (var sha256Hash = SHA256.Create())
+        {
+            byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
+            StringBuilder builder = new StringBuilder();
+
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                builder.Append(bytes[i].ToString("x2"));
+            }
+
+            return builder.ToString();
+        }
     }
 }

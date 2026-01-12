@@ -1,81 +1,46 @@
-﻿using System.Security.Cryptography;
-using System.Text;
+﻿using cafedebug.backend.application.Accounts.DTOs.Requests;
+using cafedebug.backend.application.Accounts.DTOs.Response;
+using cafedebug.backend.application.Accounts.Interfaces;
+using cafedebug.backend.application.Accounts.Validators;
+using cafedebug.backend.application.Common.Mappings;
 using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Accounts.Errors;
 using cafedebug_backend.domain.Interfaces.Repositories;
 using cafedebug_backend.domain.Shared;
-using cafedebug.backend.application.Accounts.Interfaces;
-using cafedebug.backend.application.Accounts.Validators;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
 
 namespace cafedebug.backend.application.Accounts.Services;
 
 /// <summary>
 /// User admin service: class responsible for the business rules of the user admin to access admin area.
 /// </summary>
-public class UserService : IUserService
+public class UserService(IUserRepository userRepository, IPasswordHasher<UserAdmin> passwordHasher) : IUserService
 {
-    private readonly IUserRepository _userRepository;
-    private readonly ILogger<UserService> _logger;
-    private readonly IPasswordHasher<UserAdmin> _passwordHasher;
-
-    public UserService(IUserRepository userRepository,
-        IPasswordHasher<UserAdmin> passwordHasher,
-        ILogger<UserService> logger)
+    public async Task<Result<UserAdminResponse>> GetByLoginAndPasswordAsync(string email, string password)
     {
-        _userRepository = userRepository;
-        _passwordHasher = passwordHasher;
-        _logger = logger;
+        var user = await userRepository.GetByEmailAsync(email);
+
+        if (user is null)
+            return Result.Failure<UserAdminResponse>(UserError.NotFound(email));
+
+        var verificationResult = passwordHasher.VerifyHashedPassword(user, user.HashedPassword, password);
+
+        if (verificationResult != PasswordVerificationResult.Success)
+            return Result.Failure<UserAdminResponse>(UserError.InvalidPassword());
+
+        var response = MappingConfig.ToUserAdmin(user);
+        return Result.Success(response);
     }
 
-    public async Task<Result<UserAdmin>> GetByLoginAndPasswordAsync(string email, string password)
+    public async Task<Result<UserAdminResponse>> CreateAsync(string email, string password)
     {
-        //var user = await _userRepository.GetByEmailAsync(email);
-
-        //if (user is null)
-        //{
-        //    _logger.LogWarning($"User with {email} not found!");
-        //    return Result.Failure<UserAdmin>(UserError.NotFound);
-        //}
-
-        //var verificationResult = _passwordHasher.VerifyHashedPassword(user, user.HashedPassword, password);
-
-        //if (verificationResult != PasswordVerificationResult.Success)
-        //{
-        //    _logger.LogWarning($"Password verification failed for user  {email}");
-        //    return Result.Failure<UserAdmin>(UserError.InvalidPassword);
-        //}
-
-        //return Result.Success(user);
-
-        throw new NotImplementedException();
-    }
-
-    public async Task<Result<UserAdmin>> CreateAsync(string email, string password)
-    {
-        // if (String.IsNullOrEmpty(email))
-        // {
-        //     _logger.LogInformation($"Email cannot be null or empty.");
-        //     return Result<UserAdmin>.Failure("Email cannot be null or empty.");
-        // }
+        if (String.IsNullOrEmpty(email))
+            return Result.Failure<UserAdminResponse>(UserError.EmailCannotBeNull());
 
         var emailValidator = new EmailValidation();
         var emailValidationResult = emailValidator.Validate(email);
 
-        // if (!emailValidationResult.IsValid)
-        // {
-        //     _logger.LogWarning($"Email invalid or null.");
-        //     return Result<UserAdmin>.Failure(emailValidationResult.Errors[0].ErrorMessage);
-        // }
-
-        // if (password is null)
-        // {
-        //     _logger.LogWarning($"Password cannot be null.");
-        //     return Result<UserAdmin>.Failure("Password cannot be null.");
-        // }
-
-        var hashedPassword = _passwordHasher.HashPassword(null, password);
+        var hashedPassword = passwordHasher.HashPassword(null, password);
 
         var user = new UserAdmin
         {
@@ -85,125 +50,59 @@ public class UserService : IUserService
             CreatedDate = DateTime.Now
         };
 
-        await _userRepository.SaveAsync(user);
-        _logger.LogInformation($"User saved with success.");
+        await userRepository.SaveAsync(user);
 
-        return Result.Success(user);
+        var response = MappingConfig.ToUserAdmin(user);
+
+        return Result.Success(response);
     }
 
-    public async Task<Result<UserAdmin>> UpdateAsync(UserAdmin userAdmin)
+    public async Task<Result<UserAdminResponse>> UpdateAsync(UserRequest userRequest)
     {
-        // if (userAdmin is null)
-        // {
-        //     _logger.LogWarning($"User admin cannot be null.");
-        //     return Result<UserAdmin>.Failure("User admin cannot be null.");
-        // }
+        var user = await userRepository.GetByEmailAsync(userRequest.Email);
 
-        //var userAdminRepository = await _userRepository.GetByIdAsync(userAdmin.Id);
+        if (user is null)
+            return Result.Failure<UserAdminResponse>(UserError.NotFound());
 
-        //if (userAdminRepository is null)
-        //{
-        //    _logger.LogWarning($"User admin not found.");
-        //    return Result.Failure<UserAdmin>(UserError.NotFound);
-        //}
+        await userRepository.UpdateAsync(user);
 
-        //await _userRepository.UpdateAsync(userAdmin);
-        //_logger.LogInformation($"User updated with success.");
+        var response = MappingConfig.ToUserAdmin(user);
 
-        //return Result.Success(userAdmin);
-
-        throw new NotImplementedException();
+        return Result.Success(response);
     }
 
-    public async Task<Result<UserAdmin>> GetByIdAsync(int id)
+    public async Task<Result<UserAdminResponse>> GetByIdAsync(int id)
     {
-        //var user = await _userRepository.GetByIdAsync(id);
+        var user = await userRepository.GetByIdAsync(id);
 
-        //if (user is null)
-        //{
-        //    _logger.LogWarning($"User admin not found.");
-        //    return Result.Failure<UserAdmin>(UserError.NotFound);
-        //}
+        if (user is null)
+            return Result.Failure<UserAdminResponse>(UserError.NotFound());
 
-        //return Result.Success(user);
+        var response = MappingConfig.ToUserAdmin(user); 
 
-        throw new NotImplementedException();
+        return Result.Success(response);
     }
 
     public async Task<Result> DeleteAsync(int id)
     {
-        //var user = await _userRepository.GetByIdAsync(id);
+        var user = await userRepository.GetByIdAsync(id);
 
-        //if (user is null)
-        //{
-        //    _logger.LogWarning($"User admin not found.");
-        //    return Result.Failure<UserAdmin>(UserError.NotFound);
-        //}
+        if (user is null)
+            return Result.Failure<UserAdminResponse>(UserError.NotFound());
 
-        //await _userRepository.DeleteAsync(user.Id);
-        //_logger.LogInformation($"User deleted with success.");
-
-        //return Result.Success();
-
-        throw new NotImplementedException();
+        await userRepository.DeleteAsync(user.Id);
+        return Result.Success();
     }
 
-    public async Task<Result<UserAdmin>> GetByEmailAsync(string email, string password)
+    public async Task<Result<UserAdminResponse>> GetUserAdminByEmail(string email)
     {
-        //var user = await _userRepository.GetByEmailAsync(email);
+        var user = await userRepository.GetByEmailAsync(email);
 
-        //if (user is null)
-        //{
-        //    _logger.LogWarning($"User admin not found.");
-        //    return Result.Failure<UserAdmin>(UserError.NotFound);
-        //}
+        if (user is null)
+            return Result.Failure<UserAdminResponse>(UserError.NotFound(email));
 
-        //if (!CheckPassword(password, user.HashedPassword))
-        //{
-        //    _logger.LogWarning($"Password invalid.");
-        //    return Result.Failure<UserAdmin>(UserError.InvalidPassword);
-        //}
+        var response = MappingConfig.ToUserAdmin(user);
 
-        //return Result.Success(user);
-
-        throw new NotImplementedException();
-    }
-
-    public async Task<Result<UserAdmin>> GetUserAdminByEmail(string email)
-    {
-        //var userAdmin = await _userRepository.GetByEmailAsync(email);
-
-        //if (userAdmin is null)
-        //    return Result.Failure<UserAdmin>(UserError.NotFound);
-
-        //return Result.Success(userAdmin);
-
-        throw new NotImplementedException();
-    }
-
-    private bool CheckPassword(string password, string passwordHash)
-    {
-        var passwordHashGenerated = GenerateSHA256(password);
-
-        if (passwordHashGenerated == passwordHash)
-            return true;
-
-        return false;
-    }
-
-    private string GenerateSHA256(string password)
-    {
-        using (var sha256Hash = SHA256.Create())
-        {
-            byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
-            StringBuilder builder = new StringBuilder();
-
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                builder.Append(bytes[i].ToString("x2"));
-            }
-
-            return builder.ToString();
-        }
+        return Result.Success(response);
     }
 }

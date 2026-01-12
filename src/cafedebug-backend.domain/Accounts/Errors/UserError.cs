@@ -5,6 +5,11 @@ namespace cafedebug_backend.domain.Accounts.Errors;
 
 public static class UserError
 {
+    public static Error NotFound()
+    {
+        return new Error(ErrorType.ResourceNotFound, $"User not found.");
+    }
+
     public static Error NotFound(string email)
     {
         return new Error(ErrorType.ResourceNotFound, $"User not found. {email}");
@@ -18,5 +23,10 @@ public static class UserError
     public static Error InvalidPassword()
     {
         return new Error(ErrorType.ResourceNotFound, $"Invalid password");
+    }
+
+    public static Error EmailCannotBeNull()
+    {
+        return new Error(ErrorType.BadRequest, $"Email cannot be null");
     }
 }

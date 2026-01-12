@@ -10,7 +10,7 @@ namespace cafedebug_backend.api.Controllers.Admin
     [Produces("application/json")]
     [Route("api/v1/admin/auth")]
     [Tags("Admin - Auth")]
-    public class AuthController(ILogger<AuthController> logger, IJWTService jWTService) : ControllerBase
+    public class AuthController(IJWTService jWTService) : ControllerBase
     {
         [HttpPost]
         [Authorize]

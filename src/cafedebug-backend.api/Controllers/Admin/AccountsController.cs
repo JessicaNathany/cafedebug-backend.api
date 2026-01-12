@@ -1,8 +1,7 @@
-﻿using cafedebug_backend.domain.Accounts.Services;
-using cafedebug_backend.domain.Messages.Email.Request;
-using cafedebug_backend.infrastructure.Constants;
-using cafedebug.backend.application.Accounts.DTOs.Requests;
+﻿using cafedebug.backend.application.Accounts.DTOs.Requests;
 using cafedebug.backend.application.Accounts.Interfaces;
+using cafedebug_backend.domain.Accounts.Services;
+using cafedebug_backend.domain.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,24 +10,10 @@ namespace cafedebug_backend.api.Controllers.Admin
     [ApiController]
     [Produces("application/json")]
     [Route("api/v1/accounts-admin")]
-    public class AccountsController : ControllerBase
+    public class AccountsController(IUserService userService, IAccountService accountService, IJWTService jWTService) : ControllerBase
     {
-        private readonly ILogger<AuthController> _logger;
-        private readonly IUserService _userService;
-        private readonly IAccountService _accountService;
-        private readonly IJWTService _jWTService;
-
-        public AccountsController(
-            ILogger<AuthController> logger, 
-            IUserService userService, 
-            IAccountService accountService,
-            IJWTService jWTService)
-        {
-            _userService = userService;
-            _logger = logger;
-            _accountService = accountService;
-            _jWTService = jWTService;
-        }
+        // Notes: We need to include in FluentValidation the if (!ModelState.IsValid) in all the endpoints
+        // and status code related to each endpoint.
 
         [HttpPost]
         [Route("forgot-password")]
@@ -36,50 +21,9 @@ namespace cafedebug_backend.api.Controllers.Admin
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest emailRequest)
+        public async Task<ActionResult<Result>> ForgotPassword([FromBody] ForgotPasswordRequest emailRequest)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    _logger.LogInformation("Model is invalid.");
-                    return BadRequest("Model is invalid.");
-                }
-
-                var user = _userService.GetUserAdminByEmail(emailRequest.Email);
-
-                if (user.Result.Value is null)
-                {
-                    _logger.LogInformation("User not found.");
-                    return NotFound("User not found.");
-                }
-
-                var sendEmail = new SendEmailRequest
-                {
-                    Name = emailRequest.Name,
-                    EmailFrom = emailRequest.Email,
-                    Subject = "Reset Password",
-                    MessageType = InsfrastructureConstants.EmailMessageTypeResetPassword,
-                };
-
-                var resetToken = _jWTService.GenerateResetToken(user.Result.Value.Id);
-
-                var urlResetPassword = InsfrastructureConstants.ForgotPasswordUrl;
-
-                var resetUrl = $"{urlResetPassword}?token={resetToken}";
-
-                await _accountService.SendEmailForgotPassword(sendEmail);
-
-                return Ok();
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Unauthorized();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return await accountService.ForgotPassword(emailRequest.Email, emailRequest.Name);
         }
 
 
@@ -90,32 +34,9 @@ namespace cafedebug_backend.api.Controllers.Admin
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+        public async Task<ActionResult<Result>> ChangePassword([FromBody] ChangePasswordRequest request)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    _logger.LogInformation("Model is invalid.");
-                    return BadRequest("Model is invalid.");
-                }
-
-                await _accountService.ChangePassword(request.Email, request.NewPassword);
-
-                return NoContent();
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Unauthorized();
-            }
-            catch (NullReferenceException)
-            {
-                throw;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return await accountService.ChangePassword(request.Email, request.NewPassword);
         }
 
 
@@ -125,24 +46,9 @@ namespace cafedebug_backend.api.Controllers.Admin
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> ResetPassword([FromBody] ChangePasswordRequest request)
+        public async Task<ActionResult<Result>> ResetPassword([FromBody] ChangePasswordRequest request)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    _logger.LogInformation("Model is invalid.");
-                    return BadRequest("Model is invalid.");
-                }
-
-                await _accountService.ResetPassword(request.Email, request.NewPassword);
-
-                return NoContent();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return await accountService.ResetPassword(request.Email, request.NewPassword);
         }
 
         [HttpPost]
@@ -151,22 +57,9 @@ namespace cafedebug_backend.api.Controllers.Admin
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> VerifyEmail([FromBody] ChangePasswordRequest request)
+        public async Task<ActionResult<Result>> VerifyEmail([FromBody] ChangePasswordRequest request)
         {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    _logger.LogInformation("Model is invalid.");
-                    return BadRequest("Model is invalid.");
-                }
-
-                return NoContent();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return await accountService.VerifyEmail(request.Email);
         }
     }
 }

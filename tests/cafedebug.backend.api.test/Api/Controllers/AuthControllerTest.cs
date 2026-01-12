@@ -45,7 +45,7 @@ public class AuthControllerTest
         );
 
         _userServiceMock
-            .Setup(x => x.GetByEmailAsync(userCredentials.Email, userCredentials.Password)).ReturnsAsync(Result<UserAdmin>.Success(user));
+            .Setup(x => x.GetByEmailAndPasswordAsync(userCredentials.Email, userCredentials.Password)).ReturnsAsync(Result<UserAdmin>.Success(user));
 
         _jwtServiceMock.Setup(x => x.GenerateAccesTokenAndRefreshtoken(user)).ReturnsAsync(jwtToken);
 
@@ -92,7 +92,7 @@ public class AuthControllerTest
         );
 
         _userServiceMock
-            .Setup(x => x.GetByEmailAsync(userCredentials.Email, userCredentials.Password))
+            .Setup(x => x.GetByEmailAndPasswordAsync(userCredentials.Email, userCredentials.Password))
             .ReturnsAsync(Result.Success(user));
 
         _jwtServiceMock.Setup(x => x.GenerateAccesTokenAndRefreshtoken(user)).ReturnsAsync((JWTToken)null); 

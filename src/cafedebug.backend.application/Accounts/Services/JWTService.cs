@@ -1,11 +1,10 @@
 ﻿using cafedebug.backend.application.Accounts.DTOs.Response;
-using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Accounts.Errors;
 using cafedebug_backend.domain.Accounts.Repositories;
-using cafedebug_backend.domain.Accounts.Services;
 using cafedebug_backend.domain.Accounts.Tokens;
 using cafedebug_backend.domain.Interfaces.Repositories;
 using cafedebug_backend.domain.Shared;
+using cafedebug_backend.infrastructure.Security;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,7 +12,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Principal;
 
-namespace cafedebug_backend.infrastructure.Security;
+namespace cafedebug_backend.domain.Accounts.Services;
 
 /// <summary>
 /// Service responsible for generating and managing JWT tokens.
@@ -49,54 +48,6 @@ public class JWTService(
 
     public async Task<Result<JWTToken>> RefreshTokenAsync(string refreshToken)
     {
-
-        //try
-        //{
-
-
-        //    var refreshTokenResult = await _jWTService.GetByTokenAsync(refreshTokenRequest.RefreshToken);
-
-        //    if (refreshTokenResult.Value == null || refreshTokenResult.Value.ExpirationDate <= DateTime.UtcNow)
-        //    {
-        //        _logger.LogWarning("Invalid or expired refresh token.");
-        //        return Unauthorized("Invalid or expired refresh token.");
-        //    }
-
-        //    var userResult = await _userService.GetByIdAsync(refreshTokenResult.Value.UserId);
-
-        //    if (!userResult.IsSuccess)
-        //    {
-        //        _logger.LogWarning("User not found for refresh token.");
-        //        return NotFound("User not found.");
-        //    }
-
-        //    var token = await _jWTService.RefreshTokenAsync(refreshTokenResult.Value, userResult.Value);
-
-        //    if (token is null)
-        //    {
-        //        _logger.LogError("Error creating new token during refresh.");
-        //        return BadRequest("Error creating token.");
-        //    }
-
-        //    return Ok(token);
-        //}
-        //catch (UnauthorizedAccessException)
-        //{
-        //    _logger.LogWarning("Unauthorized access during refresh token.");
-        //    return Unauthorized();
-        //}
-        //catch (NullReferenceException ex)
-        //{
-        //    _logger.LogError(ex, "NullReferenceException in refresh token endpoint.");
-        //    return StatusCode(500, "Internal server error");
-        //}
-        //catch (Exception ex)
-        //{
-        //    _logger.LogError(ex, "Unexpected error in refresh token endpoint.");
-        //    return StatusCode(500, "Internal server error");
-        //}
-
-
         var refreshTokenResult = await GetByTokenAsync(refreshToken);
 
         if (!refreshTokenResult.IsSuccess || refreshTokenResult.Value == null || refreshTokenResult.Value.ExpirationDate <= DateTime.UtcNow)
@@ -104,7 +55,7 @@ public class JWTService(
 
         var refreshTokenEntity = refreshTokenResult.Value;
 
-        // Gerar novo refresh token
+        // generate new token
         string generatedToken;
         var randomNumber = new byte[32];
         using (var randonNumberGenerator = RandomNumberGenerator.Create())
@@ -119,12 +70,11 @@ public class JWTService(
         refreshTokenEntity.UpdateToken(token, expirationDate);
         await refreshTokensRepository.UpdateAsync(refreshTokenEntity);
 
-        // Buscar o usuário para gerar novo access token
+        // get user by token user id
         var user = await userRepository.GetByIdAsync(refreshTokenEntity.UserId);
         if (user is null)
             return Result.Failure<JWTToken>(UserError.NotFound(""));
 
-        // Gerar novo access token
         var identity = GetClaimsIdentity(user);
         var jsonSecurityHandler = new JwtSecurityTokenHandler();
         var securityToken = jsonSecurityHandler.CreateToken(new SecurityTokenDescriptor
@@ -164,7 +114,7 @@ public class JWTService(
         return tokenHandler.WriteToken(token);
     }
 
-    private async Task<JWTTokenResponse> GenerateAccesTokenAndRefreshtoken(UserAdmin userAdmin)
+    public async Task<JWTTokenResponse> GenerateAccesTokenAndRefreshtoken(UserAdmin userAdmin)
     {
         var identity = GetClaimsIdentity(userAdmin);
 
