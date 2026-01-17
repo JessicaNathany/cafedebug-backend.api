@@ -71,6 +71,8 @@ jobs:
           SMTP_FROM_EMAIL=${{ vars.SMTP_FROM_EMAIL }}
           SMTP_FROM_NAME=${{ vars.SMTP_FROM_NAME }}
 
+          TESTE=17
+
           EOF
           
           # Validate .env was created
@@ -80,47 +82,47 @@ jobs:
           fi
           echo "✓ .env file created successfully"
 
-      # - name: Test SSH Connectivity
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ vars.AWS_EC2_HOST }}
-      #     username: ${{ vars.AWS_EC2_USER }}
-      #     key: ${{ secrets.AWS_EC2_SSH_KEY }}
-      #     port: ${{ vars.AWS_EC2_PORT }}
-      #     script: |
-      #       echo "=== SSH Connection Test ==="
-      #       echo "Connected to: $(hostname)"
-      #       echo "User: $(whoami)"
-      #       echo "Home directory: $HOME"
-      #       echo "Current directory: $(pwd)"
-      #       echo "Checking target path..."
-      #       echo "Target directory: ${{ vars.DOCKER_COMPOSE_PATH }}"
+      - name: Test SSH Connectivity
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.AWS_EC2_HOST }}
+          username: ${{ vars.AWS_EC2_USER }}
+          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          port: ${{ vars.AWS_EC2_PORT }}
+          script: |
+            echo "=== SSH Connection Test ==="
+            echo "Connected to: $(hostname)"
+            echo "User: $(whoami)"
+            echo "Home directory: $HOME"
+            echo "Current directory: $(pwd)"
+            echo "Checking target path..."
+            echo "Target directory: ${{ vars.DOCKER_COMPOSE_PATH }}"
             
-      #       # Check if we can create directories
-      #       if [ -w "$(dirname ${{ vars.DOCKER_COMPOSE_PATH }})" ] || [ -w "${{ vars.DOCKER_COMPOSE_PATH }}" ]; then
-      #         echo "✓ Write permission OK"
-      #       else
-      #         echo "✗ No write permission to ${{ vars.DOCKER_COMPOSE_PATH }}"
-      #         exit 1
-      #       fi
+            # Check if we can create directories
+            if [ -w "$(dirname ${{ vars.DOCKER_COMPOSE_PATH }})" ] || [ -w "${{ vars.DOCKER_COMPOSE_PATH }}" ]; then
+              echo "✓ Write permission OK"
+            else
+              echo "✗ No write permission to ${{ vars.DOCKER_COMPOSE_PATH }}"
+              exit 1
+            fi
             
-      #       # Check SSH key info
-      #       echo "SSH connection successful!"
+            # Check SSH key info
+            echo "SSH connection successful!"
       
-      # - name: Create target directory structure
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ vars.AWS_EC2_HOST }}
-      #     username: ${{ vars.AWS_EC2_USER }}
-      #     key: ${{ secrets.AWS_EC2_SSH_KEY }}
-      #     port: ${{ vars.AWS_EC2_PORT }}
-      #     script: |
-      #       set -e
-      #       mkdir -p ${{ vars.DOCKER_COMPOSE_PATH }}/scripts
-      #       echo "✓ Created directory structure: ${{ vars.DOCKER_COMPOSE_PATH }}/scripts"
+      - name: Create target directory structure
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.AWS_EC2_HOST }}
+          username: ${{ vars.AWS_EC2_USER }}
+          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          port: ${{ vars.AWS_EC2_PORT }}
+          script: |
+            set -e
+            mkdir -p ${{ vars.DOCKER_COMPOSE_PATH }}/scripts
+            echo "✓ Created directory structure: ${{ vars.DOCKER_COMPOSE_PATH }}/scripts"
 
       - name: Transfer all files to server
-        uses: appleboy/scp-action@v0.1.7 # More stable for DO Droplets
+        uses: appleboy/scp-action@v1
         with:
           host: ${{ vars.AWS_EC2_HOST }}
           username: ${{ vars.AWS_EC2_USER }}
