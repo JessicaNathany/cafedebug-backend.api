@@ -71,8 +71,6 @@ jobs:
           SMTP_FROM_EMAIL=${{ vars.SMTP_FROM_EMAIL }}
           SMTP_FROM_NAME=${{ vars.SMTP_FROM_NAME }}
 
-          TESTE=17
-
           EOF
           
           # Validate .env was created
@@ -81,45 +79,6 @@ jobs:
             exit 1
           fi
           echo "✓ .env file created successfully"
-
-      - name: Test SSH Connectivity
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ vars.AWS_EC2_HOST }}
-          username: ${{ vars.AWS_EC2_USER }}
-          key: ${{ secrets.AWS_EC2_SSH_KEY }}
-          port: ${{ vars.AWS_EC2_PORT }}
-          script: |
-            echo "=== SSH Connection Test ==="
-            echo "Connected to: $(hostname)"
-            echo "User: $(whoami)"
-            echo "Home directory: $HOME"
-            echo "Current directory: $(pwd)"
-            echo "Checking target path..."
-            echo "Target directory: ${{ vars.DOCKER_COMPOSE_PATH }}"
-            
-            # Check if we can create directories
-            if [ -w "$(dirname ${{ vars.DOCKER_COMPOSE_PATH }})" ] || [ -w "${{ vars.DOCKER_COMPOSE_PATH }}" ]; then
-              echo "✓ Write permission OK"
-            else
-              echo "✗ No write permission to ${{ vars.DOCKER_COMPOSE_PATH }}"
-              exit 1
-            fi
-            
-            # Check SSH key info
-            echo "SSH connection successful!"
-      
-      - name: Create target directory structure
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ vars.AWS_EC2_HOST }}
-          username: ${{ vars.AWS_EC2_USER }}
-          key: ${{ secrets.AWS_EC2_SSH_KEY }}
-          port: ${{ vars.AWS_EC2_PORT }}
-          script: |
-            set -e
-            mkdir -p ${{ vars.DOCKER_COMPOSE_PATH }}/scripts
-            echo "✓ Created directory structure: ${{ vars.DOCKER_COMPOSE_PATH }}/scripts"
 
       - name: Transfer all files to server
         uses: appleboy/scp-action@v1
@@ -133,30 +92,6 @@ jobs:
           strip_components: 0 # Do not strip any path components
           overwrite: true
           timeout: 120s
-      
-      - name: Set file permissions
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ vars.AWS_EC2_HOST }}
-          username: ${{ vars.AWS_EC2_USER }}
-          key: ${{ secrets.AWS_EC2_SSH_KEY }}
-          port: ${{ vars.AWS_EC2_PORT }}
-          script: |
-            set -e
-            cd ${{ vars.DOCKER_COMPOSE_PATH }}
-            
-            # Secure .env file
-            chmod 600 .env
-            echo "✓ Set .env permissions to 600"
-            
-            # Make deploy script executable
-            chmod +x scripts/deploy.sh
-            echo "✓ Made deploy.sh executable"
-            
-            # Verify files were transferred
-            echo ""
-            echo "Transferred files:"
-            ls -lah .env docker-compose.yml Caddyfile scripts/deploy.sh
 
       - name: Execute Deployment
         uses: appleboy/ssh-action@master
@@ -169,42 +104,34 @@ jobs:
             set -e
             cd "${{ vars.DOCKER_COMPOSE_PATH }}"
             
-            # Verify files were copied
-            echo "Checking copied files..."
+            # 1. Verify files were copied  
             ls -lah .env docker-compose.yml Caddyfile scripts/deploy.sh
+
+            # 2. Set Permissions            
+            chmod 600 .env
+            chmod +x scripts/deploy.sh
             
-            # Login to Registry
+            # 3. Login to Registry        
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
             
-            # Run the deploy script
-            # We pass the tag, but the script also loads it from .env (redundancy is fine)
+            # 4. Run the deploy script            
             bash scripts/deploy.sh "${{ steps.image.outputs.tag }}"
 
-            # Logout from registry 
+            # 5. Logout from registry 
             docker logout ghcr.io
-            
-      - name: Verify Deployment
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ vars.AWS_EC2_HOST }}
-          username: ${{ vars.AWS_EC2_USER }}
-          key: ${{ secrets.AWS_EC2_SSH_KEY }}
-          port: ${{ vars.AWS_EC2_PORT }}
-          script: |
-            set -e
-            cd "${{ vars.DOCKER_COMPOSE_PATH }}"
-            
+
+            # 6. Verify Deployment
             echo "Verifying deployment..."
-            
-            # Check service status
+
+            # 6.1 Check service status
             docker service ls | grep cafedebug-stack
             
-            # Check running replicas
+            # 6.2 Check running replicas
             REPLICAS=$(docker service ls --filter name=cafedebug-stack_cafedebug-api --format "{{.Replicas}}")
             echo "API Replicas: $REPLICAS"
             
-            # Show recent logs (last 20 lines)
+            # 6.3 Show recent logs (last 20 lines)
             echo "Recent logs:"
             docker service logs --tail 20 cafedebug-stack_cafedebug-api || true
             
-            echo "✓ Deployment verification complete"        
+            echo "✓ Deployment verification complete"          
