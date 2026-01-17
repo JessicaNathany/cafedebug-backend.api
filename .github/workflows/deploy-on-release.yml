@@ -91,7 +91,6 @@ jobs:
           target: "${{ vars.DOCKER_COMPOSE_PATH }}/"
           strip_components: 0 # Do not strip any path components
           overwrite: true
-          rm: true
           timeout: 120s
 
       - name: Execute Deployment
