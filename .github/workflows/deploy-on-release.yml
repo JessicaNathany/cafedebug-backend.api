@@ -72,7 +72,6 @@ jobs:
           SMTP_FROM_NAME=${{ vars.SMTP_FROM_NAME }}
 
           EOF
-          chmod 600 .env
           
           # Validate .env was created
           if [ ! -f .env ]; then
