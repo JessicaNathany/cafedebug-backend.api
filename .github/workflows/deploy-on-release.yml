@@ -121,17 +121,17 @@ jobs:
       #       echo "✓ Created directory structure: ${{ vars.DOCKER_COMPOSE_PATH }}/scripts"
 
       - name: Transfer all files to server
-        uses: appleboy/scp-action@master
+        uses: appleboy/scp-action@v1
         with:
           host: ${{ vars.AWS_EC2_HOST }}
           username: ${{ vars.AWS_EC2_USER }}
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
           port: ${{ vars.AWS_EC2_PORT }}
           source: ".env,docker-compose.yml,Caddyfile,scripts/deploy.sh"
-          target: "${{ vars.DOCKER_COMPOSE_PATH }}/"
+          target: "${{ vars.DOCKER_COMPOSE_PATH }}"
           strip_components: 0 # Do not strip any path components
           overwrite: true
-          timeout: 60s
+          timeout: 120s
       
       - name: Set file permissions
         uses: appleboy/ssh-action@master
