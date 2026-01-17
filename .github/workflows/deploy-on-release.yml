@@ -92,6 +92,7 @@ jobs:
           strip_components: 0 # Do not strip any path components
           overwrite: true
           timeout: 120s
+          command_timeout: 10s
 
       - name: Execute Deployment
         uses: appleboy/ssh-action@master
