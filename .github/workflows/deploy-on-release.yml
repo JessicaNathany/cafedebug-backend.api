@@ -80,19 +80,35 @@ jobs:
           fi
           echo "✓ .env file created successfully"
 
-      - name: Transfer all files to server
-        uses: appleboy/scp-action@v1
-        with:
-          host: ${{ vars.AWS_EC2_HOST }}
-          username: ${{ vars.AWS_EC2_USER }}
-          key: ${{ secrets.AWS_EC2_SSH_KEY }}
-          port: ${{ vars.AWS_EC2_PORT }}
-          source: ".env,docker-compose.yml,Caddyfile,scripts/deploy.sh"
-          target: "${{ vars.DOCKER_COMPOSE_PATH }}/"
-          strip_components: 0 # Do not strip any path components
-          overwrite: true
-          timeout: 120s
-          command_timeout: 10s
+      # - name: Transfer all files to server
+      #   uses: appleboy/scp-action@v1
+      #   with:
+      #     host: ${{ vars.AWS_EC2_HOST }}
+      #     username: ${{ vars.AWS_EC2_USER }}
+      #     key: ${{ secrets.AWS_EC2_SSH_KEY }}
+      #     port: ${{ vars.AWS_EC2_PORT }}
+      #     source: ".env,docker-compose.yml,Caddyfile,scripts/deploy.sh"
+      #     target: "${{ vars.DOCKER_COMPOSE_PATH }}/"
+      #     strip_components: 0 # Do not strip any path components
+      #     overwrite: true
+      #     timeout: 120s
+      #     command_timeout: 10s
+
+      - name: Transfer Files via SSH Pipe
+        run: |
+          # 1. Save the SSH key to a temporary file
+          echo "${{ secrets.AWS_EC2_SSH_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+
+          # 2. Bundle files and stream them directly to the server
+          # This avoids creating a .tar.gz file on the server's disk
+          tar cz .env docker-compose.yml Caddyfile scripts/deploy.sh | \
+          ssh -o StrictHostKeyChecking=no -i private_key.pem -p ${{ vars.AWS_EC2_PORT }} \
+          ${{ vars.AWS_EC2_USER }}@${{ vars.AWS_EC2_HOST }} \
+          "mkdir -p ${{ vars.DOCKER_COMPOSE_PATH }} && tar xz -C ${{ vars.DOCKER_COMPOSE_PATH }}/"
+
+          # 3. Securely remove the key from the runner
+          rm private_key.pem
 
       - name: Execute Deployment
         uses: appleboy/ssh-action@master
