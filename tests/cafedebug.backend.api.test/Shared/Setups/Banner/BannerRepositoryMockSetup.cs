@@ -1,11 +1,11 @@
-﻿using cafedebug.backend.application.Common.Pagination;
-using cafedebug_backend.domain.Banners;
+﻿using cafedebug_backend.domain.Banners;
+using cafedebug.backend.application.Common.Pagination;
 using cafedebug_backend.domain.Banners.Repositories;
-using cafedebug_backend.domain.Shared;
 using Moq;
 using System.Linq.Expressions;
+using cafedebug_backend.domain.Shared;
 
-namespace cafedebug.backend.api.test.Shared.Setups;
+namespace cafedebug.backend.api.test.Shared.Setups.Banners;
 
 public class BannerRepositoryMockSetup(Mock<IBannerRepository> bannerRepository)
 {

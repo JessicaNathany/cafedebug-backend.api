@@ -10,7 +10,7 @@ namespace cafedebug_backend.api.Controllers.Admin
     [ApiController]
     [Produces("application/json")]
     [Route("api/v1/accounts-admin")]
-    public class AccountsController(IUserService userService, IAccountService accountService, IJWTService jWTService) : ControllerBase
+    public class AccountsController(IUserService userService, IAccountService accountService) : ControllerBase
     {
         // Notes: We need to include in FluentValidation the if (!ModelState.IsValid) in all the endpoints
         // and status code related to each endpoint.
@@ -23,9 +23,8 @@ namespace cafedebug_backend.api.Controllers.Admin
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<Result>> ForgotPassword([FromBody] ForgotPasswordRequest emailRequest)
         {
-            return await accountService.ForgotPassword(emailRequest.Email, emailRequest.Name);
+            return await accountService.ForgotPassword(emailRequest);
         }
-
 
         [HttpPost]
         [Authorize]
@@ -36,9 +35,8 @@ namespace cafedebug_backend.api.Controllers.Admin
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<Result>> ChangePassword([FromBody] ChangePasswordRequest request)
         {
-            return await accountService.ChangePassword(request.Email, request.NewPassword);
+            return await accountService.ChangePassword(request);
         }
-
 
         [HttpPost]
         [Authorize]
@@ -48,7 +46,7 @@ namespace cafedebug_backend.api.Controllers.Admin
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<Result>> ResetPassword([FromBody] ChangePasswordRequest request)
         {
-            return await accountService.ResetPassword(request.Email, request.NewPassword);
+            return await accountService.ResetPassword(request);
         }
 
         [HttpPost]
@@ -57,9 +55,9 @@ namespace cafedebug_backend.api.Controllers.Admin
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<Result>> VerifyEmail([FromBody] ChangePasswordRequest request)
+        public async Task<ActionResult<Result>> VerifyEmail([FromBody] string email)
         {
-            return await accountService.VerifyEmail(request.Email);
+            throw new NotImplementedException();
         }
     }
 }

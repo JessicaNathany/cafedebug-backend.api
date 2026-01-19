@@ -1,7 +1,6 @@
 ﻿using cafedebug.backend.application.Service;
 using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Accounts.Services;
-using cafedebug_backend.domain.Jwt;
 using cafedebug_backend.domain.Messages.Email.Services;
 using cafedebug_backend.infrastructure.Email;
 using cafedebug_backend.infrastructure.Security;

@@ -15,7 +15,6 @@ public static class MappingConfig
         return new BannerResponse
         {
             Id = banner.Id,
-            Code = banner.Code,
             Name = banner.Name,
             UrlImage = banner.UrlImage,
             Url = banner.Url,
@@ -67,7 +66,14 @@ public static class MappingConfig
 
     public static UserAdminResponse ToUserAdmin(this UserAdmin user)
     {
-        throw new NotImplementedException();
+        return new UserAdminResponse
+        {
+            CreatedDate = user.CreatedDate,
+            Name = user.Name,
+            Email = user.Email,
+            HashedPassword = user.HashedPassword,
+            LastUpdate = user.LastUpdate
+        };
     }
 
     public static JWTTokenResponse ToToken(this JWTToken token)

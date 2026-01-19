@@ -1,4 +1,5 @@
-﻿using cafedebug.backend.application.Accounts.Interfaces;
+﻿using cafedebug.backend.application.Accounts.DTOs.Requests;
+using cafedebug.backend.application.Accounts.Interfaces;
 using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Accounts.Errors;
 using cafedebug_backend.domain.Accounts.Services;
@@ -18,8 +19,7 @@ public class AccountService(
     IEmailService emailService, 
     IUserRepository userRepository, 
     IPasswordHasher<UserAdmin> passwordHasher,
-    IJWTService jWTService
-    ) : IAccountService
+    IJWTService jWTService) : IAccountService
 {
     public async Task<Result> SendEmailForgotPassword(SendEmailRequest sendEmailRequest)
     {
@@ -27,30 +27,30 @@ public class AccountService(
         return Result.Success();
     }
 
-    public async Task<Result> ResetPassword(string email, string newPassword)
+    public async Task<Result> ResetPassword(ChangePasswordRequest request)
     {
-        var user = await userRepository.GetByEmailAsync(email);
+        var user = await userRepository.GetByEmailAsync(request.Email);
 
         if (user is null)
-            return Result.Failure(UserError.NotFound(email));
+            return Result.Failure(UserError.NotFound(request.Email));
 
-        var hashedPassword = passwordHasher.HashPassword(null, newPassword);
+        var hashedPassword = passwordHasher.HashPassword(null, request.NewPassword);
 
-        user.Email = email;
+        user.Email = request.Email;
         user.HashedPassword = hashedPassword;
         user.LastUpdate = DateTime.Now;
 
         return Result.Success();
     }
 
-    public async Task<Result> ChangePassword(string email, string newPassword)
+    public async Task<Result> ChangePassword(ChangePasswordRequest request)
     {
-        var user = await userRepository.GetByEmailAsync(email);
+        var user = await userRepository.GetByEmailAsync(request.Email);
 
         if (user is null)
-            return Result.Failure(UserError.NotFound(email));
+            return Result.Failure(UserError.NotFound(request.Email));
 
-        var hashedPassword = passwordHasher.HashPassword(null, newPassword);
+        var hashedPassword = passwordHasher.HashPassword(null, request.NewPassword);
 
         user.HashedPassword = hashedPassword;
 
@@ -60,24 +60,26 @@ public class AccountService(
         return Result.Success();
     }
 
-    public async Task<Result> ForgotPassword(string email, string name)
+    public async Task<Result> ForgotPassword(ForgotPasswordRequest request)
     {
-        var user = await userRepository.GetByEmailAsync(email);
+        var user = await userRepository.GetByEmailAsync(request.Email);
 
         if (user is null)
-            return Result.Failure(UserError.NotFound(email));
-
-        var sendEmail = new SendEmailRequest
-        {
-            Name = name,
-            EmailFrom = email,
-            Subject = "Reset Password",
-            MessageType = InsfrastructureConstants.EmailMessageTypeResetPassword,
-        };
+            return Result.Failure(UserError.NotFound(request.Email));
 
         var resetToken = jWTService.GenerateResetToken(user.Id);
         var urlResetPassword = InsfrastructureConstants.ForgotPasswordUrl;
         var resetUrl = $"{urlResetPassword}?token={resetToken}";
+
+        var sendEmail = new SendEmailRequest
+        {
+            Name = request.Name,
+            EmailFrom = request.Email,
+            Subject = "Reset Password",
+            MessageType = InsfrastructureConstants.EmailMessageTypeResetPassword,
+            EmailTo = request.Email,
+            EmailCopy = "support@cafedebug.com"
+        };
 
         await emailService.SendEmail(sendEmail);
         return Result.Success();

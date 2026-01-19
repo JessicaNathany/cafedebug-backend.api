@@ -105,4 +105,13 @@ public class UserService(IUserRepository userRepository, IPasswordHasher<UserAdm
 
         return Result.Success(response);
     }
+
+    public async Task<Result<UserAdminResponse>> UpdateAsync(UserAdmin userAdmin)
+    {
+        await userRepository.UpdateAsync(userAdmin);
+        await userRepository.SaveChangesAsync();
+
+        var response = MappingConfig.ToUserAdmin(userAdmin);
+        return Result.Success(response);
+    }
 }

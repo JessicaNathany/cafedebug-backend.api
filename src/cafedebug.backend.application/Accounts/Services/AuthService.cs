@@ -1,6 +1,7 @@
 ﻿using cafedebug.backend.application.Accounts.DTOs.Response;
 using cafedebug.backend.application.Accounts.Interfaces;
 using cafedebug.backend.application.Common.Mappings;
+using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Accounts.Errors;
 using cafedebug_backend.domain.Accounts.Services;
 using cafedebug_backend.domain.Shared;
@@ -29,16 +30,24 @@ public class AuthService(IUserService userService, IJWTService jwtService) : IAu
         if (!checkedPassword)
             return Result.Failure<JWTTokenResponse>(AuthError.InvalidCredentials());
 
-        var user = userResult.Value;
+        var userResponse = userResult.Value;
 
-        //var tokenResult = await jwtService.GenerateAccesTokenAndRefreshtoken(user);
+        var userAdmin = new UserAdmin
+        {
+            Id = userResponse.Id,
+            Email = userResponse.Email,
+            Name = userResponse.Name,
+            CreatedDate = userResponse.CreatedDate,
+            HashedPassword = userResponse.HashedPassword,
+            LastUpdate = userResponse.LastUpdate
+        };
+       
+        var tokenResult = await jwtService.GenerateAccesTokenAndRefreshtoken(userAdmin);
 
-        //if (!tokenResult.IsSuccess)
-        //    return Result.Failure<JWTTokenResponse>(AuthError.TokenGenerationFailed(user.Id));
+        if (tokenResult is null)
+            return Result.Failure<JWTTokenResponse>(AuthError.TokenGenerationFailed(userAdmin.Id));
 
-        //return Result.Success(token);
-
-        throw new NotImplementedException();
+        return tokenResult;
     }
 
     public async Task<Result<JWTTokenResponse>> RefreshTokenAsync(string refreshToken)
@@ -87,9 +96,7 @@ public class AuthService(IUserService userService, IJWTService jwtService) : IAu
             StringBuilder builder = new StringBuilder();
 
             for (int i = 0; i < bytes.Length; i++)
-            {
                 builder.Append(bytes[i].ToString("x2"));
-            }
 
             return builder.ToString();
         }
