@@ -1,10 +1,7 @@
 ﻿using cafedebug.backend.api.test.Shared;
 using cafedebug.backend.api.test.Shared.Mocks.Banners;
-using cafedebug.backend.api.test.Shared.Mocks.Podcasts;
-using cafedebug.backend.api.test.Shared.Setups;
-using cafedebug.backend.api.test.Shared.Setups.Podcasts;
+using cafedebug.backend.api.test.Shared.Setups.Banners;
 using cafedebug.backend.api.test.Shared.Verifications;
-using cafedebug.backend.api.test.Shared.Verifications.Podcasts;
 using cafedebug.backend.application.Banners.Services;
 using cafedebug_backend.domain.Banners;
 using cafedebug_backend.domain.Banners.Repositories;
