@@ -1,5 +1,5 @@
 ﻿using cafedebug.backend.application.Accounts.DTOs.Response;
-using cafedebug.backend.application.Accounts.Services;
+using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Accounts.Errors;
 using cafedebug_backend.domain.Accounts.Repositories;
 using cafedebug_backend.domain.Accounts.Tokens;
@@ -12,6 +12,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Principal;
+using System.Text;
 
 namespace cafedebug_backend.domain.Accounts.Services;
 
@@ -34,10 +35,10 @@ public class JWTService(
         if (user is null)
             return Result.Failure<JWTTokenResponse>(UserError.NotFound(email));
 
-        var passwordVerificationResult = passwordHasher.VerifyHashedPassword(user, user.HashedPassword, password);
-
-        if (passwordVerificationResult is PasswordVerificationResult.Failed)
-                return Result.Failure<JWTTokenResponse>(TokenError.PasswordInvalid());
+        // Usar o mesmo sistema de verificação do UserService (SHA256)
+        var hashedPassword = GenerateSHA256(password);
+        if (user.HashedPassword != hashedPassword)
+            return Result.Failure<JWTTokenResponse>(TokenError.PasswordInvalid());
 
         var token = await GenerateAccesTokenAndRefreshtoken(user);
 
@@ -45,6 +46,20 @@ public class JWTService(
             return Result.Failure<JWTTokenResponse>(TokenError.ErrorCreatingToken(user.Email));
 
         return Result.Success(token);
+    }
+
+    private string GenerateSHA256(string password)
+    {
+        using (var sha256Hash = SHA256.Create())
+        {
+            byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
+            StringBuilder builder = new StringBuilder();
+
+            for (int i = 0; i < bytes.Length; i++)
+                builder.Append(bytes[i].ToString("x2"));
+
+            return builder.ToString();
+        }
     }
 
     public async Task<Result<JWTToken>> RefreshTokenAsync(string refreshToken)

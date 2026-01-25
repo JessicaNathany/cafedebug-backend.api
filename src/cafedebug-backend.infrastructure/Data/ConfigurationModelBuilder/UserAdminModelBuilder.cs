@@ -18,9 +18,28 @@ public class UserAdminModelBuilder : IEntityTypeConfiguration<UserAdmin>
             .HasColumnType("varchar(50)")
             .IsRequired();
 
+        builder.Property(b => b.CreatedDate)
+           .HasColumnType("datetime")
+           .IsRequired(false);
+
+        builder.Property(b => b.LastUpdate)
+           .HasColumnType("datetime")
+           .IsRequired(false);
+
+        builder.Property(b => b.CreatedBy)
+           .HasColumnType("varchar(50)")
+           .IsRequired(false)
+           .HasDefaultValue(null);
+
+        builder.Property(b => b.UpdatedBy)
+           .HasColumnType("varchar(50)")
+           .IsRequired(false)
+           .HasDefaultValue(null);
+
         builder.Property(b => b.HashedPassword)
             .IsRequired()
             .HasColumnType("varchar(500)");
+            
         builder.ToTable("UserAdmin");
     }
 }

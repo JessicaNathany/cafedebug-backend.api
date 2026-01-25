@@ -53,7 +53,7 @@ namespace cafedebug_backend.api.Controllers.Admin
             return await teamService.GetByIdAsync(id);
         }
 
-        [HttpGet("{name}")]
+        //[HttpGet("{name}")]
         [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
