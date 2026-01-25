@@ -59,11 +59,6 @@ public static class MappingConfig
         };
     }
 
-    public static TeamResponse ToTeam(this Team team)
-    {
-        throw new NotImplementedException();
-    }
-
     public static UserAdminResponse ToUserAdmin(this UserAdmin user)
     {
         throw new NotImplementedException();

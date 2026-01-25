@@ -12,16 +12,16 @@ namespace cafedebug_backend.api.Controllers.Admin
     [Produces("application/json")]
     [Route("api/v1/admin/teams")]
     [Tags("Admin - Teams")]
-    public class TeamsController(ITeamService teamService) : ControllerBase
+    public class TeamsController(ITeamMemberService teamMemberService) : ControllerBase
     {
         [HttpPost]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Result>> CreateAsync([FromBody] TeamRequest request)
+        public async Task<ActionResult<Result>> CreateAsync([FromBody] TeamMemberRequest memberRequest)
         {
             // TODO: need to implement token validation. I'll do that next part
-            return await teamService.CreateAsync(request);
+            return await teamMemberService.CreateAsync(memberRequest);
         }
 
         [HttpPut("{id}")]
@@ -29,10 +29,10 @@ namespace cafedebug_backend.api.Controllers.Admin
         [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Result>> UpdateAsync([FromBody] TeamRequest request, int id)
+        public async Task<ActionResult<Result>> UpdateAsync([FromBody] TeamMemberRequest memberRequest, int id)
         {
             // TODO: need to implement token validation. I'll do that next part
-            return await teamService.UpdateAsync(id, request);
+            return await teamMemberService.UpdateAsync(id, memberRequest);
         }
 
         [HttpGet]
@@ -41,7 +41,7 @@ namespace cafedebug_backend.api.Controllers.Admin
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<Result>> GetAllAsync([FromQuery] PageRequest request)
         {
-            return await teamService.GetAllAsync(request);
+            return await teamMemberService.GetAllAsync(request);
         }
 
         [HttpGet("{id}")]
@@ -50,16 +50,7 @@ namespace cafedebug_backend.api.Controllers.Admin
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Result>> GetByIdAsync(int id)
         {
-            return await teamService.GetByIdAsync(id);
-        }
-
-        [HttpGet("{name}")]
-        [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Result>> GetByNameAsync(string name)
-        {
-            return await teamService.GetByNameAsync(name);
+            return await teamMemberService.GetByIdAsync(id);
         }
 
         [HttpDelete("{id}")]
@@ -70,7 +61,7 @@ namespace cafedebug_backend.api.Controllers.Admin
         public async Task<ActionResult<Result>> Delete(int id)
         {
             // TODO: need to implement token validation. I'll do that next part
-            return await teamService.DeleteAsync(id);
+            return await teamMemberService.DeleteAsync(id);
         }
     }
 }
