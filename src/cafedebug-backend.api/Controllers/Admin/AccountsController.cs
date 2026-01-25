@@ -1,6 +1,5 @@
 ﻿using cafedebug.backend.application.Accounts.DTOs.Requests;
 using cafedebug.backend.application.Accounts.Interfaces;
-using cafedebug_backend.domain.Accounts.Services;
 using cafedebug_backend.domain.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
