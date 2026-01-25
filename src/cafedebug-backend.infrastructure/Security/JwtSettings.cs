@@ -2,19 +2,21 @@
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace cafedebug_backend.domain.Jwt
+namespace cafedebug_backend.infrastructure.Security
 {
     public class JwtSettings
     {
-        public string Audience { get; }
-        public string Issuer { get; }
-        public int ValidForMinutes { get; }
-        public int RefreshTokenValidForMinutes { get; }
-        public SigningCredentials SigningCredentials { get; }
+        public string Audience { get; set; }
+        public string Issuer { get; set; }
+        public int ValidForMinutes { get; set; }
+        public int RefreshTokenValidForMinutes { get; set; }
+        public SigningCredentials SigningCredentials { get; set; }
         public DateTime IssuedAt => DateTime.UtcNow;
         public DateTime NotBefore => DateTime.UtcNow;
         public DateTime AccessTokenExpiration => IssuedAt.AddMinutes(ValidForMinutes);
         public DateTime RefreshTokenExpiration => IssuedAt.AddMinutes(RefreshTokenValidForMinutes);
+
+        public JwtSettings() {}
 
         public JwtSettings(IConfiguration configuration)
         {
@@ -25,6 +27,13 @@ namespace cafedebug_backend.domain.Jwt
 
             var signingKey = configuration["JwtSettings:SigningKey"];
             var symetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey)); 
+            SigningCredentials = new SigningCredentials(symetricKey, SecurityAlgorithms.HmacSha256);
+        }
+
+        // configure SigningCredentials after bind
+        public void ConfigureSigningCredentials(string signingKey)
+        {
+            var symetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey));
             SigningCredentials = new SigningCredentials(symetricKey, SecurityAlgorithms.HmacSha256);
         }
     }
