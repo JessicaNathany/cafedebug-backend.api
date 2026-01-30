@@ -1,9 +1,9 @@
-﻿using cafedebug_backend.domain.Banners;
+﻿using cafedebug.backend.application.Banners.DTOs.Requests;
 using FluentValidation;
 
 namespace cafedebug.backend.application.Banners.Validators;
 
-public class BannerValidator : AbstractValidator<Banner>
+public class BannerValidator : AbstractValidator<BannerRequest>
 {
     public BannerValidator()
     {

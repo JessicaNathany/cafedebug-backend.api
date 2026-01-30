@@ -12,7 +12,7 @@ public static class AuthError
 
     public static Error EmptyCredentials()
     {
-        return new Error(ErrorType.BadRequest, $"Email and password must not be empty");
+        return new Error(ErrorType.ResourceUnauthorized, $"Email and password must not be empty");
     }
     public static Error TokenGenerationFailed(int userId)
     {
@@ -36,6 +36,6 @@ public static class AuthError
 
     public static Error RefreshTokenGenerationFailed()
     {
-        return new Error(ErrorType.BadRequest, "Error creating new token");
+        return new Error(ErrorType.ResourceUnauthorized, "Error creating new token");
     }
 }

@@ -1,38 +1,15 @@
-﻿using cafedebug.backend.application.Accounts.Interfaces;
-using cafedebug.backend.application.Accounts.Services;
-using cafedebug.backend.application.Service;
-using cafedebug_backend.domain.Accounts;
-using cafedebug_backend.domain.Accounts.Services;
-using cafedebug_backend.domain.Messages.Email.Services;
-using cafedebug_backend.infrastructure.Email;
+﻿using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
 namespace cafedebug_backend.api.Configurations;
-
 public static class DependencyInjectionConfig
 {
-    
     public static void ResolveDependencies(this IServiceCollection service, IConfiguration configuration)
     {
-        #region Services
-
-        service.AddScoped<IJWTService, JWTService>();
-        service.AddScoped<IEmailService, EmailService>();
-        service.AddScoped<IEmailSender, SmtpEmailSender>();
-        service.AddScoped<IAuthService, AuthService>();
-        service.AddScoped<IAccountService, AccountService>();
-        service.AddScoped<IUserService, UserService>();
-
-        #endregion
-        
-        #region Others
-
         AddAuthorizationConfiguration(service, configuration);
-
-        #endregion
     }
 
     private static IServiceCollection AddAuthorizationConfiguration(this IServiceCollection service, IConfiguration configuration)

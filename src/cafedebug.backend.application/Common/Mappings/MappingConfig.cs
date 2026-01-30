@@ -75,7 +75,7 @@ public static class MappingConfig
         };
     }
 
-    public static JWTTokenResponse ToToken(this JWTToken token)
+    public static JWTTokenResponse ToToken(this JWTToken? token)
     {
         return new JWTTokenResponse
         {

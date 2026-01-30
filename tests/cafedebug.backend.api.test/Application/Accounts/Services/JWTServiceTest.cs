@@ -2,15 +2,14 @@
 using cafedebug.backend.api.test.Shared.Mocks.Accounts;
 using cafedebug.backend.api.test.Shared.Setups.Accounts;
 using cafedebug.backend.api.test.Shared.Verifications.Account;
+using cafedebug.backend.application.Accounts.Services;
 using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Accounts.Repositories;
-using cafedebug_backend.domain.Accounts.Services;
 using cafedebug_backend.domain.Accounts.Tokens;
 using cafedebug_backend.domain.Interfaces.Repositories;
 using cafedebug_backend.domain.Shared.Errors;
 using cafedebug_backend.infrastructure.Security;
 using FluentAssertions;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
 using System.Text;
@@ -22,21 +21,16 @@ namespace cafedebug.backend.api.test.Application.Accounts.Services;
 public class JWTServiceTest : BaseTest
 {
     private readonly JWTService _jwtService;
-    private readonly AccountTestDataMock _accountTestDataMock;
     private readonly UserRepositoryMockSetup _userRepositoryMockSetup;
     private readonly UserRepositoryVerification _userVerifications;
-    private readonly Mock<IPasswordHasher<UserAdmin>> _passwordHasherMock;
     private readonly Mock<IRefreshTokensRepository> _refreshTokensRepositoryMock;
     private readonly Mock<IUserRepository> _userRepositoryMock;
     private readonly JwtSettings _jwtSettings;
 
     public JWTServiceTest()
     {
-        _accountTestDataMock = new AccountTestDataMock(Fixture);
-
         _userRepositoryMock = new Mock<IUserRepository>();
         _refreshTokensRepositoryMock = new Mock<IRefreshTokensRepository>();
-        _passwordHasherMock = new Mock<IPasswordHasher<UserAdmin>>();
 
         // Configure JwtSettings
         _jwtSettings = new JwtSettings
@@ -50,7 +44,7 @@ public class JWTServiceTest : BaseTest
                 SecurityAlgorithms.HmacSha256)
         };
 
-        _jwtService = new JWTService(_jwtSettings, _refreshTokensRepositoryMock.Object, _userRepositoryMock.Object, _passwordHasherMock.Object);
+        _jwtService = new JWTService(_jwtSettings, _refreshTokensRepositoryMock.Object, _userRepositoryMock.Object);
         _userRepositoryMockSetup = new UserRepositoryMockSetup(_userRepositoryMock);
         _userVerifications = new UserRepositoryVerification(_userRepositoryMock);
     }
@@ -61,20 +55,20 @@ public class JWTServiceTest : BaseTest
         // Arrange
         var email = "test@cafedebug.com";
         var password = "password123";
+        var hashedPassword = GenerateSHA256(password); 
         var user = new UserAdmin
         {
             Id = 1,
             Email = email,
             Name = "Test User",
-            HashedPassword = "hashedpassword"
+            HashedPassword = hashedPassword 
         };
 
         _userRepositoryMockSetup.GetUserByEmail(user);
-        _passwordHasherMock.Setup(x => x.VerifyHashedPassword(user, user.HashedPassword, password))
-            .Returns(PasswordVerificationResult.Success);
 
         _refreshTokensRepositoryMock.Setup(x => x.GetByTokenByUserIdAsync(user.Id))
             .ReturnsAsync((RefreshTokens)null);
+        
         _refreshTokensRepositoryMock.Setup(x => x.SaveAsync(It.IsAny<RefreshTokens>()))
             .Returns(Task.CompletedTask);
 
@@ -91,7 +85,6 @@ public class JWTServiceTest : BaseTest
         result.Value.ExpiresIn.Should().BeGreaterThan(0);
 
         _userVerifications.VerifyGetUserByEmail(email, Times.Once());
-        _passwordHasherMock.Verify(x => x.VerifyHashedPassword(user, user.HashedPassword, password), Times.Once());
     }
 
     [Fact]
@@ -110,7 +103,6 @@ public class JWTServiceTest : BaseTest
         result.Error.Should().NotBeNull();
 
         _userVerifications.VerifyGetUserByEmail(Times.Never());
-        _passwordHasherMock.Verify(x => x.VerifyHashedPassword(It.IsAny<UserAdmin>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
     }
 
     [Fact]
@@ -129,7 +121,6 @@ public class JWTServiceTest : BaseTest
         result.Error.Should().NotBeNull();
 
         _userVerifications.VerifyGetUserByEmail(Times.Never());
-        _passwordHasherMock.Verify(x => x.VerifyHashedPassword(It.IsAny<UserAdmin>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
     }
 
     [Fact]
@@ -151,7 +142,6 @@ public class JWTServiceTest : BaseTest
         result.Error.Code.Should().Be(nameof(ErrorType.ResourceNotFound));
 
         _userVerifications.VerifyGetUserByEmail(email, Times.Once());
-        _passwordHasherMock.Verify(x => x.VerifyHashedPassword(It.IsAny<UserAdmin>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
     }
 
     [Fact]
@@ -159,21 +149,22 @@ public class JWTServiceTest : BaseTest
     {
         // Arrange
         var email = "test@cafedebug.com";
-        var password = "wrongpassword";
+        var correctPassword = "password123";
+        var wrongPassword = "wrongpassword";
+        var correctHash = GenerateSHA256(correctPassword); 
+        
         var user = new UserAdmin
         {
             Id = 1,
             Email = email,
             Name = "Test User",
-            HashedPassword = "hashedpassword"
+            HashedPassword = correctHash 
         };
 
         _userRepositoryMockSetup.GetUserByEmail(user);
-        _passwordHasherMock.Setup(x => x.VerifyHashedPassword(user, user.HashedPassword, password))
-            .Returns(PasswordVerificationResult.Failed);
 
         // Act
-        var result = await _jwtService.GenerateToken(email, password);
+        var result = await _jwtService.GenerateToken(email, wrongPassword);
 
         // Assert
         result.Should().NotBeNull();
@@ -181,7 +172,21 @@ public class JWTServiceTest : BaseTest
         result.Error.Should().NotBeNull();
 
         _userVerifications.VerifyGetUserByEmail(email, Times.Once());
-        _passwordHasherMock.Verify(x => x.VerifyHashedPassword(user, user.HashedPassword, password), Times.Once());
+        
+    }
+
+    private string GenerateSHA256(string password)
+    {
+        using (var sha256Hash = System.Security.Cryptography.SHA256.Create())
+        {
+            byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
+            var builder = new StringBuilder();
+
+            for (int i = 0; i < bytes.Length; i++)
+                builder.Append(bytes[i].ToString("x2"));
+
+            return builder.ToString();
+        }
     }
 
     [Fact]
@@ -200,10 +205,11 @@ public class JWTServiceTest : BaseTest
 
         _refreshTokensRepositoryMock.Setup(x => x.GetByTokenAsync(refreshTokenString))
             .ReturnsAsync(refreshToken);
+        
         _refreshTokensRepositoryMock.Setup(x => x.UpdateAsync(It.IsAny<RefreshTokens>()))
             .Returns(Task.CompletedTask);
-        _userRepositoryMock.Setup(x => x.GetByIdAsync(user.Id))
-            .ReturnsAsync(user);
+        
+        _userRepositoryMock.Setup(x => x.GetByIdAsync(user.Id)).ReturnsAsync(user);
 
         // Act
         var result = await _jwtService.RefreshTokenAsync(refreshTokenString);
@@ -277,7 +283,6 @@ public class JWTServiceTest : BaseTest
         // Assert
         result.Should().NotBeNullOrEmpty();
         result.Should().Contain(".");
-
     }
 
     [Fact]

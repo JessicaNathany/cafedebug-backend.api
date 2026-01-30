@@ -24,4 +24,8 @@
     <ProjectReference Include="..\cafedebug-backend.domain\cafedebug-backend.domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Email\" />
+  </ItemGroup>
+
 </Project>

@@ -48,16 +48,16 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
 // Add FluentValidation to ASP.NET Core
 builder.Services.AddControllers(options =>
-    {
-        options.Filters.Add<AfterHandlerActionFilterAttribute>();
-        options.Filters.Add<ApiExceptionFilterAttribute>();
-    })
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-        options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
-    });
+{
+    options.Filters.Add<AfterHandlerActionFilterAttribute>();
+    options.Filters.Add<ApiExceptionFilterAttribute>();
+})
+.AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+});
 
 var app = builder.Build();
 

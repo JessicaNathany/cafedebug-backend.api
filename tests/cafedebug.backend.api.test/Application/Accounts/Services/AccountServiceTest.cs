@@ -2,11 +2,11 @@
 using cafedebug.backend.api.test.Shared.Mocks.Accounts;
 using cafedebug.backend.api.test.Shared.Setups.Accounts;
 using cafedebug.backend.api.test.Shared.Verifications.Account;
+using cafedebug.backend.application.Accounts.Interfaces;
 using cafedebug.backend.application.Accounts.Services;
+using cafedebug.backend.application.Audience.Interfaces;
 using cafedebug_backend.domain.Accounts;
-using cafedebug_backend.domain.Accounts.Services;
 using cafedebug_backend.domain.Interfaces.Repositories;
-using cafedebug_backend.domain.Messages.Email.Services;
 using cafedebug_backend.domain.Shared.Errors;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;

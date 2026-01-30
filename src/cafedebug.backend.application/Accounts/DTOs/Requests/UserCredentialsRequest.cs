@@ -1,14 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace cafedebug.backend.application.Accounts.DTOs.Requests
+﻿namespace cafedebug.backend.application.Accounts.DTOs.Requests
 {
-    public class UserCredentialsRequest
+    public sealed record UserCredentialsRequest
     {
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
-        
-        [Required]
-        public string Password { get; set; }
+        public string Email { get; init; }
+        public string Password { get; init; }
     }
 }

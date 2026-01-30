@@ -1,9 +1,7 @@
 ﻿using cafedebug.backend.application.Accounts.DTOs.Response;
 using cafedebug.backend.application.Accounts.Interfaces;
-using cafedebug.backend.application.Common.Mappings;
 using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Accounts.Errors;
-using cafedebug_backend.domain.Accounts.Services;
 using cafedebug_backend.domain.Shared;
 using System.Security.Cryptography;
 using System.Text;
@@ -74,9 +72,8 @@ public class AuthService(IUserService userService, IJWTService jwtService) : IAu
 
         if (newToken is null)
             return Result.Failure<JWTTokenResponse>(AuthError.RefreshTokenGenerationFailed());
-      
-        var response = MappingConfig.ToToken(newToken);
-        return Result.Success(response);
+       
+        return Result.Success(newToken);
     }
     private bool CheckPassword(string password, string passwordHash)
     {
