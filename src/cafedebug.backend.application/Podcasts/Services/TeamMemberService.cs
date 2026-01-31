@@ -10,9 +10,9 @@ using cafedebug.backend.application.Common.Mappings;
 namespace cafedebug.backend.application.Podcasts.Services;
 
 /// <summary>
-/// Service responsible for managing team, including creation, updating, deletion, and retrieval operations.
+/// Service responsible for managing a team member, including creation, updating, deletion, and retrieval operations.
 /// </summary>
-public class TeamMemberMemberService(ITeamMemberRepository teamMemberRepository) : ITeamMemberService
+public class TeamMemberService(ITeamMemberRepository teamMemberRepository) : ITeamMemberService
 {
     public async Task<Result<TeamMemberResponse>> CreateAsync(TeamMemberRequest memberRequest)
     {

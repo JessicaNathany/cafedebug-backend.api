@@ -5,18 +5,18 @@ namespace cafedebug.backend.application.Podcasts.DTOs.Responses;
 public sealed record TeamMemberResponse
 {
     public int Id { get; init; }
-    public string Name { get; init; }
+    public required string Name { get; init; }
     public string? Nickname { get; init; }
     public string? Email { get; init; }
     public string? Bio { get; init; }
-    public string PodcastRole { get; init; }
+    public required string PodcastRole { get; init; }
     public string? GitHubUrl { get; init; }
     public string? InstagramUrl { get; init; }
     public string? LinkedInUrl { get; init; }
-    public string ProfilePhotoUrl { get; init; }
+    public required string ProfilePhotoUrl { get; init; }
     public string? JobTitle { get; init; }
     public bool IsActive { get; init; }
-    public DateTime JoinedAt { get; init; }
+    public DateTime? JoinedAt { get; init; }
     public DateTime CreatedAt { get; init; }
     public DateTime? UpdatedAt { get; init; }
 

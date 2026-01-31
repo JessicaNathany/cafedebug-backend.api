@@ -18,7 +18,7 @@ public class TeamMember : Entity
     public string ProfilePhotoUrl { get; private set; }
     public string? JobTitle { get; private set; }
     public bool IsActive { get; private set; }
-    public DateTime JoinedAt { get; private set; }
+    public DateTime? JoinedAt { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
     
@@ -27,7 +27,7 @@ public class TeamMember : Entity
     
     public TeamMember(string name, string? nickname, string? email, string? bio, string podcastRole, 
         string? githubUrl, string? instagramUrl, string? linkedInUrl, string profilePhotoUrl, 
-        string? jobTitle, bool isActive, DateTime joinedAt)
+        string? jobTitle, bool isActive, DateTime? joinedAt)
     {
         Name = name;
         Nickname = nickname;
@@ -56,7 +56,7 @@ public class TeamMember : Entity
         string profilePhotoUrl, 
         string? jobTitle, 
         bool isActive, 
-        DateTime joinedAt)
+        DateTime? joinedAt)
     {
         Name = name;
         Email = email;
