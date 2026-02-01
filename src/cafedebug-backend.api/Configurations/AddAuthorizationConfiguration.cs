@@ -3,21 +3,27 @@ using cafedebug_backend.infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using System.Diagnostics;
 
 namespace cafedebug_backend.api.Configurations;
-public static class DependencyInjectionConfig
+public static class AddAuthorizationConfiguration
 {
     public static void ResolveDependencies(this IServiceCollection service, IConfiguration configuration)
     {
-        AddAuthorizationConfiguration(service, configuration);
+        AddJWTConfiguration(service, configuration);
     }
 
-    private static IServiceCollection AddAuthorizationConfiguration(this IServiceCollection service, IConfiguration configuration)
+    private static IServiceCollection AddJWTConfiguration(this IServiceCollection service, IConfiguration configuration)
     {
         var jwtSettings = new JwtSettings();
         configuration.GetSection("JwtSettings").Bind(jwtSettings);
         
         var signingKey = configuration["JwtSettings:SigningKey"];
+        if (string.IsNullOrEmpty(signingKey))
+        {
+            throw new InvalidOperationException("JWT SigningKey is not configured or is empty");
+        }
+        
         jwtSettings.ConfigureSigningCredentials(signingKey);
         
         service.AddSingleton(jwtSettings);
@@ -41,7 +47,7 @@ public static class DependencyInjectionConfig
                 RequireExpirationTime = true,         
                 ValidIssuer = jwtSettings.Issuer,
                 ValidAudience = jwtSettings.Audience,
-                IssuerSigningKey = jwtSettings.SigningCredentials.Key,
+                IssuerSigningKey = jwtSettings.SigningCredentials?.Key,
                 ClockSkew = TimeSpan.Zero             
             };
 
@@ -50,8 +56,8 @@ public static class DependencyInjectionConfig
                 OnAuthenticationFailed = context =>
                 {
                     var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<JwtBearerEvents>>();
-                    logger.LogWarning("JWT authentication failed: {ErrorMessage} for {RequestPath}", 
-                        context.Exception.Message, 
+                    logger.LogError("JWT authentication failed: {ErrorMessage} for {RequestPath}", 
+                        context.Exception?.Message ?? "Unknown error", 
                         context.HttpContext.Request.Path);
                     return Task.CompletedTask;
                 },
@@ -63,14 +69,33 @@ public static class DependencyInjectionConfig
                         context.HttpContext.Request.Path);
                     return Task.CompletedTask;
                 },
-                OnChallenge = context =>
+                OnChallenge = async context =>
                 {
+                    // Stop default behavior 
+                    context.HandleResponse();
+
                     var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<JwtBearerEvents>>();
-                    logger.LogWarning("JWT authentication challenge triggered for {RequestPath}: {Error} - {ErrorDescription}", 
+                    logger.LogError("JWT authentication challenge triggered for {RequestPath}: {Error} - {ErrorDescription}", 
                         context.HttpContext.Request.Path,
                         context.Error ?? "No specific error",
                         context.ErrorDescription ?? "No description");
-                    return Task.CompletedTask;
+
+                    var traceId = Activity.Current?.Id ?? context.HttpContext.TraceIdentifier;
+
+                    var problemDetails = new
+                    {
+                        type = "https://tools.ietf.org/html/rfc7235#section-3.1",
+                        title = "Unauthorized",
+                        status = StatusCodes.Status401Unauthorized,
+                        detail = "Invalid or missing JWT token",
+                        instance = context.HttpContext.Request.Path.Value,
+                        traceId = traceId
+                    };
+
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    context.Response.ContentType = "application/problem+json";
+
+                    await context.Response.WriteAsJsonAsync(problemDetails);
                 },
                 OnMessageReceived = context =>
                 {

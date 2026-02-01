@@ -15,10 +15,12 @@ public class AfterHandlerActionFilterAttribute : ActionFilterAttribute
     {
         _failureHandlers = new Dictionary<ErrorType, Action<ActionExecutedContext, Result>>
         {
-            {ErrorType.ResourceUnauthorized, HandlerError},
+            {ErrorType.ResourceUnauthorized, HandlerUnauthorized},
             {ErrorType.ValidationError, HandlerValidationError},
             {ErrorType.ResourceNotFound, HandlerNotFound},
-            {ErrorType.ErrorWhenExecuting, HandlerError}
+            {ErrorType.ErrorWhenExecuting, HandlerError},
+            {ErrorType.Forbidden, HandlerForbidden},
+            {ErrorType.BadRequest, HandlerBadRequest}
         };
     }
 
@@ -100,6 +102,51 @@ public class AfterHandlerActionFilterAttribute : ActionFilterAttribute
         };
 
         context.Result = new NotFoundObjectResult(details);
+    }
+
+    private static void HandlerUnauthorized(ActionExecutedContext context, Result result)
+    {
+        var details = new ProblemDetails
+        {
+            Status = StatusCodes.Status401Unauthorized,
+            Title = "Unauthorized",
+            Type = "https://tools.ietf.org/html/rfc7235#section-3.1",
+            Detail = result.Error.Message
+        };
+
+        context.Result = new ObjectResult(details)
+        {
+            StatusCode = StatusCodes.Status401Unauthorized
+        };
+    }
+
+    private static void HandlerForbidden(ActionExecutedContext context, Result result)
+    {
+        var details = new ProblemDetails
+        {
+            Status = StatusCodes.Status403Forbidden,
+            Title = "Forbidden",
+            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3",
+            Detail = result.Error.Message
+        };
+
+        context.Result = new ObjectResult(details)
+        {
+            StatusCode = StatusCodes.Status403Forbidden
+        };
+    }
+
+    private static void HandlerBadRequest(ActionExecutedContext context, Result result)
+    {
+        var details = new ProblemDetails
+        {
+            Status = StatusCodes.Status400BadRequest,
+            Title = "Bad Request",
+            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+            Detail = result.Error.Message
+        };
+
+        context.Result = new BadRequestObjectResult(details);
     }
     
     private static void HandlerError(ActionExecutedContext context, Result result)

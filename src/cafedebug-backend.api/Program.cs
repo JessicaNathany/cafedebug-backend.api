@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using cafedebug_backend.api.Configurations;
 using cafedebug_backend.api.Filters;
 using cafedebug_backend.api.Infrastructure.HealthChecks;
+using cafedebug_backend.api.Middleware;
 using cafedebug_backend.infrastructure.Common.Extensions;
 using cafedebug.backend.application.Common.Extensions;
 using DotNetEnv;
@@ -70,6 +71,9 @@ if (app.Environment.IsDevelopment())
 app.UseSerilog();
 app.UseAppHealthChecks();
 app.UseHttpsRedirection();
+
+// Add authentication middleware before UseAuthentication
+app.UseMiddleware<AuthenticationMiddleware>();
 
 app.UseAuthentication();  
 app.UseAuthorization();   
