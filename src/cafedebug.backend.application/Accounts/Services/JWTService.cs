@@ -1,28 +1,29 @@
 ﻿using cafedebug.backend.application.Accounts.DTOs.Response;
-using cafedebug.backend.application.Accounts.Services;
+using cafedebug.backend.application.Accounts.Interfaces;
+using cafedebug.backend.application.Common.Mappings;
+using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Accounts.Errors;
 using cafedebug_backend.domain.Accounts.Repositories;
 using cafedebug_backend.domain.Accounts.Tokens;
 using cafedebug_backend.domain.Interfaces.Repositories;
 using cafedebug_backend.domain.Shared;
 using cafedebug_backend.infrastructure.Security;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Principal;
+using System.Text;
 
-namespace cafedebug_backend.domain.Accounts.Services;
+namespace cafedebug.backend.application.Accounts.Services;
 
 /// <summary>
 /// Service responsible for generating and managing JWT tokens.
 /// </summary>
 public class JWTService(
-    JwtSettings jwtSettings, 
-    IRefreshTokensRepository refreshTokensRepository, 
-    IUserRepository userRepository,
-    IPasswordHasher<UserAdmin> passwordHasher) : IJWTService
+    JwtSettings jwtSettings,
+    IRefreshTokensRepository refreshTokensRepository,
+    IUserRepository userRepository) : IJWTService
 {
     public async Task<Result<JWTTokenResponse>> GenerateToken(string email, string password)
     {
@@ -34,25 +35,38 @@ public class JWTService(
         if (user is null)
             return Result.Failure<JWTTokenResponse>(UserError.NotFound(email));
 
-        var passwordVerificationResult = passwordHasher.VerifyHashedPassword(user, user.HashedPassword, password);
-
-        if (passwordVerificationResult is PasswordVerificationResult.Failed)
-                return Result.Failure<JWTTokenResponse>(TokenError.PasswordInvalid());
+        var hashedPassword = GenerateSHA256(password);
+        if (user.HashedPassword != hashedPassword)
+            return Result.Failure<JWTTokenResponse>(TokenError.PasswordInvalid());
 
         var token = await GenerateAccesTokenAndRefreshtoken(user);
 
-        if(token is null)
+        if (token is null)
             return Result.Failure<JWTTokenResponse>(TokenError.ErrorCreatingToken(user.Email));
 
         return Result.Success(token);
     }
 
-    public async Task<Result<JWTToken>> RefreshTokenAsync(string refreshToken)
+    private string GenerateSHA256(string password)
+    {
+        using (var sha256Hash = SHA256.Create())
+        {
+            byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
+            StringBuilder builder = new StringBuilder();
+
+            for (int i = 0; i < bytes.Length; i++)
+                builder.Append(bytes[i].ToString("x2"));
+
+            return builder.ToString();
+        }
+    }
+
+    public async Task<Result<JWTTokenResponse>> RefreshTokenAsync(string refreshToken)
     {
         var refreshTokenResult = await GetByTokenAsync(refreshToken);
 
         if (!refreshTokenResult.IsSuccess || refreshTokenResult.Value == null || refreshTokenResult.Value.ExpirationDate <= DateTime.UtcNow)
-            return Result.Failure<JWTToken>(AuthError.RefreshTokenInvalid());
+            return Result.Failure<JWTTokenResponse>(AuthError.RefreshTokenInvalid());
 
         var refreshTokenEntity = refreshTokenResult.Value;
 
@@ -74,7 +88,7 @@ public class JWTService(
         // get user by token user id
         var user = await userRepository.GetByIdAsync(refreshTokenEntity.UserId);
         if (user is null)
-            return Result.Failure<JWTToken>(UserError.NotFound(""));
+            return Result.Failure<JWTTokenResponse>(UserError.NotFound(""));
 
         var identity = GetClaimsIdentity(user);
         var jsonSecurityHandler = new JwtSecurityTokenHandler();
@@ -90,10 +104,12 @@ public class JWTService(
         });
         var accessToken = jsonSecurityHandler.WriteToken(securityToken);
 
-        return Result.Success(JWTToken.Create(
+        var response = MappingConfig.ToToken(JWTToken.Create(
             accessToken, refreshTokenEntity,
             TokenType.Bearer.ToString(),
             (long)TimeSpan.FromMinutes(jwtSettings.ValidForMinutes).TotalSeconds));
+
+        return Result.Success(response);
     }
 
     public string GenerateResetToken(int userId)
@@ -101,7 +117,7 @@ public class JWTService(
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = jwtSettings.SigningCredentials.Key as SymmetricSecurityKey;
 
-        if (key == null)
+        if (key is null)
             throw new InvalidOperationException("Signing key is not a symmetric key.");
 
         var tokenDescriptor = new SecurityTokenDescriptor
@@ -134,10 +150,10 @@ public class JWTService(
         return new JWTTokenResponse
         {
             AccessToken = accessToken,
-            RefreshToken = new RefreshTokenResponse 
-            { 
-                Token = createRefreshToken.Token, 
-                ExpirationDate = createRefreshToken.ExpirationDate 
+            RefreshToken = new RefreshTokenResponse
+            {
+                Token = createRefreshToken.Token,
+                ExpirationDate = createRefreshToken.ExpirationDate
             },
             TokenType = TokenType.Bearer.ToString(),
             ExpiresIn = (long)TimeSpan.FromMinutes(jwtSettings.ValidForMinutes).TotalSeconds
@@ -186,17 +202,15 @@ public class JWTService(
 
         var refreshTokenByUser = await refreshTokensRepository.GetByTokenByUserIdAsync(userId);
 
-        if (refreshTokenByUser != null)
-        {
-            refreshTokenByUser.UpdateToken(token, expirationDate);
-            await refreshTokensRepository.UpdateAsync(refreshTokenByUser);
-            return refreshTokenByUser;
-        }
-        else
+        if (refreshTokenByUser is null)
         {
             var refreshToken = RefreshTokens.Create(userId, userName, token, expirationDate, now);
             await refreshTokensRepository.SaveAsync(refreshToken);
             return refreshToken;
         }
+
+        refreshTokenByUser.UpdateToken(token, expirationDate);
+        await refreshTokensRepository.UpdateAsync(refreshTokenByUser);
+        return refreshTokenByUser;
     }
 }

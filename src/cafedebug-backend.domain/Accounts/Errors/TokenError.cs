@@ -22,6 +22,6 @@ public static class TokenError
 
     public static Error ErrorCreatingToken(string email)
     {
-        return new Error(ErrorType.BadRequest, $"Error creating token for user. {email}");
+        return new Error(ErrorType.ResourceUnauthorized, $"Error creating token for user. {email}");
     }
 }

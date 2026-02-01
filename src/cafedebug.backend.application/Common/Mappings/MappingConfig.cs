@@ -7,7 +7,6 @@ using cafedebug_backend.domain.Banners;
 using cafedebug_backend.domain.Podcasts;
 
 namespace cafedebug.backend.application.Common.Mappings;
-
 public static class MappingConfig
 {
     public static BannerResponse ToBanner(this Banner banner)
@@ -68,15 +67,15 @@ public static class MappingConfig
     {
         return new UserAdminResponse
         {
-            CreatedDate = user.CreatedDate,
+            CreatedDate = (DateTime)user.CreatedDate,
             Name = user.Name,
             Email = user.Email,
             HashedPassword = user.HashedPassword,
-            LastUpdate = user.LastUpdate
+            LastUpdate = (DateTime)user.LastUpdate
         };
     }
 
-    public static JWTTokenResponse ToToken(this JWTToken token)
+    public static JWTTokenResponse ToToken(this JWTToken? token)
     {
         return new JWTTokenResponse
         {

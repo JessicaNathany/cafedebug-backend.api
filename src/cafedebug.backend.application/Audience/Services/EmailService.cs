@@ -1,17 +1,17 @@
-ï»¿using System.Net.Mail;
+using System.Net.Mail;
 using System.Text;
+using cafedebug.backend.application.Audience.Interfaces;
 using cafedebug_backend.domain.Messages.Email.Request;
-using cafedebug_backend.domain.Messages.Email.Services;
 using cafedebug_backend.infrastructure.Constants;
 using Microsoft.Extensions.Logging;
 
-namespace cafedebug_backend.infrastructure.Email;
+namespace cafedebug.backend.application.Audience.Services;
 
 public class EmailService : IEmailService
 {
     private readonly ILogger<EmailService> _logger;
-    private readonly IEmailSender _emailSender;
-    public EmailService(ILogger<EmailService> logger, IEmailSender emailSender)
+    private readonly IEmailSenderService _emailSender;
+    public EmailService(ILogger<EmailService> logger, IEmailSenderService emailSender)
     {
         _logger = logger;
         _emailSender = emailSender;
@@ -63,7 +63,7 @@ public class EmailService : IEmailService
                 BodyEncoding = Encoding.UTF8,
                 IsBodyHtml = true,
                 Priority = MailPriority.High,
-                Body = $"<html><body><h2>{emailRequest.MessageType}</h2><br /></p><p>Mensagem: VocÃª solicitou a recuperaÃ§Ã£o de senha, clique no link {url} para resetar sua senha </p></body></html>",
+                Body = $"<html><body><h2>{emailRequest.MessageType}</h2><br /></p><p>Mensagem: Você solicitou a recuperação de senha, clique no link {url} para resetar sua senha </p></body></html>",
                 From = new MailAddress(Environment.GetEnvironmentVariable("SMTP_FROM_EMAIL"), Environment.GetEnvironmentVariable("SMTP_FROM_NAME"), Encoding.UTF8)
             };
 

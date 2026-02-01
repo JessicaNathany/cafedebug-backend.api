@@ -1,6 +1,6 @@
-﻿using cafedebug.backend.application.Banners.DTOs.Responses;
-using cafedebug.backend.application.Common.Pagination;
+﻿using cafedebug.backend.application.Common.Pagination;
 using cafedebug.backend.application.Podcasts.DTOs.Requests;
+using cafedebug.backend.application.Podcasts.DTOs.Responses;
 using cafedebug.backend.application.Podcasts.Interfaces.Teams;
 using cafedebug_backend.domain.Shared;
 using Microsoft.AspNetCore.Authorization;
@@ -16,27 +16,26 @@ namespace cafedebug_backend.api.Controllers.Admin
     {
         [HttpPost]
         [Authorize]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(TeamResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Result>> CreateAsync([FromBody] TeamRequest request)
         {
-            // TODO: need to implement token validation. I'll do that next part
             return await teamService.CreateAsync(request);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
+        [Route("{id:int}")]
         [Authorize]
-        [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TeamResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Result>> UpdateAsync([FromBody] TeamRequest request, int id)
+        public async Task<ActionResult<Result>> UpdateAsync(int id, [FromBody] TeamRequest request)
         {
-            // TODO: need to implement token validation. I'll do that next part
             return await teamService.UpdateAsync(id, request);
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PagedResult<TeamResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<Result>> GetAllAsync([FromQuery] PageRequest request)
@@ -44,8 +43,9 @@ namespace cafedebug_backend.api.Controllers.Admin
             return await teamService.GetAllAsync(request);
         }
 
-        [HttpGet("{id}")]
-        [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("{id:int}")]
+        [ProducesResponseType(typeof(TeamResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Result>> GetByIdAsync(int id)
@@ -53,8 +53,9 @@ namespace cafedebug_backend.api.Controllers.Admin
             return await teamService.GetByIdAsync(id);
         }
 
-        [HttpGet("{name}")]
-        [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("by-name/{name}")]
+        [ProducesResponseType(typeof(TeamResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Result>> GetByNameAsync(string name)
@@ -62,14 +63,14 @@ namespace cafedebug_backend.api.Controllers.Admin
             return await teamService.GetByNameAsync(name);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
+        [Route("{id:int}")]
         [Authorize]
-        [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Result>> Delete(int id)
         {
-            // TODO: need to implement token validation. I'll do that next part
             return await teamService.DeleteAsync(id);
         }
     }
