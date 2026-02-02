@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Security;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -82,7 +83,8 @@ public class ApiExceptionFilterAttribute(ILogger<ApiExceptionFilterAttribute> lo
         return exception switch
         {
             ArgumentNullException or ArgumentException => StatusCodes.Status400BadRequest,
-            UnauthorizedAccessException => StatusCodes.Status403Forbidden,
+            UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
+            SecurityException => StatusCodes.Status403Forbidden,
             KeyNotFoundException => StatusCodes.Status404NotFound,
             InvalidOperationException => StatusCodes.Status409Conflict,
             NotImplementedException => StatusCodes.Status501NotImplemented,
@@ -97,6 +99,7 @@ public class ApiExceptionFilterAttribute(ILogger<ApiExceptionFilterAttribute> lo
         {
             StatusCodes.Status400BadRequest => "Bad Request",
             StatusCodes.Status403Forbidden => "Forbidden",
+            StatusCodes.Status401Unauthorized => "Unauthorized",
             StatusCodes.Status404NotFound => "Not Found",
             StatusCodes.Status409Conflict => "Conflict",
             StatusCodes.Status501NotImplemented => "Not Implemented",
@@ -110,6 +113,7 @@ public class ApiExceptionFilterAttribute(ILogger<ApiExceptionFilterAttribute> lo
         return statusCode switch
         {
             StatusCodes.Status400BadRequest => "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+            StatusCodes.Status401Unauthorized => "https://tools.ietf.org/html/rfc7235#section-3.1",
             StatusCodes.Status403Forbidden => "https://tools.ietf.org/html/rfc7231#section-6.5.3",
             StatusCodes.Status404NotFound => "https://tools.ietf.org/html/rfc7231#section-6.5.4",
             StatusCodes.Status409Conflict => "https://tools.ietf.org/html/rfc7231#section-6.5.8",

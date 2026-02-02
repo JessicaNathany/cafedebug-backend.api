@@ -1,10 +1,10 @@
-﻿using System.Net;
+using cafedebug.backend.application.Audience.Interfaces;
+using System.Net;
 using System.Net.Mail;
-using cafedebug_backend.domain.Messages.Email.Services;
 
-namespace cafedebug.backend.application.Service;
+namespace cafedebug.backend.application.Audience.Services;
 
-public class SmtpEmailSender : IEmailSender
+public class SmtpEmailSenderService : IEmailSenderService
 {
     public void SendEmail(MailMessage message)
     {

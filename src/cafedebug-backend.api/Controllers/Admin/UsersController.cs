@@ -1,5 +1,4 @@
-﻿using cafedebug_backend.domain.Accounts.Services;
-using cafedebug.backend.application.Accounts.Interfaces;
+﻿using cafedebug.backend.application.Accounts.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace cafedebug_backend.api.Controllers.Admin

@@ -3,17 +3,17 @@ namespace cafedebug.backend.application.Banners.DTOs.Requests;
 
 public sealed record BannerRequest
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string UrlImage { get; set; }
-    public string Url { get; set; }
-    public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
-    public DateTime UpdateAt { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime? UpdateDate { get;  set; }
-    public bool Active { get; set; }
-    public int Order { get; set; }
+    public int Id { get; init; }
+    public string Name { get; init; }
+    public string UrlImage { get; init; }
+    public string Url { get; init; }
+    public DateTime StartDate { get; init; }
+    public DateTime EndDate { get; init; }
+    public DateTime UpdateAt { get; init; }
+    public DateTime CreatedAt { get; init; }
+    public DateTime? UpdateDate { get; init; }
+    public bool Active { get; init; }
+    public int Order { get; init; }
 
     public Banner ToBanner()
     {

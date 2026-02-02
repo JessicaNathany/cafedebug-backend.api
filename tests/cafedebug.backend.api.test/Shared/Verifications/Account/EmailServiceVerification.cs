@@ -1,5 +1,5 @@
+using cafedebug.backend.application.Audience.Interfaces;
 using cafedebug_backend.domain.Messages.Email.Request;
-using cafedebug_backend.domain.Messages.Email.Services;
 using Moq;
 
 namespace cafedebug.backend.api.test.Shared.Verifications.Account

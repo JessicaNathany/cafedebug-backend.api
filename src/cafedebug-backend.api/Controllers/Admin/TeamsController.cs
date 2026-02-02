@@ -1,8 +1,8 @@
-﻿using cafedebug.backend.application.Banners.DTOs.Responses;
-using cafedebug.backend.application.Common.Pagination;
-using cafedebug.backend.application.Podcasts.DTOs.Requests;
+﻿using cafedebug.backend.application.Common.Pagination;
 using cafedebug.backend.application.Podcasts.Interfaces.Teams;
 using cafedebug_backend.domain.Shared;
+using cafedebug.backend.application.Podcasts.DTOs.Requests;
+using cafedebug.backend.application.Podcasts.DTOs.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,27 +16,26 @@ namespace cafedebug_backend.api.Controllers.Admin
     {
         [HttpPost]
         [Authorize]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(TeamMemberResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Result>> CreateAsync([FromBody] TeamMemberRequest memberRequest)
+        public async Task<ActionResult<Result>> CreateAsync([FromBody] TeamMemberRequest request)
         {
-            // TODO: need to implement token validation. I'll do that next part
-            return await teamMemberService.CreateAsync(memberRequest);
+            return await teamMemberService.CreateAsync(request);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
+        [Route("{id:int}")]
         [Authorize]
-        [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TeamMemberResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Result>> UpdateAsync([FromBody] TeamMemberRequest memberRequest, int id)
+        public async Task<ActionResult<Result>> UpdateAsync(int id, [FromBody] TeamMemberRequest request)
         {
-            // TODO: need to implement token validation. I'll do that next part
-            return await teamMemberService.UpdateAsync(id, memberRequest);
+            return await teamMemberService.UpdateAsync(id, request);
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PagedResult<TeamMemberResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<Result>> GetAllAsync([FromQuery] PageRequest request)
@@ -44,23 +43,25 @@ namespace cafedebug_backend.api.Controllers.Admin
             return await teamMemberService.GetAllAsync(request);
         }
 
-        [HttpGet("{id}")]
-        [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("{id:int}")]
+        [ProducesResponseType(typeof(TeamMemberResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Result>> GetByIdAsync(int id)
         {
             return await teamMemberService.GetByIdAsync(id);
         }
+        
 
-        [HttpDelete("{id}")]
+        [HttpDelete]
+        [Route("{id:int}")]
         [Authorize]
-        [ProducesResponseType(typeof(BannerResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Result>> Delete(int id)
         {
-            // TODO: need to implement token validation. I'll do that next part
             return await teamMemberService.DeleteAsync(id);
         }
     }

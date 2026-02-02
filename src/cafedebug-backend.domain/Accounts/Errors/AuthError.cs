@@ -12,16 +12,16 @@ public static class AuthError
 
     public static Error EmptyCredentials()
     {
-        return new Error(ErrorType.BadRequest, $"Email and password must not be empty");
+        return new Error(ErrorType.ResourceUnauthorized, $"Email and password must not be empty");
     }
     public static Error TokenGenerationFailed(int userId)
     {
-        return new Error(ErrorType.ErrorWhenExecuting, $"Error creating token for user with ID: {userId}");
+        return new Error(ErrorType.ResourceUnauthorized, $"Error creating token for user with ID: {userId}");
     }
 
     public static Error RefreshTokenNull()
     {
-        return new Error(ErrorType.BadRequest, "Refresh token cannot be null");
+        return new Error(ErrorType.ResourceUnauthorized, "Refresh token cannot be null");
     }
 
     public static Error RefreshTokenInvalid()
@@ -36,6 +36,6 @@ public static class AuthError
 
     public static Error RefreshTokenGenerationFailed()
     {
-        return new Error(ErrorType.BadRequest, "Error creating new token");
+        return new Error(ErrorType.ResourceUnauthorized, "Error creating new token");
     }
 }

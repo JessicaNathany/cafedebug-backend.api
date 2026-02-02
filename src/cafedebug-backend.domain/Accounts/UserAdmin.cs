@@ -1,5 +1,4 @@
 ﻿using cafedebug_backend.domain.Shared;
-
 namespace cafedebug_backend.domain.Accounts;
 
 /// <summary>
@@ -8,12 +7,10 @@ namespace cafedebug_backend.domain.Accounts;
 public class UserAdmin : Entity
 {
     public string Name { get; set; }
-
     public string Email { get; set; }
-
     public string HashedPassword { get; set; }
-
-    public DateTime CreatedDate { get; set; }
-
-    public DateTime LastUpdate { get; set; }
+    public DateTime? CreatedDate { get; set; }
+    public DateTime? LastUpdate { get; set; }
+    public string? CreatedBy { get; set; }
+    public string? UpdatedBy { get; set; }
 }

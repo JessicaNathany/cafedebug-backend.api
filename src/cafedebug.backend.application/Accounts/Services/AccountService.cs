@@ -1,11 +1,10 @@
 ﻿using cafedebug.backend.application.Accounts.DTOs.Requests;
 using cafedebug.backend.application.Accounts.Interfaces;
+using cafedebug.backend.application.Audience.Interfaces;
 using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Accounts.Errors;
-using cafedebug_backend.domain.Accounts.Services;
 using cafedebug_backend.domain.Interfaces.Repositories;
 using cafedebug_backend.domain.Messages.Email.Request;
-using cafedebug_backend.domain.Messages.Email.Services;
 using cafedebug_backend.domain.Shared;
 using cafedebug_backend.infrastructure.Constants;
 using Microsoft.AspNetCore.Identity;
@@ -88,6 +87,5 @@ public class AccountService(
     public async Task<Result> VerifyEmail(string email)
     {
         throw new NotImplementedException();
-        // will be to implement email verification in the future ForgotPassword
     }
 }
