@@ -12,7 +12,7 @@ namespace cafedebug_backend.api.Controllers.Admin;
 [Produces("application/json")]
 [Route("api/v1/admin/team-members")]
 [Tags("Admin - Team Members")]
-public class TeamsController(ITeamMemberService teamMemberService) : ControllerBase
+public class TeamMembersController(ITeamMemberService teamMemberService) : ControllerBase
 {
     [HttpPost]
     [Authorize]
