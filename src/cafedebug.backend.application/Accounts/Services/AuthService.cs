@@ -35,9 +35,9 @@ public class AuthService(IUserService userService, IJWTService jwtService) : IAu
             Id = userResponse.Id,
             Email = userResponse.Email,
             Name = userResponse.Name,
-            CreatedDate = userResponse.CreatedDate,
+            CreatedAt = userResponse.CreatedDate,
             HashedPassword = userResponse.HashedPassword,
-            LastUpdate = userResponse.LastUpdate
+            UpdatedAt = userResponse.LastUpdate
         };
        
         var tokenResult = await jwtService.GenerateAccesTokenAndRefreshtoken(userAdmin);

@@ -9,8 +9,8 @@ public class Banner : Entity
     public string? Url { get; private set; }
     public DateTime StartDate { get; private set; }
     public DateTime EndDate { get; private set; }
-    public DateTime? UpdatedAt { get; private set; }
     public DateTime CreatedAt { get; private set; }
+    public DateTime? UpdatedAt { get; private set; }
     public bool Active { get; private set; }
     public int Order { get; private set; }
 

@@ -16,13 +16,13 @@ public class ContactModelBuilder : IEntityTypeConfiguration<Contact>
 
         builder.Property(b => b.Email)
             .IsRequired()
-            .HasColumnType("varchar(150)");
+            .HasColumnType("varchar(50)");
 
         builder.Property(b => b.Message)
-            .IsRequired()
             .HasColumnType("varchar(500)");
 
         builder.Property(e => e.MessageDate)
+            .IsRequired()
             .HasColumnType("datetime");
     }
 }

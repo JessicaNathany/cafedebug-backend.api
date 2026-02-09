@@ -46,8 +46,7 @@ public class UserService(IUserRepository userRepository, IPasswordHasher<UserAdm
         {
             Email = email,
             HashedPassword = hashedPassword,
-            Code = new Guid(),
-            CreatedDate = DateTime.Now
+            CreatedAt = DateTime.Now
         };
 
         await userRepository.SaveAsync(user);

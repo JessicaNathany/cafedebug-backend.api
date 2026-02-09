@@ -11,10 +11,6 @@ public class EpisodeModelBuilder : IEntityTypeConfiguration<Episode>
     {
         builder.HasKey(e => e.Id);
 
-        builder.Property(e => e.Code)
-            .IsRequired()
-            .HasColumnType("char(36)");
-
         builder.Property(e => e.Title)
             .IsRequired()
             .HasColumnType("varchar(250)");
@@ -25,8 +21,7 @@ public class EpisodeModelBuilder : IEntityTypeConfiguration<Episode>
 
         builder.Property(e => e.ShortDescription)
             .IsRequired()
-            .HasColumnType("varchar(500)")
-            .HasColumnName("ResumeDescription");
+            .HasColumnType("varchar(500)");
 
         builder.Property(e => e.Url)
             .IsRequired()

@@ -9,8 +9,6 @@ public class UserAdmin : Entity
     public string Name { get; set; }
     public string Email { get; set; }
     public string HashedPassword { get; set; }
-    public DateTime? CreatedDate { get; set; }
-    public DateTime? LastUpdate { get; set; }
-    public string? CreatedBy { get; set; }
-    public string? UpdatedBy { get; set; }
+    public DateTime? CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 }
