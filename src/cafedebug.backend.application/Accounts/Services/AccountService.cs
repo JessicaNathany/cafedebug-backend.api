@@ -37,7 +37,7 @@ public class AccountService(
 
         user.Email = request.Email;
         user.HashedPassword = hashedPassword;
-        user.LastUpdate = DateTime.Now;
+        user.UpdatedAt = DateTime.Now;
 
         return Result.Success();
     }

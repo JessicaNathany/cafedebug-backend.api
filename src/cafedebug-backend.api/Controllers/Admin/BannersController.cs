@@ -20,7 +20,6 @@ namespace cafedebug_backend.api.Controllers.Admin
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Result>> CreateAsync([FromBody] BannerRequest request)
         {
-            // TODO: need to implement token validation. I'll do that next part
             return await bannerService.CreateAsync(request);
         }
 
@@ -31,7 +30,6 @@ namespace cafedebug_backend.api.Controllers.Admin
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Result>> UpdateAsync([FromBody] BannerRequest request, int id)
         {
-            // TODO: need to implement token validation. I'll do that next part
             return await bannerService.UpdateAsync(request, id);
         }
 
@@ -60,7 +58,6 @@ namespace cafedebug_backend.api.Controllers.Admin
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Result>> Delete(int id)
         {
-            // TODO: need to implement token validation. I'll do that next part
             return await bannerService.DeleteAsync(id);
         }
     }

@@ -15,20 +15,24 @@ public class TeamModelBuilder : IEntityTypeConfiguration<Team>
             .HasColumnType("varchar(50)");
 
         builder.Property(b => b.UrlGitHub)
-            .IsRequired()
             .HasColumnType("varchar(500)");
 
         builder.Property(b => b.UrlInstagram)
-            .IsRequired()
             .HasColumnType("varchar(500)");
 
         builder.Property(b => b.UrlLinkedin)
-            .IsRequired()
             .HasColumnType("varchar(500)");
 
         builder.Property(b => b.UrlImage)
             .IsRequired()
             .HasColumnType("varchar(500)");
+
+        builder.Property(e => e.CreatedAt)
+            .IsRequired()
+            .HasColumnType("datetime");
+
+        builder.Property(e => e.UpdatedAt)
+            .HasColumnType("datetime");
 
         builder.Property(b => b.Job)
             .IsRequired()

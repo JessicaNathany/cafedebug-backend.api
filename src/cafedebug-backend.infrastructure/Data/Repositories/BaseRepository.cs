@@ -60,11 +60,6 @@ public abstract class BaseRepository<TEntity>(CafedebugContext context) : IBaseR
         return await PagedList<TEntity>.CreateAsync(query, page, pageSize, sortBy, descending, cancellationToken);
     }
 
-    public async Task<TEntity?> GetByCodeAsync(Guid code)
-    {
-        return await context.Set<TEntity>().FirstOrDefaultAsync(x => x.Code == code);
-    }
-
     public virtual async Task<TEntity?> GetByIdAsync(int id)
     {
         return await context.Set<TEntity>().FirstOrDefaultAsync(x => x.Id == id);

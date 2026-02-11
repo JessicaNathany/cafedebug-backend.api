@@ -22,8 +22,6 @@ public interface IBaseRepository<TEntity> where TEntity : Entity
     
     Task<TEntity?> GetByIdAsync(int id);
 
-    Task<TEntity?> GetByCodeAsync(Guid code);
-
     Task<int> CountAsync();
 
     Task<int> SaveChangesAsync();

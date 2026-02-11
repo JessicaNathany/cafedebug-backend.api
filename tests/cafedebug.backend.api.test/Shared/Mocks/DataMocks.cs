@@ -11,7 +11,6 @@ namespace cafedebug.backend.api.test.Shared.Mocks
             return new UserAdmin
             {
                 Id = 1,
-                Code = new Guid("f1d8dcf4-98b6-4e7b-8b8b-7f6f7a3f6c7b"),
                 Email = "debugcafe@local.com",
                 Name = "Test User",
                 HashedPassword = "cf8676b53315b632ec681f2065d6e3c993c3ebaeb667338658b40983d7ce663e"
