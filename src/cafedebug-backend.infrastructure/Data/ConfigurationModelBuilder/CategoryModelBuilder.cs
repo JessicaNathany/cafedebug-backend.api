@@ -9,14 +9,17 @@ public class CategoryModelBuilder : IEntityTypeConfiguration<Category>
     public void Configure(EntityTypeBuilder<Category> builder)
     {
         builder.HasKey(c => c.Id);
-        
-        builder.Property(c => c.Code)
-            .IsRequired()
-            .HasColumnType("char(36)");       
 
         builder.Property(c => c.Name)
             .IsRequired()
             .HasColumnType("varchar(50)");
+
+        builder.Property(c => c.CreatedAt)
+            .IsRequired()
+            .HasColumnType("datetime");
+
+        builder.Property(c => c.UpdatedAt)
+            .HasColumnType("datetime");
 
         builder.ToTable("Category");
     }   

@@ -62,11 +62,11 @@ public static class MappingConfig
     {
         return new UserAdminResponse
         {
-            CreatedDate = (DateTime)user.CreatedDate,
+            CreatedDate = (DateTime)user.CreatedAt,
             Name = user.Name,
             Email = user.Email,
             HashedPassword = user.HashedPassword,
-            LastUpdate = (DateTime)user.LastUpdate
+            LastUpdate = (DateTime)user.UpdatedAt
         };
     }
 

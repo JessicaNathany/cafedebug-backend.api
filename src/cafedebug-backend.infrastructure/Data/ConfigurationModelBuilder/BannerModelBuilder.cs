@@ -10,10 +10,6 @@ public class BannerModelBuilder : IEntityTypeConfiguration<Banner>
     {
         builder.HasKey(b => b.Id);
 
-        builder.Property(b => b.Code)
-            .IsRequired()
-            .HasColumnType("char(36)");
-
         builder.Property(b => b.Name)
             .IsRequired()
             .HasColumnType("varchar(50)");

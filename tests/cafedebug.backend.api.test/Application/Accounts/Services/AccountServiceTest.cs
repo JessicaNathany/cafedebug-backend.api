@@ -105,7 +105,7 @@ public class AccountServiceTest : BaseTest
 
         user.HashedPassword.Should().Be(newHashedPassword);
         user.Email.Should().Be(request.Email);
-        user.LastUpdate.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
+        user.UpdatedAt.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
 
         _userVerifications.VerifyGetUserByEmail(request.Email, Times.Once());
         _passwordHasherMock.Verify(x => x.HashPassword(null, request.NewPassword), Times.Once());
