@@ -15,7 +15,7 @@ public class TeamMember : Entity
     public string? GitHubUrl { get; private set; }
     public string? InstagramUrl { get; private set; }
     public string? LinkedInUrl { get; private set; }
-    public string ProfilePhotoUrl { get; private set; }
+    public string? ProfilePhotoUrl { get; private set; }
     public string? JobTitle { get; private set; }
     public bool IsActive { get; private set; }
     public DateTime? JoinedAt { get; private set; }
@@ -26,7 +26,7 @@ public class TeamMember : Entity
     private TeamMember() { }
     
     public TeamMember(string name, string? nickname, string? email, string? bio, string podcastRole, 
-        string? githubUrl, string? instagramUrl, string? linkedInUrl, string profilePhotoUrl, 
+        string? githubUrl, string? instagramUrl, string? linkedInUrl, string? profilePhotoUrl, 
         string? jobTitle, bool isActive, DateTime? joinedAt)
     {
         Name = name;
@@ -53,7 +53,7 @@ public class TeamMember : Entity
         string? gitHubUrl, 
         string? instagramUrl, 
         string? linkedInUrl, 
-        string profilePhotoUrl, 
+        string? profilePhotoUrl, 
         string? jobTitle, 
         bool isActive, 
         DateTime? joinedAt)

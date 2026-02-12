@@ -13,7 +13,7 @@ public sealed record TeamMemberResponse
     public string? GitHubUrl { get; init; }
     public string? InstagramUrl { get; init; }
     public string? LinkedInUrl { get; init; }
-    public required string ProfilePhotoUrl { get; init; }
+    public string? ProfilePhotoUrl { get; init; }
     public string? JobTitle { get; init; }
     public bool IsActive { get; init; }
     public DateTime? JoinedAt { get; init; }

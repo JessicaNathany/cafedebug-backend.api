@@ -37,7 +37,6 @@ public class TeamMemberModelBuilder : IEntityTypeConfiguration<TeamMember>
             .HasColumnType("varchar(500)");
 
         builder.Property(t => t.ProfilePhotoUrl)
-            .IsRequired()
             .HasColumnType("varchar(500)");
 
         builder.Property(t => t.JobTitle)
