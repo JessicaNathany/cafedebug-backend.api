@@ -40,8 +40,7 @@ public class EpisodeModelBuilder : IEntityTypeConfiguration<Episode>
 
         builder.Property(e => e.PublishedAt)
             .IsRequired()
-            .HasColumnType("datetime")
-            .HasColumnName("PublicationDate");
+            .HasColumnType("datetime");
 
         builder.Property(e => e.CreatedAt)
             .IsRequired()
