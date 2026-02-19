@@ -10,28 +10,28 @@ public class TeamMemberValidator : AbstractValidator<TeamMemberRequest>
     {
         RuleFor(request => request.Name)
             .NotEmpty().WithMessage("Name is required")
-            .MaximumLength(200).WithMessage("Name cannot exceed 200 characters")
+            .MaximumLength(100).WithMessage("Name cannot exceed 100 characters")
             .MinimumLength(3).WithMessage("Name must be at least 3 characters");
 
         RuleFor(request => request.Nickname)
-            .MaximumLength(100).WithMessage("Nickname cannot exceed 100 characters");
+            .MaximumLength(50).WithMessage("Nickname cannot exceed 50 characters");
 
         RuleFor(request => request.Email)
             .EmailAddress().WithMessage("Invalid email format")
             .When(request => !string.IsNullOrEmpty(request.Email));
 
         RuleFor(request => request.Bio)
-            .MaximumLength(500).WithMessage("Bio cannot exceed 500 characters");
+            .MaximumLength(1000).WithMessage("Bio cannot exceed 1000 characters");
 
         RuleFor(request => request.PodcastRole)
             .NotEmpty().WithMessage("Podcast role is required")
-            .MaximumLength(100).WithMessage("Podcast role cannot exceed 100 characters");
+            .MaximumLength(50).WithMessage("Podcast role cannot exceed 50 characters");
 
         RuleFor(request => request.GitHubUrl)
             .IsValidUrl().WithMessage("GitHub URL must be a valid URL format")
             .When(request => !string.IsNullOrEmpty(request.GitHubUrl));
 
-        RuleFor(request => request.InstagramUrl)
+        RuleFor(request => request.InstagramUrl) 
             .IsValidUrl().WithMessage("Instagram URL must be a valid URL format")
             .When(request => !string.IsNullOrEmpty(request.InstagramUrl));
 
