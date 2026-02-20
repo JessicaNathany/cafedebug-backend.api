@@ -25,8 +25,8 @@ public class RefreshTokensModelBuilder : IEntityTypeConfiguration<RefreshTokens>
             .WithMany()
             .HasForeignKey(r => r.UserId);
 
-        builder.Property(r => r.CreatedDate);
-        builder.Property(r => r.LastUpdate);
+        builder.Property(r => r.CreatedAt);
+        builder.Property(r => r.UpdatedAt);
 
         builder.ToTable("RefreshTokens");   
     }   

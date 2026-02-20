@@ -142,6 +142,10 @@ public class JWTService(
             Subject = identity,
             Issuer = jwtSettings.Issuer,
             Audience = jwtSettings.Audience,
+            IssuedAt = jwtSettings.IssuedAt,
+            NotBefore = jwtSettings.NotBefore,
+            Expires = jwtSettings.AccessTokenExpiration,
+            SigningCredentials = jwtSettings.SigningCredentials
         });
 
         var accessToken = jsonSecurityHandler.WriteToken(securityToken);

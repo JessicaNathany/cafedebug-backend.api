@@ -1,3 +1,4 @@
+using cafedebug.backend.application.Common.Validations;
 using cafedebug.backend.application.Podcasts.DTOs.Requests;
 using FluentValidation;
 
@@ -24,13 +25,13 @@ public class EpisodeValidator : AbstractValidator<EpisodeRequest>
 
         RuleFor(x => x.Url)
             .NotEmpty().WithMessage("URL is required")
-            .Must(BeAValidUrl).WithMessage("URL must be a valid URL format")
+            .IsValidUrl().WithMessage("URL must be a valid URL format")
             .MaximumLength(2000).WithMessage("URL cannot exceed 2000 characters");
 
         RuleFor(x => x.ImageUrl)
             .NotEmpty().WithMessage("Image URL is required")
-            .Must(BeAValidUrl).WithMessage("Image URL must be a valid URL format")
-            .Must(BeAnImageUrl).WithMessage("Image URL must point to an image file (jpg, jpeg, png, gif, webp)")
+            .IsValidUrl().WithMessage("Image URL must be a valid URL format")
+            .IsImageUrl().WithMessage("Image URL must point to an image file (jpg, jpeg, png, gif, webp)")
             .MaximumLength(2000).WithMessage("Image URL cannot exceed 2000 characters");
 
         RuleFor(x => x.Tags)
@@ -53,26 +54,5 @@ public class EpisodeValidator : AbstractValidator<EpisodeRequest>
         RuleFor(x => x.DurationInSeconds)
             .GreaterThan(0).WithMessage("Duration must be greater than 0 seconds")
             .LessThanOrEqualTo(86400).WithMessage("Duration cannot exceed 24 hours (86400 seconds)");
-    }
-
-    private static bool BeAValidUrl(string url)
-    {
-        if (string.IsNullOrWhiteSpace(url))
-            return false;
-
-        return Uri.TryCreate(url, UriKind.Absolute, out var uriResult)
-               && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
-    }
-
-    private static bool BeAnImageUrl(string imageUrl)
-    {
-        if (string.IsNullOrWhiteSpace(imageUrl))
-            return false;
-
-        var validExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg" };
-
-        if (!Uri.TryCreate(imageUrl, UriKind.Absolute, out var uri)) return false;
-        var path = uri.AbsolutePath.ToLowerInvariant();
-        return validExtensions.Any(ext => path.EndsWith(ext));
     }
 }
