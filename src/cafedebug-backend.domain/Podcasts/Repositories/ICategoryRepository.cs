@@ -5,6 +5,7 @@ namespace cafedebug_backend.domain.Episodes.Repositories
 {
     public interface ICategoryRepository : IBaseRepository<Category>
     {
-        Task<IEnumerable<Category>> GetPagedAsync(string searchParam, int pageIndex = 0, int pageSize = 10);
+        Task<Category?> GetByNameAsync(string categoryName);
+        Task<IEnumerable<Category>> GetPagedAsync(int pageIndex = 0, int pageSize = 10);
     }
 }
