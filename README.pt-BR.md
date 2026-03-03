@@ -1,6 +1,6 @@
 # CafeDebug API
 
-🇧🇷 Português | 🇺🇸 [English](../README.md)
+🇧🇷 Português | 🇺🇸 [English](README.md)
 
 ![image](https://user-images.githubusercontent.com/11943572/234849730-c6b41618-6c13-4a87-9b5e-5b9d16ba4474.png)
 

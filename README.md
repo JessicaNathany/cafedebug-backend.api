@@ -1,5 +1,5 @@
 # CafeDebug API
-🇺🇸 English | 🇧🇷 [Português](docs/README.pt-BR.md)
+🇺🇸 English | 🇧🇷 [Português](README.pt-BR.md)
 
 ![image](https://user-images.githubusercontent.com/11943572/234849730-c6b41618-6c13-4a87-9b5e-5b9d16ba4474.png)
 
@@ -23,64 +23,61 @@
 </p>
 
  <h4 align="center"> 
-	🚧  Projeto 🚀 em construção...  🚧
+	🚧  Project 🚀 under construction...  🚧
  </h4>
 
-## Sobre o projeto 📑
+## About the project 📑
 
-Este é o repositório do projeto API Café Debug. Essa API tem como objetivo manter o backend separado do frontend<br/>
-trazendo informações do podcast como episódios e agenda e outros conteúdos relacionado a tecnologia.<br />
-[site café debug](wwww.cafedebug.com.br) atual.
+This repository contains the Café Debug API project. The purpose of this API is to keep the backend separate from the frontend, providing information about the podcast such as episodes and schedule, as well as other technology‑related content. [Café Debug website](wwww.cafedebug.com.br) current.
 
-## Tecnologias
+## Technologies
 
-Este projeto utiliza as seguintes tecnologias principais:
+This project uses the following main technologies:
 
-- .NET 9 (C#) — plataforma do backend
-- Entity Framework Core — ORM para acesso ao MySQL
-- MySQL — banco de dados relacional
-- Docker / docker-compose — facilitação do ambiente local
-- xUnit / Moq — framework de testes unitários e mocking
+- .NET 9 (C#) — backend platform
+- Entity Framework Core — ORM for MySQL access
+- MySQL — relational database
+- Docker / docker-compose — ease local environment
+- xUnit / Moq — unit testing and mocking framework
 
-## Requisitos 📋
+## Requirements 📋
 
 - [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
 - [MySQL](https://www.mysql.com/)
 - [Docker](https://www.docker.com/)
 
-
 ## Setup 🔧
 
-### 1. Clonar ou fazer fork do repositório
-Você pode clonar o repositório diretamente ou criar um fork no GitHub e clonar seu fork. Exemplo:
+### 1. Clone or fork the repository
+You can clone the repository directly or create a fork on GitHub and clone your fork. Example:
 
 ```bash
 git clone https://github.com/JessicaNathany/cafedebug-backend.api.git
 cd cafedebug-backend.api
 ```
 
-### 2. Configure o banco de dados
+### 2. Configure the database
 
-Para rodar a base local, faça um [clone deste projeto](https://github.com/JessicaNathany/debug-automation) e execute os comandos abaixo:
+To run the local database, clone [this project](https://github.com/JessicaNathany/debug-automation) and execute the commands below:
 
-Dê permissão ao arquivo .sh:
+Give permission to the script:
 ```bash
 chmod +x cafedebug-setup.sh
 ```
 
-Execute o script do banco de dados:
+Execute the database script:
 ```bash
 ./cafedebug-setup.sh
 ```
 
-### 3. Configure o appsettings
+### 3. Configure the appsettings
 
-Copie o arquivo de template:
+Copy the template file:
 ```bash
 cp appsettings.json appsettings.Development.json
 ```
 
-Edite o arquivo `appsettings.Development.json` e substitua os placeholders:
+Edit `appsettings.Development.json` and replace the placeholders:
 ```json
 {
   "ConnectionStrings": {
@@ -116,38 +113,37 @@ Edite o arquivo `appsettings.Development.json` e substitua os placeholders:
 }
 ```
 
-**⚠️ IMPORTANTE:** Nunca commite o arquivo `appsettings.Development.json` com dados reais!
+**⚠️ IMPORTANT:** Never commit the `appsettings.Development.json` file with real data!
 
-#### Valores necessários:
+#### Required values:
 
-| Placeholder                         | Descrição                                                                                | Exemplo                                                                   |
-|-------------------------------------|------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
-| `{connection-string}`               | String de conexão MySQL                                                                  | `Server=localhost;Port=3306;Database=cafedebug;User=root;Password=senha;` |
-| `{issuer}`                          | Emissor do token JWT                                                                     | `https://api.cafedebug.com.br`                                            |
-| `{audience}`                        | Audiência do token JWT                                                                   | `https://cafedebug.com.br`                                                |
-| `{signing-key}`                     | Chave secreta para assinar tokens (mínimo 32 caracteres)                                 | Use uma string aleatória forte                                            |
-| `{valid-for-minutes}`               | Tempo de validade do access token em minutos                                             | `15`                                                                      |
-| `{refresh-token-valid-for-minutes}` | Tempo de validade do refresh token em minutos                                            | `10080` (7 dias)                                                          |
-| `{health-check-uri}`                | URI do health check                                                                      | `http://localhost:5000/health`                                            |
-| `{bucket}`                          | Nome do bucket do S3                                                                     | `cafedebug-images`                                                        |
-| `{s3-url}`                          | Url da AWS S3 ou do MinIO                                                                | `http://localhost:9000/cafedebug-uploads`                                 |
-| `{region}`                          | Região do serviço AWS (se aplicável). MinIO usar sempre `null`                           | `us-east-1` ou `null`                                                     |
-| `{force-path-style}`                | Se `true`, acessa o bucket como caminho da URL (`host/bucket`). MinIO usar sempre `true` | `true` ou `false`                                                         |
-| `{use-http}`                        | Se `true`, usa HTTP ao invés de HTTPS. MinIO usar sempre `true`                          | `true` ou `false`                                                         |
-| `{service-url}`                     | Url do serviço do MinIO.                                                                 | `http://localhost:9000`                                                   |
+| Placeholder                         | Description                                                                                | Example                                                                   |
+|-------------------------------------|--------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|
+| `{connection-string}`               | MySQL connection string                                                                    | `Server=localhost;Port=3306;Database=cafedebug;User=root;Password=senha;` |
+| `{issuer}`                          | JWT token issuer                                                                           | `https://api.cafedebug.com.br`                                            |
+| `{audience}`                        | JWT token audience                                                                         | `https://cafedebug.com.br`                                                |
+| `{signing-key}`                     | Secret key for signing tokens (minimum 32 characters)                                     | Use a strong random string                                                |
+| `{valid-for-minutes}`               | Access token validity time in minutes                                                      | `15`                                                                      |
+| `{refresh-token-valid-for-minutes}` | Refresh token validity time in minutes                                                     | `10080` (7 days)                                                          |
+| `{health-check-uri}`                | Health check URI                                                                           | `http://localhost:5000/health`                                            |
+| `{bucket}`                          | S3 bucket name                                                                             | `cafedebug-images`                                                        |
+| `{s3-url}`                          | AWS S3 or MinIO URL                                                                        | `http://localhost:9000/cafedebug-uploads`                                 |
+| `{region}`                          | Service region (if applicable). MinIO always `null`                                       | `us-east-1` or `null`                                                     |
+| `{force-path-style}`                | If `true`, access the bucket using path-style URL (`host/bucket`). For MinIO always `true` | `true` or `false`                                                         |
+| `{use-http}`                        | If `true`, use HTTP instead of HTTPS. For MinIO always `true`                             | `true` or `false`                                                         |
+| `{service-url}`                     | MinIO service URL.                                                                         | `http://localhost:9000`                                                   |
 
-
-### 4. Restaure as dependências
+### 4. Restore dependencies
 ```bash
 dotnet restore
 ```
 
-### 5. Execute o projeto
+### 5. Run the project
 ```bash
 dotnet run --project src/cafedebug-backend.api
 ```
 
-A API estará disponível em: `http://localhost:5000` ou `https://localhost:5001`
+The API will be available at: `http://localhost:5000` or `https://localhost:5001`
 
 ## Tests 🧪
 ```bash
@@ -158,29 +154,28 @@ dotnet test
 
 _Auth_
 
-- `POST /api/auth/login` - autenticação do usuário retornando um token de validação.
+- `POST /api/auth/login` - user authentication returning a validation token.
 
 _BannerAdmin_
 
-- `POST /api/banner-admin/novo-banner` - adiciona um novo banner aa área administrativa.
-- `PUT /api/banner-admin/editar-banner` - edita o banner da área administrativa.
-- `GET /api/banner-admin/banners` - retorna uma lilsta de banners da área administrativa.
-- `GET /api/banner-admin/banner/{id}` - retorna banner por id.
-- `DELETE /api/banner-admin/banner/{id}` - apaga banner por id.
+- `POST /api/banner-admin/novo-banner` - adds a new banner to the admin area.
+- `PUT /api/banner-admin/editar-banner` - edits the banner in the admin area.
+- `GET /api/banner-admin/banners` - returns a list of banners for the admin area.
+- `GET /api/banner-admin/banner/{id}` - returns banner by id.
+- `DELETE /api/banner-admin/banner/{id}` - deletes banner by id.
 
+Admin - Episodes
 
-Admin - Episódios
-
-- `GET /api/v1/admin/episodes` — lista episódios
-- `GET /api/v1/admin/episodes/{id}` — obtém episódio por id
-- `POST /api/v1/admin/episodes` — cria episódio (Authorize)
-- `PUT /api/v1/admin/episodes/{id}` — atualiza episódio (Authorize)
-- `DELETE /api/v1/admin/episodes/{id}` — remove episódio (Authorize)
+- `GET /api/v1/admin/episodes` — lists episodes
+- `GET /api/v1/admin/episodes/{id}` — gets episode by id
+- `POST /api/v1/admin/episodes` — creates episode (Authorize)
+- `PUT /api/v1/admin/episodes/{id}` — updates episode (Authorize)
+- `DELETE /api/v1/admin/episodes/{id}` — removes episode (Authorize)
 
 ### Architecture
 
 <img width="1154" height="614" alt="image" src="https://github.com/user-attachments/assets/5bfe0c95-463b-4a38-8f58-f456ba124e1d" />
 
-## Como contribuir 🤝
+## How to contribute 🤝
 
-Confira o guia de contribuição em [CONTRIBUTING.md](./CONTRIBUTING.md)
+See the contribution guide in [CONTRIBUTING.md](./CONTRIBUTING.md)
