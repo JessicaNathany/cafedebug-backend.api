@@ -237,4 +237,4 @@ Esta estrutura permite fácil adição de novas funcionalidades e mantém limite
 
 ## Como contribuir 🤝
 
-Confira o guia de contribuição em [CONTRIBUTING.md](./CONTRIBUTING.md)
+Confira o guia de contribuição em [CONTRIBUTING.md](./docs/CONTRIBUTING-pt-BR.md)

@@ -231,4 +231,4 @@ This structure enables easy feature addition and maintains clear boundaries betw
 
 ## How to contribute 🤝
 
-See the contribution guide in [CONTRIBUTING.md](./CONTRIBUTING.md)
+See the contribution guide in [CONTRIBUTING.md](./docs/CONTRIBUTING.md)
