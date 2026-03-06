@@ -176,6 +176,59 @@ Admin - Episodes
 
 <img width="1154" height="614" alt="image" src="https://github.com/user-attachments/assets/5bfe0c95-463b-4a38-8f58-f456ba124e1d" />
 
+### Project Structure
+
+The project follows **Clean Architecture** principles with clear separation of concerns organized into four main layers:
+
+#### Layer Organization
+
+```
+src/
+├── cafedebug-backend.api/           # API Layer (Presentation)
+│   ├── Controllers/                 # API endpoints and request handling
+│   ├── Filters/                     # Custom filters and middlewares
+│   └── Program.cs                   # Application entry point and configuration
+│
+├── cafedebug.backend.application/   # Application Layer
+│   ├── Accounts/                    # Account-related use cases
+│   ├── Audience/                    # Audience-related use cases
+│   ├── Banners/                     # Banner management use cases
+│   ├── Content/                     # Content-related use cases
+│   ├── Media/                       # Media handling use cases
+│   ├── Podcasts/                    # Podcast management use cases
+│   └── Common/                      # Shared application logic (DTOs, validators, mappers)
+│
+├── cafedebug-backend.domain/        # Domain Layer (Business Logic)
+│   ├── Accounts/                    # Account entities and business rules
+│   ├── Audience/                    # Audience entities and business rules
+│   ├── Banners/                     # Banner entities and business rules
+│   ├── Messages/                    # Domain events and messages
+│   ├── Podcasts/                    # Podcast entities and business rules
+│   └── Shared/                      # Base classes and shared domain logic
+│
+└── cafedebug-backend.infrastructure/# Infrastructure Layer
+    ├── Database/                    # Entity Framework Core DbContext and migrations
+    ├── Repositories/                # Data access implementations
+    ├── Services/                    # External service integrations (S3, etc)
+    └── Configuration/               # Infrastructure setup and configuration
+```
+
+#### Layer Responsibilities
+
+- **API Layer** (`cafedebug-backend.api`): Handles HTTP requests/responses, routing, and request validation
+- **Application Layer** (`cafedebug.backend.application`): Implements business use cases, DTOs, and application logic
+- **Domain Layer** (`cafedebug-backend.domain`): Contains core business entities, value objects, and domain rules
+- **Infrastructure Layer** (`cafedebug-backend.infrastructure`): Manages database access, external APIs, and persistence concerns
+
+#### Feature-Based Organization
+
+Each feature (Accounts, Banners, Podcasts, etc.) is organized consistently across all layers:
+- **Domain**: Entity definitions and business rules
+- **Application**: Use cases and DTOs
+- **API**: Controllers and endpoints
+
+This structure enables easy feature addition and maintains clear boundaries between layers.
+
 ## How to contribute 🤝
 
 See the contribution guide in [CONTRIBUTING.md](./CONTRIBUTING.md)

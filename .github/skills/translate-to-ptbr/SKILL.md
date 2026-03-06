@@ -1,4 +1,9 @@
-# Skill: Translate to Brazilian Portuguese (pt-BR)
+---
+name: translate-to-ptbr
+description: Translate English documentation files to Brazilian Portuguese.
+---
+
+# Skill Instructions
 
 ## Purpose
 Translate English documentation files to Brazilian Portuguese.
@@ -20,11 +25,12 @@ Translate English documentation files to Brazilian Portuguese.
 3. Preserve all emojis exactly as-is
 4. Preserve all badges and image tags exactly as-is
 5. Update the language switcher to highlight pt-BR as active:
-   `🇺🇸 English | 🇧🇷 [Português](docs/README.pt-BR.md)`
+   `🇺🇸 English | 🇧🇷 [Português](README.pt-BR.md)`
 6. Keep identical section order as the English source
 
 ## Output
 Produce the complete translated file content ready to save.
+
 ```
 
 ---
@@ -57,7 +63,7 @@ Developer invokes @docs-agent in Copilot Chat
           ↓
 Agent reads .github/copilot-instructions.md (project context)
           ↓
-Agent picks the right skill from .copilot/skills/
+Agent picks the right skill from .github/skills/
           ↓
 Skill provides the rules and structure for the task
           ↓

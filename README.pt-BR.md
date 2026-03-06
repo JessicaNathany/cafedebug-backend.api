@@ -163,9 +163,9 @@ _Auth_
 
 _BannerAdmin_
 
-- `POST /api/banner-admin/novo-banner` - adiciona um novo banner aa área administrativa.
+- `POST /api/banner-admin/novo-banner` - adiciona um novo banner a área administrativa.
 - `PUT /api/banner-admin/editar-banner` - edita o banner da área administrativa.
-- `GET /api/banner-admin/banners` - retorna uma lilsta de banners da área administrativa.
+- `GET /api/banner-admin/banners` - retorna uma lista de banners da área administrativa.
 - `GET /api/banner-admin/banner/{id}` - retorna banner por id.
 - `DELETE /api/banner-admin/banner/{id}` - apaga banner por id.
 
@@ -178,9 +178,62 @@ Admin - Episódios
 - `PUT /api/v1/admin/episodes/{id}` — atualiza episódio (Authorize)
 - `DELETE /api/v1/admin/episodes/{id}` — remove episódio (Authorize)
 
-### Architecture
+### Arquitetura
 
 <img width="1154" height="614" alt="image" src="https://github.com/user-attachments/assets/5bfe0c95-463b-4a38-8f58-f456ba124e1d" />
+
+### Estrutura do Projeto
+
+O projeto segue princípios de **Clean Architecture** com uma clara separação de responsabilidades organizada em quatro camadas principais:
+
+#### Organização das Camadas
+
+```
+src/
+├── cafedebug-backend.api/           # API Layer (Apresentação)
+│   ├── Controllers/                 # Endpoints da API e tratamento de requisições
+│   ├── Filters/                     # Filtros personalizados e middlewares
+│   └── Program.cs                   # Ponto de entrada e configuração da aplicação
+│
+├── cafedebug.backend.application/   # Application Layer
+│   ├── Accounts/                    # Casos de uso relacionados a contas
+│   ├── Audience/                    # Casos de uso relacionados a audiência
+│   ├── Banners/                     # Casos de uso de gerenciamento de banners
+│   ├── Content/                     # Casos de uso relacionados a conteúdo
+│   ├── Media/                       # Casos de uso de manipulação de mídia
+│   ├── Podcasts/                    # Casos de uso de gerenciamento de podcasts
+│   └── Common/                      # Lógica de aplicação compartilhada (DTOs, validadores, mapeadores)
+│
+├── cafedebug-backend.domain/        # Domain Layer (Lógica de Negócio)
+│   ├── Accounts/                    # Entidades de conta e regras de negócio
+│   ├── Audience/                    # Entidades de audiência e regras de negócio
+│   ├── Banners/                     # Entidades de banner e regras de negócio
+│   ├── Messages/                    # Eventos de domínio e mensagens
+│   ├── Podcasts/                    # Entidades de podcast e regras de negócio
+│   └── Shared/                      # Classes base e lógica de domínio compartilhada
+│
+└── cafedebug-backend.infrastructure/# Infrastructure Layer
+    ├── Database/                    # Entity Framework Core DbContext e migrações
+    ├── Repositories/                # Implementações de acesso a dados
+    ├── Services/                    # Integrações com serviços externos (S3, etc)
+    └── Configuration/               # Configuração e setup da infraestrutura
+```
+
+#### Responsabilidades das Camadas
+
+- **API Layer** (`cafedebug-backend.api`): Gerencia requisições/respostas HTTP, roteamento e validação de requisições
+- **Application Layer** (`cafedebug.backend.application`): Implementa casos de uso, DTOs e lógica de aplicação
+- **Domain Layer** (`cafedebug-backend.domain`): Contém entidades de negócio, objetos de valor e regras de domínio
+- **Infrastructure Layer** (`cafedebug-backend.infrastructure`): Gerencia acesso a banco de dados, APIs externas e persistência
+
+#### Organização Baseada em Funcionalidades
+
+Cada funcionalidade (Accounts, Banners, Podcasts, etc.) é organizada consistentemente em todas as camadas:
+- **Domain**: Definições de entidades e regras de negócio
+- **Application**: Casos de uso e DTOs
+- **API**: Controllers e endpoints
+
+Esta estrutura permite fácil adição de novas funcionalidades e mantém limites claros entre as camadas.
 
 ## Como contribuir 🤝
 

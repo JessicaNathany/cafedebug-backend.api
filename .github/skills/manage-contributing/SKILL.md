@@ -1,4 +1,9 @@
-# Skill: CONTRIBUTING Maintainer
+---
+name: manage-contributing
+description: Create or update CONTRIBUTING.md (English) for the Café Debug API
+---
+
+# Skill Instructions
 
 ## Purpose
 Create or update CONTRIBUTING.md (English) for the Café Debug API.
@@ -7,7 +12,7 @@ Create or update CONTRIBUTING.md (English) for the Café Debug API.
 - CONTRIBUTING.md (English, root)
 
 ## Required sections in order
-1. Language switcher: `🇺🇸 English | 🇧🇷 [Português](docs/README.pt-BR.md)`
+1. Language switcher: `🇺🇸 English | 🇧🇷 [Português](README.pt-BR.md)`
 2. About the project
 3. How to contribute (issues, branch naming: feature/ and fix/)
 4. Development standards (mirrors the pt-BR version rules)

@@ -1,4 +1,9 @@
-# Skill: README Maintainer
+---
+name: manage-readme
+description: Create or update README.md (English) for the Café Debug API
+---
+
+# Skill Instructions
 
 ## Purpose
 Create or update README.md (English) for the Café Debug API.
@@ -8,7 +13,7 @@ Create or update README.md (English) for the Café Debug API.
 
 ## Required sections in order
 1. Header with project name, badges and short description
-2. Language switcher: `🇺🇸 English | 🇧🇷 [Português](docs/README.pt-BR.md)`
+2. Language switcher: `🇺🇸 English | 🇧🇷 [Português](README.pt-BR.md)`
 3. About the project
 4. Tech stack
 5. Architecture diagram (preserve existing image links)
