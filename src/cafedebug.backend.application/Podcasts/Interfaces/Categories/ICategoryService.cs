@@ -5,7 +5,7 @@ using cafedebug_backend.domain.Shared;
 
 namespace cafedebug.backend.application.Podcasts.Interfaces.Categories;
 
-public interface ICategoriesService
+public interface ICategoryService
 {
     Task<Result<CategoryResponse>> GetByIdAsync(int idn);
     Task<Result<PagedResult<CategoryResponse>>> GetAllAsync(PageRequest request);

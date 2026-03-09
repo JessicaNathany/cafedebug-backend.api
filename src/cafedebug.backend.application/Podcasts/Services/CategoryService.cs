@@ -4,8 +4,8 @@ using cafedebug.backend.application.Podcasts.DTOs.Requests;
 using cafedebug.backend.application.Podcasts.DTOs.Responses;
 using cafedebug.backend.application.Podcasts.Interfaces.Categories;
 using cafedebug_backend.domain.Banners;
-using cafedebug_backend.domain.Episodes.Repositories;
 using cafedebug_backend.domain.Podcasts.Errors;
+using cafedebug_backend.domain.Podcasts.Repositories;
 using cafedebug_backend.domain.Shared;
 
 namespace cafedebug.backend.application.Podcasts.Services;
@@ -13,7 +13,7 @@ namespace cafedebug.backend.application.Podcasts.Services;
 /// <summary>
 /// Service responsible for managing categories, including creation, updating, deletion, and retrieval operations.
 /// </summary>
-public class CategoriesService(ICategoryRepository categoryRepository) : ICategoriesService
+public class CategoryService(ICategoryRepository categoryRepository) : ICategoryService
 {
     public async Task<Result<CategoryResponse>> CreateAsync(CategoryRequest request)
     {

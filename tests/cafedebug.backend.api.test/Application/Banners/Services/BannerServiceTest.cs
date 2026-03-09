@@ -12,7 +12,7 @@ using Xunit;
 
 namespace cafedebug.backend.api.test.Application.Banners.Services;
 
-[Collection("PodcastTests")]
+[Collection("BannerTests")]
 public class BannerServiceTest : BaseTest
 {
     private readonly BannerService _bannerService;

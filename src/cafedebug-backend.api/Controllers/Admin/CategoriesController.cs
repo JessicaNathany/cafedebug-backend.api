@@ -12,7 +12,7 @@ namespace cafedebug_backend.api.Controllers.Admin
     [Produces("application/json")]
     [Route("api/v1/admin/categories")]
     [Tags("Admin - Categories")]
-    public class CategoriesController(ICategoriesService categoriesService) : ControllerBase
+    public class CategoriesController(ICategoryService categoriyService) : ControllerBase
     {
         [HttpPost]
         [Authorize]
@@ -20,7 +20,7 @@ namespace cafedebug_backend.api.Controllers.Admin
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Result>> CreateAsync([FromBody] CategoryRequest request)
         {
-            return await categoriesService.CreateAsync(request);
+            return await categoriyService.CreateAsync(request);
         }
 
         [HttpPut("{id}")]
@@ -30,7 +30,7 @@ namespace cafedebug_backend.api.Controllers.Admin
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Result>> UpdateAsync([FromBody] CategoryRequest request, int id)
         {
-            return await categoriesService.UpdateAsync(request, id);
+            return await categoriyService.UpdateAsync(request, id);
         }
 
         [HttpGet]
@@ -39,7 +39,7 @@ namespace cafedebug_backend.api.Controllers.Admin
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<Result>> GetAllAsync([FromQuery] PageRequest request)
         {
-            return await categoriesService.GetAllAsync(request);
+            return await categoriyService.GetAllAsync(request);
         }
 
         [HttpGet("{id}")]
@@ -48,7 +48,7 @@ namespace cafedebug_backend.api.Controllers.Admin
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Result>> GetByIdAsync(int id)
         {
-            return await categoriesService.GetByIdAsync(id);
+            return await categoriyService.GetByIdAsync(id);
         }
 
         [HttpDelete("{id}")]
@@ -58,7 +58,7 @@ namespace cafedebug_backend.api.Controllers.Admin
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Result>> Delete(int id)
         {
-            return await categoriesService.DeleteAsync(id);
+            return await categoriyService.DeleteAsync(id);
         }
     }
 }
