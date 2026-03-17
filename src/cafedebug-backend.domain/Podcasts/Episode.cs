@@ -17,7 +17,6 @@ public class Episode : Entity
     public int Number { get; private set; }
     public int CategoryId { get; private set; }
     public Category Category { get; private set; }
-    public int DurationInSeconds { get; private set; }
     public int Views { get; private set; }
     public int Likes { get; private set; }
 
@@ -33,8 +32,7 @@ public class Episode : Entity
         DateTime publishedAt,
         bool active,
         int number,
-        int categoryId,
-        int durationInSeconds)
+        int categoryId)
     {
         Title = title;
         Description = description;
@@ -46,7 +44,6 @@ public class Episode : Entity
         Active = active;
         Number = number;
         CategoryId = categoryId;
-        DurationInSeconds = durationInSeconds;
         EndDateVerify(PublishedAt);
         Views = 0;
         Likes = 0;
@@ -63,8 +60,7 @@ public class Episode : Entity
         DateTime publishedAt,
         bool active,
         int number,
-        int categoryId,
-        int durationInSeconds)
+        int categoryId)
     {
        Title = title;
        Description = description;
@@ -77,7 +73,6 @@ public class Episode : Entity
        Active = active;
        Number = number;
        CategoryId = categoryId;
-       DurationInSeconds = durationInSeconds;
     }
     private void EndDateVerify(DateTime publishedAt)
     {

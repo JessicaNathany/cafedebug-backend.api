@@ -43,7 +43,7 @@ jobs:
           JwtSettings__Audience: ${{ vars.JWT_AUDIENCE }}
           JwtSettings__SigningKey: ${{ vars.JWT_SIGNING_KEY }}
           JwtSettings__ValidForMinutes: 15
-          JwtSettings__RefreshTokenValidForMinutes: 10080
+          JwtSettings__RefreshTokenValidForMinutes: 240
           Storage__AWS__S3__Bucket: ${{ vars.AWS_S3_BUCKET }}
           Storage__AWS__S3__Region: ${{ vars.AWS_S3_REGION }}
           Storage__AWS__S3__BaseUrl: ${{ vars.AWS_S3_BASE_URL }}

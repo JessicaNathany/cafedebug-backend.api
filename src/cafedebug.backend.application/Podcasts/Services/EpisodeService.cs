@@ -57,9 +57,8 @@ public class EpisodeService(IEpisodeRepository episodeRepository, ICategoryRepos
             request.PublishedAt,
             request.Active,
             request.Number,
-            request.CategoryId,
-            request.DurationInSeconds);
-        
+            request.CategoryId);
+
         episode.SetCategory(category);
         
         await episodeRepository.UpdateAsync(episode);

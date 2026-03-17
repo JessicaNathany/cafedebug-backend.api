@@ -50,9 +50,5 @@ public class EpisodeValidator : AbstractValidator<EpisodeRequest>
 
         RuleFor(x => x.CategoryId)
             .NotEmpty().WithMessage("Category id is required");
-
-        RuleFor(x => x.DurationInSeconds)
-            .GreaterThan(0).WithMessage("Duration must be greater than 0 seconds")
-            .LessThanOrEqualTo(86400).WithMessage("Duration cannot exceed 24 hours (86400 seconds)");
     }
 }

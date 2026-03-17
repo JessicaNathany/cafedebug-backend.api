@@ -3,7 +3,6 @@
 public sealed record EpisodeResponse
 {
     public int Id { get; set; }
-    public Guid Code { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }
     public string ShortDescription { get; set; }
@@ -17,7 +16,6 @@ public sealed record EpisodeResponse
     public int Number { get; set; }
     public CategoryResponse Category { get; set; }
     public int CategoryId { get; set; }
-    public int DurationInSeconds { get; set; }
     public int Views { get; set; }
     public int Likes { get; set; }
 }

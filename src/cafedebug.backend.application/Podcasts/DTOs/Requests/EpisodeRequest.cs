@@ -14,7 +14,6 @@ public sealed record EpisodeRequest
     public bool Active { get; init; }
     public int Number { get; init; }
     public int CategoryId { get; init; }
-    public int DurationInSeconds { get; init; }
     
     public Episode ToEpisode()
     {
@@ -28,7 +27,6 @@ public sealed record EpisodeRequest
             PublishedAt,
             Active,
             Number,
-            CategoryId,
-            DurationInSeconds);
+            CategoryId);
     }
 }

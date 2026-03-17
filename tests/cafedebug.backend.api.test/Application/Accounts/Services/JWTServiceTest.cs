@@ -1,5 +1,4 @@
 ﻿using cafedebug.backend.api.test.Shared;
-using cafedebug.backend.api.test.Shared.Mocks.Accounts;
 using cafedebug.backend.api.test.Shared.Setups.Accounts;
 using cafedebug.backend.api.test.Shared.Verifications.Account;
 using cafedebug.backend.application.Accounts.Services;
@@ -37,8 +36,8 @@ public class JWTServiceTest : BaseTest
         {
             Issuer = "TestIssuer",
             Audience = "TestAudience",
-            ValidForMinutes = 60,
-            RefreshTokenValidForMinutes = 1440,
+            ValidForMinutes = 15,
+            RefreshTokenValidForMinutes = 240,
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ThisIsASecretKeyForTestingPurposes123456")),
                 SecurityAlgorithms.HmacSha256)
