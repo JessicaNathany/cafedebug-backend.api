@@ -42,7 +42,6 @@ public static class MappingConfig
              Active = episode.Active,
              Number = episode.Number,
              Category = episode.Category?.ToCategory(),
-             CategoryId = episode.CategoryId,
              Views = episode.Views,     
              Likes = episode.Likes     
          };

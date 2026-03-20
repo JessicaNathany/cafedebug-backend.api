@@ -42,7 +42,7 @@ public abstract class BaseRepository<TEntity>(CafedebugContext context) : IBaseR
         return await query.ToListAsync();
     }
 
-    public async Task<IPagedResult<TEntity>> GetPageList(int page = 1, int pageSize = 10, string? sortBy = null,
+    public virtual async Task<IPagedResult<TEntity>> GetPageList(int page = 1, int pageSize = 10, string? sortBy = null,
         bool descending = false, CancellationToken cancellationToken = default)
     {
         if (page < 1) page = 1;
@@ -99,7 +99,7 @@ public abstract class BaseRepository<TEntity>(CafedebugContext context) : IBaseR
         return filterExpression is not null ? queryable.Where(filterExpression) : queryable;
     }
 
-    private IQueryable<TEntity> ApplySorting(IQueryable<TEntity> query, string sortBy, bool descending)
+    protected IQueryable<TEntity> ApplySorting(IQueryable<TEntity> query, string sortBy, bool descending)
     {
         var allowedSortFields = GetAllowedSortFields();
         
