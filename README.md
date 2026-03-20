@@ -21,10 +21,6 @@
   </a>
 </p>
 
- <h4 align="center"> 
-	🚧  Projeto 🚀 em construção...  🚧
- </h4>
-
 ## Sobre o projeto 📑
 
 Este é o repositório do projeto API Café Debug. Essa API tem como objetivo manter o backend separado do frontend<br/>
