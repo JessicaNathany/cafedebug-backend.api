@@ -90,8 +90,7 @@ public class EpisodeValidatorTests
             ImageUrl = "https://cafedebug.com.br/images/episode1.jpg",
             PublishedAt = DateTime.UtcNow,
             Number = 1,
-            CategoryId = 1,
-            DurationInSeconds = 3600
+            CategoryId = 1
         };
         
         // Act

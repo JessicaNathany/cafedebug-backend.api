@@ -42,8 +42,6 @@ public static class MappingConfig
              Active = episode.Active,
              Number = episode.Number,
              Category = episode.Category?.ToCategory(),
-             CategoryId = episode.CategoryId,
-             DurationInSeconds = episode.DurationInSeconds,
              Views = episode.Views,     
              Likes = episode.Likes     
          };
@@ -54,7 +52,9 @@ public static class MappingConfig
         return new CategoryResponse
         {
             Id = category.Id,
-            Name = category.Name
+            Name = category.Name,
+            CreatedAt = category.CreatedAt,
+            UpdatedAt = category.UpdatedAt
         };
     }
 

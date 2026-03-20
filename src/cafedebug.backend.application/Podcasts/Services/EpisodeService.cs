@@ -3,7 +3,6 @@ using cafedebug.backend.application.Common.Pagination;
 using cafedebug.backend.application.Podcasts.DTOs.Requests;
 using cafedebug.backend.application.Podcasts.DTOs.Responses;
 using cafedebug.backend.application.Podcasts.Interfaces.Episodes;
-using cafedebug_backend.domain.Episodes.Repositories;
 using cafedebug_backend.domain.Podcasts;
 using cafedebug_backend.domain.Podcasts.Errors;
 using cafedebug_backend.domain.Podcasts.Repositories;
@@ -58,9 +57,8 @@ public class EpisodeService(IEpisodeRepository episodeRepository, ICategoryRepos
             request.PublishedAt,
             request.Active,
             request.Number,
-            request.CategoryId,
-            request.DurationInSeconds);
-        
+            request.CategoryId);
+
         episode.SetCategory(category);
         
         await episodeRepository.UpdateAsync(episode);
@@ -82,7 +80,6 @@ public class EpisodeService(IEpisodeRepository episodeRepository, ICategoryRepos
     public async Task<Result<PagedResult<EpisodeResponse>>> GetAllAsync(PageRequest request)
     {
         var episodes = await episodeRepository.GetPageList(request.Page, request.PageSize, request.SortBy, request.Descending);
-        
         return episodes.MapToPagedResult(episodes => episodes.ToEpisode());
     }
 

@@ -1,7 +1,10 @@
-namespace cafedebug.backend.application.Podcasts.DTOs.Responses;
+﻿namespace cafedebug.backend.application.Podcasts.DTOs.Responses;
 
-public sealed record CategoryResponse 
+public class CategoryResponse
 {
     public int Id { get; set; }
     public string Name { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 }
+

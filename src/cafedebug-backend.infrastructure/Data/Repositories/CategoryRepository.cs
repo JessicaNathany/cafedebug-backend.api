@@ -1,5 +1,6 @@
-﻿using cafedebug_backend.domain.Episodes.Repositories;
+﻿using cafedebug_backend.domain.Banners;
 using cafedebug_backend.domain.Podcasts;
+using cafedebug_backend.domain.Podcasts.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace cafedebug_backend.infrastructure.Data.Repositories;
@@ -8,14 +9,21 @@ public class CategoryRepository(CafedebugContext context) : BaseRepository<Categ
 {
     private readonly CafedebugContext _context = context;
 
-    public async Task<IEnumerable<Category>> GetPagedAsync(string searchParam, int pageIndex = 0, int pageSize = 10)
+    public async Task<Category?> GetByNameAsync(string categoryName)
     {
-        var query = _context.Set<Category>()
+        return await _context.Categories
             .AsNoTracking()
-            .Where(category => category.Name.Contains(searchParam))
+            .Where(category => category.Name.Contains(categoryName, StringComparison.InvariantCultureIgnoreCase))
+            .FirstOrDefaultAsync();
+    }
+    
+    public async Task<IEnumerable<Category>> GetPagedAsync(int pageIndex = 0, int pageSize = 10)
+    {
+        var query = _context.Categories
+            .AsNoTracking()
             .Skip(pageIndex * pageSize)
             .Take(pageSize);
 
-        return await query.ToListAsync();
+        return (IEnumerable<Category>)await query.ToListAsync();
     }
 }
