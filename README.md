@@ -22,10 +22,6 @@
   </a>
 </p>
 
- <h4 align="center"> 
-	🚧  Project 🚀 under construction...  🚧
- </h4>
-
 ## About the project 📑
 
 This repository contains the Café Debug API project. The purpose of this API is to keep the backend separate from the frontend, providing information about the podcast such as episodes and schedule, as well as other technology‑related content. [Café Debug website](wwww.cafedebug.com.br) current.
