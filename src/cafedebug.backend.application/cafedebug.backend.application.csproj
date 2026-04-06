@@ -34,4 +34,9 @@
     <ProjectReference Include="..\cafedebug-backend.domain\cafedebug-backend.domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Podcasts\Validators\Category\" />
+    <Folder Include="Podcasts\Validators\Tags\" />
+  </ItemGroup>
+
 </Project>
