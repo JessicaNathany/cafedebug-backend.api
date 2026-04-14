@@ -36,7 +36,6 @@
 
   <ItemGroup>
     <Folder Include="Podcasts\Validators\Category\" />
-    <Folder Include="Podcasts\Validators\Tags\" />
   </ItemGroup>
 
 </Project>

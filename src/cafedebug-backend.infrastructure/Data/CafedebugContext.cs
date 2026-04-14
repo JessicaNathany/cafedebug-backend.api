@@ -22,8 +22,6 @@ public class CafedebugContext : DbContext
     public DbSet<Contact> Contacts { get; set; }
     public DbSet<UserAdmin> Users { get; set; }
     public DbSet<RefreshTokens> RefreshTokens { get; set; }
-    public DbSet<Tags> Tags { get; set; }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(CafedebugContext).Assembly);

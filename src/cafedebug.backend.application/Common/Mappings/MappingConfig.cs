@@ -84,16 +84,5 @@ public static class MappingConfig
             }
         };
     }
-
-    public static TagsResponse ToTags(this Tags tags)
-    {
-        return new TagsResponse
-        {
-            Id = tags.Id,
-            Name = tags.Name,
-            UpdatedAt = tags.UpdatedAt,
-            CreatedAt = tags.CreatedAt  
-        };
-    }
 }
 
