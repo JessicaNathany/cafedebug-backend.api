@@ -15,6 +15,6 @@ public sealed record EpisodeResponse
     public bool Active { get; set; }
     public int Number { get; set; }
     public CategoryResponse Category { get; set; }
-    public int Views { get; set; }
-    public int Likes { get; set; }
+    public long Views { get; set; }
+    public long Likes { get; set; }
 }

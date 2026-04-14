@@ -17,8 +17,8 @@ public class Episode : Entity
     public int Number { get; private set; }
     public int CategoryId { get; private set; }
     public Category Category { get; private set; }
-    public int Views { get; private set; }
-    public int Likes { get; private set; }
+    public long Views { get; private set; }
+    public long Likes { get; private set; }
 
     // EF Core will use this constructor 
     private Episode() { }

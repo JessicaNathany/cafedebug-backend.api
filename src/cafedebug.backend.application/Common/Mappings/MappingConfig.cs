@@ -17,8 +17,8 @@ public static class MappingConfig
             Name = banner.Name,
             UrlImage = banner.UrlImage,
             Url = banner.Url,
-            StartDate = banner.StartDate.ToString("yyyy-MM-dd"), 
-            EndDate = banner.EndDate.ToString("yyyy-MM-dd"),     
+            StartDate = banner.StartDate.ToString("yyyy-MM-dd"),
+            EndDate = banner.EndDate.ToString("yyyy-MM-dd"),
             UpdateDate = banner.UpdatedAt?.ToString("yyyy-MM-dd HH:mm:ss") ?? string.Empty,
             Active = banner.Active.ToString(),
             Order = banner.Order
@@ -27,24 +27,24 @@ public static class MappingConfig
 
     public static EpisodeResponse ToEpisode(this Episode episode)
     {
-         return new EpisodeResponse
-         {
-             Id = episode.Id,
-             Title = episode.Title,
-             Description = episode.Description,
-             ShortDescription = episode.ShortDescription,
-             Url = episode.Url,
-             ImageUrl = episode.ImageUrl,
-             Tags = episode.Tags,
-             PublishedAt = episode.PublishedAt, 
-             UpdatedAt = episode.UpdatedAt,     
-             CreatedAt = episode.CreatedAt,    
-             Active = episode.Active,
-             Number = episode.Number,
-             Category = episode.Category?.ToCategory(),
-             Views = episode.Views,     
-             Likes = episode.Likes     
-         };
+        return new EpisodeResponse
+        {
+            Id = episode.Id,
+            Title = episode.Title,
+            Description = episode.Description,
+            ShortDescription = episode.ShortDescription,
+            Url = episode.Url,
+            ImageUrl = episode.ImageUrl,
+            Tags = episode.Tags,
+            PublishedAt = episode.PublishedAt,
+            UpdatedAt = episode.UpdatedAt,
+            CreatedAt = episode.CreatedAt,
+            Active = episode.Active,
+            Number = episode.Number,
+            Category = episode.Category?.ToCategory(),
+            Views = episode.Views,
+            Likes = episode.Likes
+        };
     }
 
     public static CategoryResponse ToCategory(this Category category)

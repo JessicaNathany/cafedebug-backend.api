@@ -59,11 +59,11 @@ public class EpisodeModelBuilder : IEntityTypeConfiguration<Episode>
             .HasColumnType("int");
 
         builder.Property(e => e.Views)
-            .HasColumnType("int")
+            .HasColumnType("bigint")
             .HasColumnName("View");
 
         builder.Property(e => e.Likes)
-            .HasColumnType("int")
+            .HasColumnType("bigint")
             .HasColumnName("Like");
 
         builder.HasOne( e => e.Category)
