@@ -10,6 +10,13 @@ public class EpisodeRepository(CafedebugContext context) : BaseRepository<Episod
 {
     private readonly CafedebugContext _context = context;
 
+    public override async Task<Episode?> GetByIdAsync(int id) 
+    {
+        return await _context.Episodes
+            .Include(e => e.Category)
+            .FirstOrDefaultAsync(e => e.Id == id && e.Active);
+    }
+    
     public async Task<IEnumerable<Episode>> SearchByEpisodeName(string searchParam, int pageIndex = 0, int pageSize = 10)
     {
         var query = _context.Set<Episode>()

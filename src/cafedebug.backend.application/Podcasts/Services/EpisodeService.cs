@@ -33,7 +33,7 @@ public class EpisodeService(IEpisodeRepository episodeRepository, ICategoryRepos
 
         await episodeRepository.SaveAsync(episode);
 
-        var response = MappingConfig.ToEpisode(episode);
+        var response = episode.ToEpisode();
         return Result.Success(response);
     }
 
@@ -63,7 +63,7 @@ public class EpisodeService(IEpisodeRepository episodeRepository, ICategoryRepos
         
         await episodeRepository.UpdateAsync(episode);
 
-        var response = MappingConfig.ToEpisode(episode);
+        var response = episode.ToEpisode();
         return Result.Success(response);
     }
 
@@ -89,7 +89,7 @@ public class EpisodeService(IEpisodeRepository episodeRepository, ICategoryRepos
         if (episode is null)
             return Result.Failure<EpisodeResponse>(EpisodeError.NotFound(id));
 
-        var response = MappingConfig.ToEpisode(episode);
+        var response = episode.ToEpisode();
         
         return Result.Success(response);
     }

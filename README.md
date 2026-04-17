@@ -167,6 +167,7 @@ Admin - Episodes
 - `POST /api/v1/admin/episodes` — creates episode (Authorize)
 - `PUT /api/v1/admin/episodes/{id}` — updates episode (Authorize)
 - `DELETE /api/v1/admin/episodes/{id}` — removes episode (Authorize)
+- `PATCH /api/v1/admin/episodes/{id}` — update partial episode (Authorize)
 
 ### Architecture
 

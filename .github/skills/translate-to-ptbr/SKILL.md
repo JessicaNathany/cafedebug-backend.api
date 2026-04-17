@@ -24,8 +24,8 @@ Translate English documentation files to Brazilian Portuguese.
    - Branch naming conventions (feature/, fix/)
 3. Preserve all emojis exactly as-is
 4. Preserve all badges and image tags exactly as-is
-5. Update the language switcher to highlight pt-BR as active:
-   `🇺🇸 English | 🇧🇷 [Português](README.pt-BR.md)`
+5. Update the language switcher to highlight pt-BR as active and link back to English:
+   `🇧🇷 Português | 🇺🇸 [English](README.md)`
 6. Keep identical section order as the English source
 
 ## Output
