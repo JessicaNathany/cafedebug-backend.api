@@ -79,7 +79,7 @@ public class EpisodeService(IEpisodeRepository episodeRepository, ICategoryRepos
 
     public async Task<Result<PagedResult<EpisodeResponse>>> GetAllAsync(PageRequest request)
     {
-        var episodes = await episodeRepository.GetPageList(request.Page, request.PageSize, request.SortBy, request.Descending);
+        var episodes = await episodeRepository.GetPageList(request.Search, request.Page, request.PageSize, request.SortBy, request.Descending);
         return episodes.MapToPagedResult(episodes => episodes.ToEpisode());
     }
 
