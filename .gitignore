@@ -74,3 +74,4 @@ launchSettings.json
 .DS_Store
 .env
 docker-compose.local.yml
+.junie
