@@ -39,16 +39,19 @@ public static class MappingConfig
             PublishedAt = episode.PublishedAt,
             UpdatedAt = episode.UpdatedAt,
             CreatedAt = episode.CreatedAt,
-            Active = episode.Active,
+            Status = episode.Status,
             Number = episode.Number,
-            Category = episode.Category?.ToCategory(),
+            Category = episode.Category.ToCategory(),
             Views = episode.Views,
             Likes = episode.Likes
         };
     }
 
-    public static CategoryResponse ToCategory(this Category category)
+    public static CategoryResponse? ToCategory(this Category? category)
     {
+        if (category == null)
+            return null;
+        
         return new CategoryResponse
         {
             Id = category.Id,

@@ -1,4 +1,5 @@
 ﻿using cafedebug_backend.domain.Shared;
+using static cafedebug_backend.domain.Podcasts.EpisodeStatus;
 
 namespace cafedebug_backend.domain.Podcasts;
 
@@ -13,7 +14,14 @@ public class Episode : Entity
     public DateTime PublishedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
     public DateTime CreatedAt { get; private set; }
-    public bool Active { get; private set; }
+    
+    private EpisodeStatus _status;
+    public EpisodeStatus Status
+    {
+        get => GetStatus();
+        private set => _status = value;
+    }
+
     public int Number { get; private set; }
     public int CategoryId { get; private set; }
     public Category Category { get; private set; }
@@ -30,7 +38,7 @@ public class Episode : Entity
         string imageUrl,
         List<string>? tags,
         DateTime publishedAt,
-        bool active,
+        EpisodeStatus status,
         int number,
         int categoryId)
     {
@@ -41,10 +49,9 @@ public class Episode : Entity
         ImageUrl = imageUrl;
         Tags = tags?.AsReadOnly();
         PublishedAt = publishedAt;
-        Active = active;
+        Status = status;
         Number = number;
         CategoryId = categoryId;
-        EndDateVerify(PublishedAt);
         Views = 0;
         Likes = 0;
         CreatedAt = DateTime.Now;
@@ -58,7 +65,7 @@ public class Episode : Entity
         string imageUrl,
         List<string>? tags,
         DateTime publishedAt,
-        bool active,
+        EpisodeStatus status,
         int number,
         int categoryId)
     {
@@ -70,18 +77,22 @@ public class Episode : Entity
        Tags = tags?.AsReadOnly();
        PublishedAt = publishedAt;
        UpdatedAt = DateTime.Now;
-       Active = active;
+       Status = status;
        Number = number;
        CategoryId = categoryId;
-    }
-    private void EndDateVerify(DateTime publishedAt)
-    {
-        if (publishedAt == DateTime.Now.AddDays(-1))
-            Active = false;
     }
 
     public void SetCategory(Category category)
     {
         Category = category;
+    }
+
+    private EpisodeStatus GetStatus()
+    {
+        return _status == Draft || _status == Archived
+            ? _status
+            : DateTime.Now > PublishedAt
+                ? Published
+                : Scheduled;
     }
 }

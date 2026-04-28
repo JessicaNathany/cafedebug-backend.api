@@ -34,9 +34,9 @@ public class EpisodeRepositoryVerifications(Mock<IEpisodeRepository> episodeRepo
         episodeRepository.Verify(x => x.DeleteAsync(episode), once);
     }
 
-    public void VerifyEpisodePageListRetrieved(int page, int pageSize,
+    public void VerifyEpisodePageListRetrieved(string? search, int page, int pageSize,
         string? sortBy, bool descending, Times times)
     {
-        episodeRepository.Verify(x => x.GetPageList(page, pageSize, sortBy, descending, CancellationToken.None), times);
+        episodeRepository.Verify(x => x.GetPageList(search, page, pageSize, sortBy, descending, CancellationToken.None), times);
     }
 }

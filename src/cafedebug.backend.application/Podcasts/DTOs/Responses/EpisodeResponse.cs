@@ -12,7 +12,7 @@ public sealed record EpisodeResponse
     public DateTime PublishedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public DateTime CreatedAt { get; set; }
-    public bool Active { get; set; }
+    public string Status { get; set; }
     public int Number { get; set; }
     public CategoryResponse Category { get; set; }
     public long Views { get; set; }

@@ -15,7 +15,7 @@ public class EpisodeRepository(CafedebugContext context) : BaseRepository<Episod
     {
         return await _context.Episodes
             .Include(e => e.Category)
-            .FirstOrDefaultAsync(e => e.Id == id && e.Active);
+            .FirstOrDefaultAsync(e => e.Id == id);
     }
 
     public async Task<IEnumerable<Episode>> GetLastThreeEpisodes()
@@ -40,7 +40,6 @@ public class EpisodeRepository(CafedebugContext context) : BaseRepository<Episod
         {
           query = GetEpisodesQuery(sortBy, descending);
         }
-        
 
         return await PagedList<Episode>.CreateAsync(query, page, pageSize, sortBy, descending, cancellationToken);
     }
@@ -69,8 +68,7 @@ public class EpisodeRepository(CafedebugContext context) : BaseRepository<Episod
             .FromSqlInterpolated($"""
                                   SELECT e.*
                                   FROM Episode e
-                                  WHERE e.Active = 1
-                                    AND MATCH(e.Title, e.Description) AGAINST ({normalizedSearchParam} IN NATURAL LANGUAGE MODE)
+                                  WHERE MATCH(e.Title, e.Description) AGAINST ({normalizedSearchParam} IN NATURAL LANGUAGE MODE)
                                   ORDER BY MATCH(e.Title, e.Description) AGAINST ({normalizedSearchParam} IN NATURAL LANGUAGE MODE) DESC,
                                            e.Number DESC
                                   """)
