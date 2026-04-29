@@ -62,7 +62,7 @@ public class EpisodeRepositoryMockSetup(Mock<IEpisodeRepository> episodeReposito
     public void EpisodeGetPageList(IPagedResult<Episode> pagedResult, PageRequest pageRequest)
     {
         episodeRepository
-            .Setup(x => x.GetPageList(pageRequest.Page, pageRequest.PageSize, pageRequest.SortBy, pageRequest.Descending, CancellationToken.None))
+            .Setup(x => x.GetPageList(pageRequest.Search, pageRequest.Page, pageRequest.PageSize, pageRequest.SortBy, pageRequest.Descending, CancellationToken.None))
             .ReturnsAsync(pagedResult);   
     }
 }

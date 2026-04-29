@@ -1,6 +1,6 @@
 # CafeDebug API
 
-🇧🇷 Português | 🇺🇸 [English](README.md)
+🇺🇸 English | 🇧🇷 [Português](README.pt-BR.md)
 
 ![image](https://user-images.githubusercontent.com/11943572/234849730-c6b41618-6c13-4a87-9b5e-5b9d16ba4474.png)
 
@@ -150,7 +150,7 @@ dotnet run --project src/cafedebug-backend.api
 
 A API estará disponível em: `http://localhost:5000` ou `https://localhost:5001`
 
-## Tests 🧪
+## Testes 🧪
 ```bash
 dotnet test
 ```
@@ -177,6 +177,7 @@ Admin - Episódios
 - `POST /api/v1/admin/episodes` — cria episódio (Authorize)
 - `PUT /api/v1/admin/episodes/{id}` — atualiza episódio (Authorize)
 - `DELETE /api/v1/admin/episodes/{id}` — remove episódio (Authorize)
+- `PATCH /api/v1/admin/episodes/{id}` — atualiza parcialmente um episódio (Authorize)
 
 ### Arquitetura
 

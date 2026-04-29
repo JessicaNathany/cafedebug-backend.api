@@ -261,7 +261,7 @@ public class EpisodeServiceTest : BaseTest
         result.Value.SortBy.Should().Be(request.SortBy);
         result.Value.Descending.Should().Be(request.Descending);
         
-        _episodeRepositoryVerifications.VerifyEpisodePageListRetrieved(request.Page, request.PageSize, request.SortBy, request.Descending, Times.Once());
+        _episodeRepositoryVerifications.VerifyEpisodePageListRetrieved(request.Search, request.Page, request.PageSize, request.SortBy, request.Descending, Times.Once());
     }
 
     [Fact]
@@ -286,7 +286,7 @@ public class EpisodeServiceTest : BaseTest
         result.Value.SortBy.Should().Be(request.SortBy);
         result.Value.Descending.Should().Be(request.Descending);
         
-        _episodeRepositoryVerifications.VerifyEpisodePageListRetrieved(request.Page, request.PageSize, request.SortBy, request.Descending, Times.Once());
+        _episodeRepositoryVerifications.VerifyEpisodePageListRetrieved(request.Search, request.Page, request.PageSize, request.SortBy, request.Descending, Times.Once());
     }
 
     [Fact]
@@ -306,6 +306,72 @@ public class EpisodeServiceTest : BaseTest
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         
+        _episodeRepositoryVerifications.VerifyEpisodeRetrieved(episodeId, Times.Once());
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_WhenPublishedDateIsInFuture_ReturnsScheduledStatus()
+    {
+        // Arrange
+        const int episodeId = 223;
+        var category = _categoryTestDataMock.CreateCategory(1001);
+        var episode = new Episode(
+            "Episode title",
+            "Episode description",
+            "Episode short description",
+            "https://cafedebug.example/episode",
+            "https://cafedebug.example/image.png",
+            new List<string> { "podcast" },
+            DateTime.Now.AddHours(3),
+            EpisodeStatus.Published,
+            1,
+            category.Id);
+
+        episode.Id = episodeId;
+        episode.SetCategory(category);
+
+        _episodeRepositoryMockSetup.GetEpisodeById(episode);
+
+        // Act
+        var result = await _episodeService.GetByIdAsync(episodeId);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Status.Should().Be(EpisodeStatus.Scheduled.Value);
+
+        _episodeRepositoryVerifications.VerifyEpisodeRetrieved(episodeId, Times.Once());
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_WhenStatusIsDraft_KeepsDraftStatus()
+    {
+        // Arrange
+        const int episodeId = 223;
+        var category = _categoryTestDataMock.CreateCategory(1001);
+        var episode = new Episode(
+            "Episode title",
+            "Episode description",
+            "Episode short description",
+            "https://cafedebug.example/episode",
+            "https://cafedebug.example/image.png",
+            new List<string> { "podcast" },
+            DateTime.Now.AddHours(-3),
+            EpisodeStatus.Draft,
+            1,
+            category.Id);
+
+        episode.Id = episodeId;
+        episode.SetCategory(category);
+
+        _episodeRepositoryMockSetup.GetEpisodeById(episode);
+
+        // Act
+        var result = await _episodeService.GetByIdAsync(episodeId);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Status.Should().Be(EpisodeStatus.Draft.Value);
+
         _episodeRepositoryVerifications.VerifyEpisodeRetrieved(episodeId, Times.Once());
     }
 

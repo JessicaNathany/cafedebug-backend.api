@@ -49,8 +49,13 @@ public class EpisodeModelBuilder : IEntityTypeConfiguration<Episode>
         builder.Property(e => e.UpdatedAt)
             .HasColumnType("datetime");
 
-        builder.Property(e => e.Active)
-            .HasColumnType("bit");
+        builder.Property(e => e.Status)
+            .HasConversion(
+                status => status.Value,
+                value => value
+            )
+            .HasMaxLength(20)
+            .IsRequired();
 
         builder.Property(e => e.Number)
             .HasColumnType("int");
