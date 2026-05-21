@@ -11,7 +11,7 @@ description: 'Maintains README and CONTRIBUTING files for the Café Debug API. C
 - "@docs sync README.md and README.pt-BR.md"
 
 ## Context
-Repository: CafeDebug Backend API
+Repository: Cafe Debug Backend API
 Stack: ASP.NET Core (.NET), Docker, AWS services
 Documentation rules:
 - English documentation is the source of truth.
