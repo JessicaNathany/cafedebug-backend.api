@@ -11,7 +11,7 @@ public sealed record EpisodeStatus(string Value)
     
     public static implicit operator string(EpisodeStatus status) => status.Value;
     
-    public static implicit operator EpisodeStatus(string status) => status switch
+    public static implicit operator EpisodeStatus(string status) => status.ToLower() switch
     {
         "draft" => Draft,
         "scheduled" => Scheduled,
