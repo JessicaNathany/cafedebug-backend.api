@@ -11,15 +11,31 @@ public class BannerTestDataMock(IFixture fixture)
 {
     public BannerRequest CreateBannerRequest()
     {
-        var build = fixture.Build<BannerRequest>();
-        return build.Create();
+        return fixture.Build<BannerRequest>()
+            .With(r => r.UrlImage, $"https://example.com/{Guid.NewGuid():N}.png")
+            .With(r => r.Url, $"https://example.com/{Guid.NewGuid():N}")
+            .With(r => r.StartDate, DateTime.UtcNow.AddDays(-1))
+            .With(r => r.EndDate, DateTime.UtcNow.AddDays(7))
+            .With(r => r.Status, BannerStatus.Published.Value)
+            .With(r => r.Active, true)
+            .Create();
     }
 
     public Banner CreateBanner(int bannerId)
     {
-        return fixture.Build<Banner>()
-            .With(b => b.Id, bannerId)
-            .Create();
+        var banner = new Banner(
+            fixture.Create<string>(),
+            $"https://example.com/{Guid.NewGuid():N}.png",
+            $"https://example.com/{Guid.NewGuid():N}",
+            DateTime.UtcNow.AddDays(-1),
+            DateTime.UtcNow.AddDays(7),
+            BannerStatus.Published,
+            true,
+            fixture.Create<int>());
+
+        banner.Id = bannerId;
+
+        return banner;
     }
 
     public PageRequest CreatePageRequest()
@@ -33,11 +49,12 @@ public class BannerTestDataMock(IFixture fixture)
 
     public PagedList<Banner> CreateBannerPagedResult(int page, int pageSize, string? sortBy = null, bool descending = false, int totalCount = 10)
     {
-        var banners = fixture.CreateMany<Banner>(totalCount).ToList();
+        var banners = Enumerable.Range(1, totalCount)
+            .Select(CreateBanner)
+            .ToList();
 
         var bannersQuery = banners.BuildMock();
 
         return new PagedList<Banner>(bannersQuery, page, pageSize, sortBy, descending);
     }
 }
-
