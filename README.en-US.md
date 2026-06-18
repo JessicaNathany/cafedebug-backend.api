@@ -1,5 +1,5 @@
 # CafeDebug API
-🇺🇸 English | 🇧🇷 [Português](README.md)
+<a href="README.en-US.md"><img src="https://flagcdn.com/w20/us.png" alt="United States" width="20" style="vertical-align: middle;" /> English</a> | <a href="README.md"><img src="https://flagcdn.com/w20/br.png" alt="Brasil" width="20" style="vertical-align: middle;" /> Português</a>
 
 ![image](https://user-images.githubusercontent.com/11943572/234849730-c6b41618-6c13-4a87-9b5e-5b9d16ba4474.png)
 
