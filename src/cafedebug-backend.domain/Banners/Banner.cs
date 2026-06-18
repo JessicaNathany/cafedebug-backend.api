@@ -1,4 +1,5 @@
 ﻿using cafedebug_backend.domain.Shared;
+using static cafedebug_backend.domain.Banners.BannerStatus;
 
 namespace cafedebug_backend.domain.Banners;
 
@@ -14,6 +15,14 @@ public class Banner : Entity
     public bool Active { get; private set; }
     public int Order { get; private set; }
 
+    private BannerStatus _status;
+
+    public BannerStatus Status
+    {
+        get => GetStatus();
+        set => _status = value;
+    }
+
     private Banner() { }
     public Banner(
         string name,
@@ -21,6 +30,7 @@ public class Banner : Entity
         string url, 
         DateTime startDate, 
         DateTime endDate,
+        BannerStatus status,
         bool active, 
         int ordem)
     {
@@ -29,6 +39,7 @@ public class Banner : Entity
         Url = url;
         StartDate = startDate;
         EndDate = endDate;
+        Status = status;
         CreatedAt = DateTime.Now;
         Active = active;
         EndDateVerify(endDate);
@@ -41,6 +52,7 @@ public class Banner : Entity
         string url, 
         DateTime startDate, 
         DateTime endDate,
+        BannerStatus status,
         bool active, 
         int ordem)
     {
@@ -49,6 +61,7 @@ public class Banner : Entity
         Url = url;
         StartDate = startDate;
         EndDate = endDate;
+        Status = status;
         UpdatedAt = DateTime.Now;
         Active = active;
         EndDateVerify(endDate);
@@ -58,5 +71,14 @@ public class Banner : Entity
     {
         if (endDate == DateTime.Now.AddDays(-1))
             Active = false;
+    }
+
+    public BannerStatus GetStatus()
+    {
+        return _status == Draft || _status == Archived
+            ? _status
+            : DateTime.Now < StartDate
+                ? Published
+                : Scheduled;
     }
 }

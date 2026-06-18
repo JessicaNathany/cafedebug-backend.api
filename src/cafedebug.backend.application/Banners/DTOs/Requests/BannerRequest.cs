@@ -9,6 +9,7 @@ public sealed record BannerRequest
     public string Url { get; init; }
     public DateTime StartDate { get; init; }
     public DateTime EndDate { get; init; }
+    public string Status { get; init; }
     public DateTime UpdateAt { get; init; }
     public DateTime CreatedAt { get; init; }
     public DateTime? UpdateDate { get; init; }
@@ -23,6 +24,7 @@ public sealed record BannerRequest
             Url,
             StartDate,
             EndDate,
+            Status,
             Active,
             Order);        
     }
