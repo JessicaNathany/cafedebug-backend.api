@@ -1,4 +1,4 @@
-# CafeDebug UI
+# CafeDebug API
 
 <a href="README.md"><img src="https://flagcdn.com/w20/br.png" alt="Brasil" width="20" style="vertical-align: middle;" /> Português</a> | <a href="README.en-US.md"><img src="https://flagcdn.com/w20/us.png" alt="United States" width="20" style="vertical-align: middle;" /> English</a>
 
