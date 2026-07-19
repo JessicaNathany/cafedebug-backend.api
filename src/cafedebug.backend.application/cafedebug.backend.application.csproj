@@ -27,7 +27,6 @@
     <PackageReference Include="Scrutor" Version="6.1.0" />
     <PackageReference Include="SharpGrip.FluentValidation.AutoValidation.Mvc" Version="1.5.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
-    <PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.15" />
   </ItemGroup>
 
   <ItemGroup>
