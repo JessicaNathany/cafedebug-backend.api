@@ -33,7 +33,7 @@ trazendo informações do podcast como episódios e agenda e outros conteúdos r
 
 Este projeto utiliza as seguintes tecnologias principais:
 
-- .NET 9 (C#) — plataforma do backend
+- .NET 10 (C#) — plataforma do backend
 - Entity Framework Core — ORM para acesso ao MySQL
 - MySQL — banco de dados relacional
 - Docker / docker-compose — facilitação do ambiente local
@@ -41,7 +41,7 @@ Este projeto utiliza as seguintes tecnologias principais:
 
 ## Requisitos 📋
 
-- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
+- [.NET 10 SDK](https://dotnet.microsoft.com/pt-br/download/dotnet/10.0)
 - [MySQL](https://www.mysql.com/)
 - [Docker](https://www.docker.com/)
 
