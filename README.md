@@ -41,7 +41,7 @@ Este projeto utiliza as seguintes tecnologias principais:
 
 ## Requisitos 📋
 
-- [.NET 10 SDK](https://dotnet.microsoft.com/pt-br/download/dotnet/10.0)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 - [MySQL](https://www.mysql.com/)
 - [Docker](https://www.docker.com/)
 
