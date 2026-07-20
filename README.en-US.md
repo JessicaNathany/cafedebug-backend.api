@@ -30,7 +30,7 @@ This repository contains the Café Debug API project. The purpose of this API is
 
 This project uses the following main technologies:
 
-- .NET 9 (C#) — backend platform
+- .NET 10 (C#) — backend platform
 - Entity Framework Core — ORM for MySQL access
 - MySQL — relational database
 - Docker / docker-compose — ease local environment
@@ -38,7 +38,7 @@ This project uses the following main technologies:
 
 ## Requirements 📋
 
-- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 - [MySQL](https://www.mysql.com/)
 - [Docker](https://www.docker.com/)
 
