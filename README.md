@@ -62,12 +62,12 @@ Para rodar a base local, faça um [clone deste projeto](https://github.com/Jessi
 
 Dê permissão ao arquivo .sh:
 ```bash
-chmod +x cafedebug-setup.sh
+chmod +x run.sh
 ```
 
 Execute o script do banco de dados:
 ```bash
-./cafedebug-setup.sh
+./run.sh
 ```
 
 ### 3. Configure o appsettings
