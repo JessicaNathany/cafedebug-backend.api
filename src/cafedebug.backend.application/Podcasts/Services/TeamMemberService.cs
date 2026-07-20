@@ -32,16 +32,13 @@ public class TeamMemberService(ITeamMemberRepository teamMemberRepository) : ITe
         teamMember.Update(
             memberRequest.Name, 
             memberRequest.Email, 
-            memberRequest.Nickname, 
             memberRequest.Bio, 
             memberRequest.PodcastRole, 
             memberRequest.GitHubUrl, 
-            memberRequest.InstagramUrl, 
             memberRequest.LinkedInUrl, 
             memberRequest.ProfilePhotoUrl, 
             memberRequest.JobTitle, 
-            memberRequest.IsActive, 
-            memberRequest.JoinedAt);
+            memberRequest.IsActive);
 
         await teamMemberRepository.UpdateAsync(teamMember);
 

@@ -31,10 +31,6 @@ public class TeamMemberValidator : AbstractValidator<TeamMemberRequest>
             .IsValidUrl().WithMessage("GitHub URL must be a valid URL format")
             .When(request => !string.IsNullOrEmpty(request.GitHubUrl));
 
-        RuleFor(request => request.InstagramUrl) 
-            .IsValidUrl().WithMessage("Instagram URL must be a valid URL format")
-            .When(request => !string.IsNullOrEmpty(request.InstagramUrl));
-
         RuleFor(request => request.LinkedInUrl)
             .IsValidUrl().WithMessage("LinkedIn URL must be a valid URL format")
             .When(request => !string.IsNullOrEmpty(request.LinkedInUrl));

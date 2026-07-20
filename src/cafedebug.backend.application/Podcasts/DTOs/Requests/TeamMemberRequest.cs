@@ -10,7 +10,6 @@ public sealed record TeamMemberRequest
     public string? Bio { get; init; }
     public required string PodcastRole { get; init; }
     public string? GitHubUrl { get; init; }
-    public string? InstagramUrl { get; init; }
     public string? LinkedInUrl { get; init; }
     public string? ProfilePhotoUrl { get; init; }
     public string? JobTitle { get; init; }
@@ -26,12 +25,9 @@ public sealed record TeamMemberRequest
             Bio,
             PodcastRole,
             GitHubUrl,
-            InstagramUrl,
             LinkedInUrl,
             ProfilePhotoUrl,
             JobTitle,
-            IsActive,
-            JoinedAt
-            );
+            IsActive);
     }
 }
