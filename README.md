@@ -67,7 +67,7 @@ chmod +x run.sh
 
 Execute o script do banco de dados:
 ```bash
-./run.sh
+./run.sh -up
 ```
 
 ### 3. Configure o appsettings
