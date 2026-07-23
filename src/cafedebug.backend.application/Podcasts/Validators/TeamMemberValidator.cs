@@ -13,9 +13,6 @@ public class TeamMemberValidator : AbstractValidator<TeamMemberRequest>
             .MaximumLength(100).WithMessage("Name cannot exceed 100 characters")
             .MinimumLength(3).WithMessage("Name must be at least 3 characters");
 
-        RuleFor(request => request.Nickname)
-            .MaximumLength(50).WithMessage("Nickname cannot exceed 50 characters");
-
         RuleFor(request => request.Email)
             .EmailAddress().WithMessage("Invalid email format")
             .When(request => !string.IsNullOrEmpty(request.Email));

@@ -23,7 +23,7 @@ public class TeamMember : Entity
     private TeamMember() { }
     
     public TeamMember(string name, string? email, string? bio, string podcastRole, 
-        string? githubUrl, string? imageUrl, string? linkedInUrl, string? profilePhotoUrl, 
+        string? githubUrl,string? linkedInUrl, string? profilePhotoUrl, 
         string? jobTitle, bool isActive)
     {
         Name = name;
