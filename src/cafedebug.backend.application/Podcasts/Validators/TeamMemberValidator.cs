@@ -13,9 +13,6 @@ public class TeamMemberValidator : AbstractValidator<TeamMemberRequest>
             .MaximumLength(100).WithMessage("Name cannot exceed 100 characters")
             .MinimumLength(3).WithMessage("Name must be at least 3 characters");
 
-        RuleFor(request => request.Nickname)
-            .MaximumLength(50).WithMessage("Nickname cannot exceed 50 characters");
-
         RuleFor(request => request.Email)
             .EmailAddress().WithMessage("Invalid email format")
             .When(request => !string.IsNullOrEmpty(request.Email));
@@ -30,10 +27,6 @@ public class TeamMemberValidator : AbstractValidator<TeamMemberRequest>
         RuleFor(request => request.GitHubUrl)
             .IsValidUrl().WithMessage("GitHub URL must be a valid URL format")
             .When(request => !string.IsNullOrEmpty(request.GitHubUrl));
-
-        RuleFor(request => request.InstagramUrl) 
-            .IsValidUrl().WithMessage("Instagram URL must be a valid URL format")
-            .When(request => !string.IsNullOrEmpty(request.InstagramUrl));
 
         RuleFor(request => request.LinkedInUrl)
             .IsValidUrl().WithMessage("LinkedIn URL must be a valid URL format")

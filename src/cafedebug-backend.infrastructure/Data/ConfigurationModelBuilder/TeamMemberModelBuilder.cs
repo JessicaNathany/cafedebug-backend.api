@@ -14,9 +14,6 @@ public class TeamMemberModelBuilder : IEntityTypeConfiguration<TeamMember>
             .IsRequired()
             .HasColumnType("varchar(100)");
         
-        builder.Property(t => t.Nickname)
-            .HasColumnType("varchar(50)");
-        
         builder.Property(t => t.Email)
             .HasColumnType("varchar(150)");
         
@@ -28,9 +25,6 @@ public class TeamMemberModelBuilder : IEntityTypeConfiguration<TeamMember>
             .HasColumnType("varchar(50)");
 
         builder.Property(t => t.GitHubUrl)
-            .HasColumnType("varchar(500)");
-
-        builder.Property(t => t.InstagramUrl)
             .HasColumnType("varchar(500)");
 
         builder.Property(t => t.LinkedInUrl)
@@ -46,10 +40,6 @@ public class TeamMemberModelBuilder : IEntityTypeConfiguration<TeamMember>
             .IsRequired()
             .HasColumnType("bit")
             .HasDefaultValue(true);
-        
-        builder.Property(t => t.JoinedAt)
-            .IsRequired()
-            .HasColumnType("datetime");
         
         builder.Property(t => t.CreatedAt)
             .IsRequired()

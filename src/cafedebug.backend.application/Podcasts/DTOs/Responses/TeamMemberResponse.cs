@@ -11,7 +11,6 @@ public sealed record TeamMemberResponse
     public string? Bio { get; init; }
     public required string PodcastRole { get; init; }
     public string? GitHubUrl { get; init; }
-    public string? InstagramUrl { get; init; }
     public string? LinkedInUrl { get; init; }
     public string? ProfilePhotoUrl { get; init; }
     public string? JobTitle { get; init; }
@@ -26,17 +25,14 @@ public sealed record TeamMemberResponse
         {
             Id = teamMember.Id,
             Name = teamMember.Name,
-            Nickname = teamMember.Nickname,
             Email = teamMember.Email,
             Bio = teamMember.Bio,
             PodcastRole = teamMember.PodcastRole,
             GitHubUrl = teamMember.GitHubUrl,
-            InstagramUrl = teamMember.InstagramUrl,
             LinkedInUrl = teamMember.LinkedInUrl,
             ProfilePhotoUrl = teamMember.ProfilePhotoUrl,
             JobTitle = teamMember.JobTitle,
             IsActive = teamMember.IsActive,
-            JoinedAt = teamMember.JoinedAt,
             CreatedAt = teamMember.CreatedAt,
             UpdatedAt = teamMember.UpdatedAt
         };
