@@ -32,6 +32,14 @@ public class BannerModelBuilder : IEntityTypeConfiguration<Banner>
         builder.Property(b => b.UpdatedAt)
             .HasColumnType("datetime");
 
+        builder.Property(e => e.Status)
+            .HasConversion(
+                status => status.Value,
+                value => value
+            )
+            .HasMaxLength(20)
+            .IsRequired();
+
         builder.Property(b => b.CreatedAt)
             .IsRequired()
             .HasColumnType("datetime");
