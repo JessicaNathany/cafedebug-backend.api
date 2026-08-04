@@ -40,7 +40,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\cafedebug-backend.api\cafedebug-backend.api.csproj" />
     <ProjectReference Include="..\..\src\cafedebug.backend.application\cafedebug.backend.application.csproj" />
   </ItemGroup>
 
