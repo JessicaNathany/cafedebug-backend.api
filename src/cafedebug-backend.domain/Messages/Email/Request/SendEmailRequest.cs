@@ -1,12 +1,12 @@
-﻿namespace cafedebug_backend.domain.Messages.Email.Request;
+namespace cafedebug_backend.domain.Messages.Email.Request;
 
-public class SendEmailRequest
+public sealed record SendEmailRequest
 {
-    public string Name { get; set; } 
-    public string EmailFrom { get; set; }
-    public string MessageType { get; set; }
-    public string Subject { get; set; }
-    public string MessageBody { get; set; }
-    public string EmailTo { get; set; } 
-    public string EmailCopy { get; set; }
+    public string Name { get; init; }
+    public string EmailFrom { get; init; }
+    public string MessageType { get; init; }
+    public string Subject { get; init; }
+    public string MessageBody { get; init; }
+    public string EmailTo { get; init; }
+    public string EmailCopy { get; init; }
 }

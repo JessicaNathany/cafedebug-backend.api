@@ -1,12 +1,11 @@
-﻿namespace cafedebug.backend.application.Accounts.DTOs.Response
+namespace cafedebug.backend.application.Accounts.DTOs.Response;
+
+public sealed record AccountResponse
 {
-    public class AccountResponse
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string CreatedDate { get; set; }
-        public string LastUpdate { get; set; }
-        public string UpdatedBy { get; set; }
-    }
+    public string Id { get; init; }
+    public string Name { get; init; }
+    public string Email { get; init; }
+    public string CreatedDate { get; init; }
+    public string LastUpdate { get; init; }
+    public string UpdatedBy { get; init; }
 }

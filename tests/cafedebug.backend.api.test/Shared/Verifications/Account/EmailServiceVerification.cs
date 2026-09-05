@@ -2,18 +2,16 @@ using cafedebug.backend.application.Audience.Interfaces;
 using cafedebug_backend.domain.Messages.Email.Request;
 using Moq;
 
-namespace cafedebug.backend.api.test.Shared.Verifications.Account
+namespace cafedebug.backend.api.test.Shared.Verifications.Account;
+public class EmailServiceVerification(Mock<IEmailService> emailService)
 {
-    public class EmailServiceVerification(Mock<IEmailService> emailService)
+    public void VerifyEmailSent(Times times)
     {
-        public void VerifyEmailSent(Times times)
-        {
-            emailService.Verify(x => x.SendEmail(It.IsAny<SendEmailRequest>()), times);
-        }
+        emailService.Verify(x => x.SendEmail(It.IsAny<SendEmailRequest>()), times);
+    }
 
-        public void VerifyEmailSent(SendEmailRequest request, Times times)
-        {
-            emailService.Verify(x => x.SendEmail(request), times);
-        }
+    public void VerifyEmailSent(SendEmailRequest request, Times times)
+    {
+        emailService.Verify(x => x.SendEmail(request), times);
     }
 }

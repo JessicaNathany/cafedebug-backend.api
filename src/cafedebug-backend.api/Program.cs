@@ -14,6 +14,8 @@ Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSingleton(TimeProvider.System);
+
 // Add default logging
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();

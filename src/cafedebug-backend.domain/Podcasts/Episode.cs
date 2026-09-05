@@ -5,6 +5,8 @@ namespace cafedebug_backend.domain.Podcasts;
 
 public class Episode : Entity
 {
+    private TimeProvider _timeProvider = TimeProvider.System;
+
     public string Title { get; private set; }
     public string Description { get; private set; }
     public string ShortDescription { get; private set; }
@@ -15,11 +17,12 @@ public class Episode : Entity
     public DateTime? UpdatedAt { get; private set; }
     public DateTime CreatedAt { get; private set; }
     
-    private EpisodeStatus _status;
     public EpisodeStatus Status
     {
-        get => GetStatus();
-        private set => _status = value;
+        get => field == Draft || field == Archived
+            ? field
+            : _timeProvider.GetLocalNow().DateTime > PublishedAt ? Published : Scheduled;
+        private set;
     }
 
     public int Number { get; private set; }
@@ -40,8 +43,10 @@ public class Episode : Entity
         DateTime publishedAt,
         EpisodeStatus status,
         int number,
-        int categoryId)
+        int categoryId,
+        TimeProvider? timeProvider = null)
     {
+        _timeProvider = timeProvider ?? TimeProvider.System;
         Title = title;
         Description = description;
         ShortDescription = shortDescription;
@@ -54,7 +59,7 @@ public class Episode : Entity
         CategoryId = categoryId;
         Views = 0;
         Likes = 0;
-        CreatedAt = DateTime.Now;
+        CreatedAt = _timeProvider.GetLocalNow().DateTime;
     }
 
     public void Update(
@@ -67,8 +72,10 @@ public class Episode : Entity
         DateTime publishedAt,
         EpisodeStatus status,
         int number,
-        int categoryId)
+        int categoryId,
+        TimeProvider? timeProvider = null)
     {
+       _timeProvider = timeProvider ?? TimeProvider.System;
        Title = title;
        Description = description;
        ShortDescription = shortDescription;
@@ -76,7 +83,7 @@ public class Episode : Entity
        ImageUrl = imageUrl;
        Tags = tags?.AsReadOnly();
        PublishedAt = publishedAt;
-       UpdatedAt = DateTime.Now;
+       UpdatedAt = _timeProvider.GetLocalNow().DateTime;
        Status = status;
        Number = number;
        CategoryId = categoryId;
@@ -85,14 +92,5 @@ public class Episode : Entity
     public void SetCategory(Category category)
     {
         Category = category;
-    }
-
-    private EpisodeStatus GetStatus()
-    {
-        return _status == Draft || _status == Archived
-            ? _status
-            : DateTime.Now > PublishedAt
-                ? Published
-                : Scheduled;
     }
 }

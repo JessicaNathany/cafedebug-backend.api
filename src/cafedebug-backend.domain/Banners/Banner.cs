@@ -5,6 +5,8 @@ namespace cafedebug_backend.domain.Banners;
 
 public class Banner : Entity
 {
+    private TimeProvider _timeProvider = TimeProvider.System;
+
     public string Name { get; private set; }
     public string UrlImage { get; private set; }
     public string? Url { get; private set; }
@@ -15,12 +17,12 @@ public class Banner : Entity
     public bool Active { get; private set; }
     public int Order { get; private set; }
 
-    private BannerStatus _status;
-
     public BannerStatus Status
     {
-        get => GetStatus();
-        set => _status = value;
+        get => field == Draft || field == Archived
+            ? field
+            : _timeProvider.GetLocalNow().DateTime < StartDate ? Published : Scheduled;
+        set;
     }
 
     private Banner() { }
@@ -32,15 +34,18 @@ public class Banner : Entity
         DateTime endDate,
         BannerStatus status,
         bool active, 
-        int ordem)
+        int ordem,
+        TimeProvider? timeProvider = null)
     {
+        _timeProvider = timeProvider ?? TimeProvider.System;
+        var now = _timeProvider.GetLocalNow().DateTime;
         Name = name;
         UrlImage = urlImage;
         Url = url;
         StartDate = startDate;
         EndDate = endDate;
         Status = status;
-        CreatedAt = DateTime.Now;
+        CreatedAt = now;
         Active = active;
         EndDateVerify(endDate);
         Order = ordem;
@@ -54,31 +59,25 @@ public class Banner : Entity
         DateTime endDate,
         BannerStatus status,
         bool active, 
-        int ordem)
+        int ordem,
+        TimeProvider? timeProvider = null)
     {
+        _timeProvider = timeProvider ?? TimeProvider.System;
+        var now = _timeProvider.GetLocalNow().DateTime;
         Name = name;
         UrlImage = urlImage;
         Url = url;
         StartDate = startDate;
         EndDate = endDate;
         Status = status;
-        UpdatedAt = DateTime.Now;
+        UpdatedAt = now;
         Active = active;
         EndDateVerify(endDate);
         Order = ordem;
     }
     public void EndDateVerify(DateTime endDate)
     {
-        if (endDate == DateTime.Now.AddDays(-1))
+        if (endDate == _timeProvider.GetLocalNow().DateTime.AddDays(-1))
             Active = false;
-    }
-
-    public BannerStatus GetStatus()
-    {
-        return _status == Draft || _status == Archived
-            ? _status
-            : DateTime.Now < StartDate
-                ? Published
-                : Scheduled;
     }
 }

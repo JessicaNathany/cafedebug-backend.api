@@ -15,7 +15,7 @@ public sealed record EpisodeRequest
     public int Number { get; init; }
     public int CategoryId { get; init; }
     
-    public Episode ToEpisode()
+    public Episode ToEpisode(TimeProvider timeProvider)
     {
         return new Episode(
             Title,
@@ -27,6 +27,7 @@ public sealed record EpisodeRequest
             PublishedAt,
             Status,
             Number,
-            CategoryId);
+            CategoryId,
+            timeProvider);
     }
 }

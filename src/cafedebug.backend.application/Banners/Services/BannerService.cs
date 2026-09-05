@@ -14,11 +14,11 @@ namespace cafedebug.backend.application.Banners.Services;
 /// <summary>
 /// Service responsible for managing banners, including creation, updating, deletion, and retrieval operations.
 /// </summary>
-public class BannerService(IBannerRepository bannerRepository) : IBannerService
+public class BannerService(IBannerRepository bannerRepository, TimeProvider timeProvider) : IBannerService
 {
     public async Task<Result<BannerResponse>> CreateAsync(BannerRequest request)
     {
-        var banner = request.ToBanner();
+        var banner = request.ToBanner(timeProvider);
 
         var exists = await bannerRepository.AnyAsync(e => e.Name == banner.Name);
 
@@ -46,7 +46,8 @@ public class BannerService(IBannerRepository bannerRepository) : IBannerService
             request.EndDate,
             request.Status,
             request.Active,
-            request.Order);
+            request.Order,
+            timeProvider);
 
         await bannerRepository.UpdateAsync(banner);
 

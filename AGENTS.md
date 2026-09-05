@@ -14,7 +14,7 @@
 
 ## Architecture at a glance
 - Solution file: `cafedebug-backend.api.sln`
-- Runtime: ASP.NET Core on .NET 9.
+- Runtime: ASP.NET Core on .NET 10.
 - Architecture: Clean Architecture with feature-oriented organization inside each layer.
 - Main layers:
   - `src/cafedebug-backend.api`: presentation layer, controllers, filters, middleware, health checks, configuration, `Program.cs`.
@@ -46,7 +46,7 @@
 - Restore: `dotnet restore`
 - Build like CI: `dotnet build cafedebug-backend.api.sln --configuration Release`
 - Run API locally: `dotnet run --project src/cafedebug-backend.api/cafedebug-backend.api.csproj`
-- Run tests: `dotnet test tests/cafedebug.backend.api.test/cafedebug.backend.api.test.csproj --configuration Release`
+- Run tests like CI: `dotnet test cafedebug-backend.api.sln --configuration Release`
 - Build container: `docker build -t cafedebug-backend.api .`
 
 ## Implementation patterns to follow

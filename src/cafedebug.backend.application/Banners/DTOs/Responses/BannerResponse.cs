@@ -1,22 +1,14 @@
-﻿namespace cafedebug.backend.application.Banners.DTOs.Responses;
+namespace cafedebug.backend.application.Banners.DTOs.Responses;
 
-public class BannerResponse
+public sealed record BannerResponse
 {
-    public int Id { get; set; }
-
-    public string Name { get; set; }
-
-    public string UrlImage { get; set; }
-
-    public string Url { get; set; }
-
-    public string StartDate { get; set; }
-
-    public string EndDate { get; set; }
-
-    public string UpdateDate { get; set; }
-
-    public string Active { get; set; }
-    
-    public int Order { get; set; }
+    public int Id { get; init; }
+    public string Name { get; init; }
+    public string UrlImage { get; init; }
+    public string Url { get; init; }
+    public string StartDate { get; init; }
+    public string EndDate { get; init; }
+    public string UpdateDate { get; init; }
+    public string Active { get; init; }
+    public int Order { get; init; }
 }

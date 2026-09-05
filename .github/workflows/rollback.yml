@@ -31,8 +31,8 @@ jobs:
         id: validate
         run: |
           IMAGE_TAG="${{ github.event.inputs.image_tag }}"
-          if [[ ! "$IMAGE_TAG" =~ ^[a-z0-9]+-[a-z0-9]{7}$ ]]; then
-            echo "❌ Invalid image tag format. Expected format: branch-sha7 (e.g., main-abc1234)"
+          if [[ ! "$IMAGE_TAG" =~ ^[a-f0-9]{7}$ ]]; then
+            echo "❌ Invalid image tag format. Expected a 7-character lowercase commit SHA (e.g., abc1234)"
             exit 1
           fi
           echo "Image tag is valid: $IMAGE_TAG"

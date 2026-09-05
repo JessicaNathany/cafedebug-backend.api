@@ -85,10 +85,10 @@ When opening a PR, include in the description:
 
    ![screenshot](https://github.com/user-attachments/assets/defd3d75-288b-400a-aa92-1d7ca7a9a5b4)
 
-4. The project targets .NET 9.
+4. The project targets .NET 10.
    **Windows (Visual Studio):** just run it normally.
    **Linux/Mac:**
-   1. Install .NET SDK 9
+   1. Install .NET SDK 10
    2. Clone the backend API:
       ```bash
       git clone https://github.com/JessicaNathany/cafedebug-backend.api.git

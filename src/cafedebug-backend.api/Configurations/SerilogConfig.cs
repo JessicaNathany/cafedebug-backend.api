@@ -14,7 +14,7 @@ public static class SerilogConfig
     
     public static void UseSerilog(this IApplicationBuilder app)
     {
-        if (app == null) throw new ArgumentNullException(nameof(app));
+        ArgumentNullException.ThrowIfNull(app);
 
         app.UseSerilogRequestLogging(options =>
         {

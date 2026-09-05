@@ -6,7 +6,7 @@ public static class SwaggerConfig
 {
     public static IServiceCollection AddSwaggerConfiguration(this IServiceCollection services)
     {
-        if (services == null) throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(s =>
@@ -53,7 +53,7 @@ public static class SwaggerConfig
 
     public static void UseSwaggerSetup(this IApplicationBuilder app)
     {
-        if (app == null) throw new ArgumentNullException(nameof(app));
+        ArgumentNullException.ThrowIfNull(app);
 
         app.UseSwagger();
         app.UseSwaggerUI(c =>

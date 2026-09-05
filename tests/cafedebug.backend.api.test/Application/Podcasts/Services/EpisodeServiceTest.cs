@@ -7,6 +7,7 @@ using cafedebug_backend.domain.Podcasts;
 using cafedebug_backend.domain.Podcasts.Repositories;
 using cafedebug_backend.domain.Shared.Errors;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 using Xunit;
 
@@ -23,6 +24,7 @@ public class EpisodeServiceTest : BaseTest
     private readonly CategoryRepositoryMockSetup _categoryRepositoryMockSetup;
     private readonly EpisodeRepositoryVerifications _episodeRepositoryVerifications;
     private readonly CategoryRepositoryVerifications _categoryRepositoryVerifications;
+    private readonly FakeTimeProvider _timeProvider;
 
     public EpisodeServiceTest()
     {
@@ -31,12 +33,40 @@ public class EpisodeServiceTest : BaseTest
         
         var episodeRepository = new Mock<IEpisodeRepository>();
         var categoryRepository = new Mock<ICategoryRepository>();
+        _timeProvider = new FakeTimeProvider(new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero));
         
-        _episodeService = new EpisodeService(episodeRepository.Object, categoryRepository.Object);
+        _episodeService = new EpisodeService(episodeRepository.Object, categoryRepository.Object, _timeProvider);
         _categoryRepositoryVerifications = new CategoryRepositoryVerifications(categoryRepository);
         _episodeRepositoryVerifications = new EpisodeRepositoryVerifications(episodeRepository);
         _episodeRepositoryMockSetup = new EpisodeRepositoryMockSetup(episodeRepository);
         _categoryRepositoryMockSetup = new CategoryRepositoryMockSetup(categoryRepository);
+    }
+
+    [Fact]
+    public void Status_WhenClockAdvances_UsesInjectedTimeProvider()
+    {
+        // Arrange
+        var episode = new Episode(
+            "Episode",
+            "Description",
+            "Short description",
+            "https://example.test/episode",
+            "https://example.test/episode.png",
+            [],
+            _timeProvider.GetLocalNow().DateTime.AddHours(1),
+            EpisodeStatus.Published,
+            1,
+            1,
+            _timeProvider);
+
+        // Act
+        var statusBeforePublication = episode.Status;
+        _timeProvider.Advance(TimeSpan.FromHours(2));
+        var statusAfterPublication = episode.Status;
+
+        // Assert
+        statusBeforePublication.Should().Be(EpisodeStatus.Scheduled);
+        statusAfterPublication.Should().Be(EpisodeStatus.Published);
     }
 
     [Fact]

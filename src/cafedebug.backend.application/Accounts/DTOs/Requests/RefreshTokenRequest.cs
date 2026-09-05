@@ -1,10 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
-namespace cafedebug.backend.application.Accounts.DTOs.Requests
+namespace cafedebug.backend.application.Accounts.DTOs.Requests;
+
+public sealed record RefreshTokenRequest
 {
-    public class RefreshTokenRequest
-    {
-        [Required]
-        public string RefreshToken { get; set; }
-    }
+    [Required]
+    public required string RefreshToken { get; init; }
 }

@@ -1,33 +1,24 @@
 using System.Diagnostics;
 using System.Security;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace cafedebug_backend.api.Middleware;
 
 /// <summary>
-/// Middleware to handle authentication errors properly in .NET 9
+/// Middleware to handle authentication errors properly.
 /// </summary>
-public class AuthenticationMiddleware
+public partial class AuthenticationMiddleware(RequestDelegate next, ILogger<AuthenticationMiddleware> logger)
 {
-    private readonly RequestDelegate _next;
-    private readonly ILogger<AuthenticationMiddleware> _logger;
-
-    public AuthenticationMiddleware(RequestDelegate next, ILogger<AuthenticationMiddleware> logger)
-    {
-        _next = next;
-        _logger = logger;
-    }
-
     public async Task InvokeAsync(HttpContext context)
     {
         try
         {
-            await _next(context);
+            await next(context);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Authentication middleware caught an exception for {RequestPath}", 
-                context.Request.Path);
+            LogUnhandledAuthenticationException(logger, ex, context.Request.Path.Value ?? string.Empty);
 
             // Check if this is an authentication-related exception
             if (IsAuthenticationException(ex) && !context.Response.HasStarted)
@@ -59,26 +50,22 @@ public class AuthenticationMiddleware
     {
         var traceId = Activity.Current?.Id ?? context.TraceIdentifier;
         
-        _logger.LogWarning("Authentication failed for {RequestPath}: {ErrorMessage}", 
-            context.Request.Path, ex.Message);
+        LogAuthenticationFailure(logger, context.Request.Path.Value ?? string.Empty, ex.Message);
 
-        var problemDetails = new
-        {
-            type = "https://tools.ietf.org/html/rfc7235#section-3.1",
-            title = "Unauthorized",
-            status = StatusCodes.Status401Unauthorized,
-            detail = "Authentication failed. Please provide a valid JWT token.",
-            instance = context.Request.Path.Value,
-            traceId = traceId
-        };
+        var problemDetails = new AuthenticationProblemDetails(
+            "https://tools.ietf.org/html/rfc7235#section-3.1",
+            "Unauthorized",
+            StatusCodes.Status401Unauthorized,
+            "Authentication failed. Please provide a valid JWT token.",
+            context.Request.Path.Value,
+            traceId);
 
         context.Response.StatusCode = StatusCodes.Status401Unauthorized;
         context.Response.ContentType = "application/problem+json";
 
-        var json = JsonSerializer.Serialize(problemDetails, new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        });
+        var json = JsonSerializer.Serialize(
+            problemDetails,
+            AuthenticationJsonSerializerContext.Default.AuthenticationProblemDetails);
 
         await context.Response.WriteAsync(json);
     }
@@ -87,23 +74,40 @@ public class AuthenticationMiddleware
     {
         var traceId = Activity.Current?.Id ?? context.TraceIdentifier;
 
-        var problemDetails = new
-        {
-            type = "https://tools.ietf.org/html/rfc7235#section-3.1",
-            title = "Unauthorized",
-            status = StatusCodes.Status401Unauthorized,
-            detail = "Invalid or missing JWT token",
-            instance = context.Request.Path.Value,
-            traceId = traceId
-        };
+        var problemDetails = new AuthenticationProblemDetails(
+            "https://tools.ietf.org/html/rfc7235#section-3.1",
+            "Unauthorized",
+            StatusCodes.Status401Unauthorized,
+            "Invalid or missing JWT token",
+            context.Request.Path.Value,
+            traceId);
 
         context.Response.ContentType = "application/problem+json";
 
-        var json = JsonSerializer.Serialize(problemDetails, new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        });
+        var json = JsonSerializer.Serialize(
+            problemDetails,
+            AuthenticationJsonSerializerContext.Default.AuthenticationProblemDetails);
 
         await context.Response.WriteAsync(json);
     }
+
+    [LoggerMessage(EventId = 1, Level = LogLevel.Error,
+        Message = "Authentication middleware caught an exception for {RequestPath}")]
+    private static partial void LogUnhandledAuthenticationException(ILogger logger, Exception exception, string requestPath);
+
+    [LoggerMessage(EventId = 2, Level = LogLevel.Warning,
+        Message = "Authentication failed for {RequestPath}: {ErrorMessage}")]
+    private static partial void LogAuthenticationFailure(ILogger logger, string requestPath, string errorMessage);
 }
+
+internal sealed record AuthenticationProblemDetails(
+    string Type,
+    string Title,
+    int Status,
+    string Detail,
+    string? Instance,
+    string TraceId);
+
+[JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
+[JsonSerializable(typeof(AuthenticationProblemDetails))]
+internal partial class AuthenticationJsonSerializerContext : JsonSerializerContext;

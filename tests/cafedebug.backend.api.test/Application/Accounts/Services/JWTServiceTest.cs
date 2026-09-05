@@ -9,6 +9,7 @@ using cafedebug_backend.domain.Interfaces.Repositories;
 using cafedebug_backend.domain.Shared.Errors;
 using cafedebug_backend.infrastructure.Security;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
 using System.Text;
@@ -25,11 +26,13 @@ public class JWTServiceTest : BaseTest
     private readonly Mock<IRefreshTokensRepository> _refreshTokensRepositoryMock;
     private readonly Mock<IUserRepository> _userRepositoryMock;
     private readonly JwtSettings _jwtSettings;
+    private readonly FakeTimeProvider _timeProvider;
 
     public JWTServiceTest()
     {
         _userRepositoryMock = new Mock<IUserRepository>();
         _refreshTokensRepositoryMock = new Mock<IRefreshTokensRepository>();
+        _timeProvider = new FakeTimeProvider(new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero));
 
         // Configure JwtSettings
         _jwtSettings = new JwtSettings
@@ -43,7 +46,11 @@ public class JWTServiceTest : BaseTest
                 SecurityAlgorithms.HmacSha256)
         };
 
-        _jwtService = new JWTService(_jwtSettings, _refreshTokensRepositoryMock.Object, _userRepositoryMock.Object);
+        _jwtService = new JWTService(
+            _jwtSettings,
+            _refreshTokensRepositoryMock.Object,
+            _userRepositoryMock.Object,
+            _timeProvider);
         _userRepositoryMockSetup = new UserRepositoryMockSetup(_userRepositoryMock);
         _userVerifications = new UserRepositoryVerification(_userRepositoryMock);
     }
@@ -82,6 +89,8 @@ public class JWTServiceTest : BaseTest
         result.Value.RefreshToken.Should().NotBeNull();
         result.Value.TokenType.Should().Be("Bearer");
         result.Value.ExpiresIn.Should().BeGreaterThan(0);
+        result.Value.RefreshToken.ExpirationDate.Should().Be(
+            _timeProvider.GetUtcNow().UtcDateTime.AddMinutes(_jwtSettings.RefreshTokenValidForMinutes));
 
         _userVerifications.VerifyGetUserByEmail(email, Times.Once());
     }
@@ -200,7 +209,8 @@ public class JWTServiceTest : BaseTest
             Name = "Test User",
             HashedPassword = "hashedpassword"
         };
-        var refreshToken = RefreshTokens.Create(user.Id, user.Name, refreshTokenString, DateTime.UtcNow.AddDays(1), DateTime.UtcNow);
+        var now = _timeProvider.GetUtcNow().UtcDateTime;
+        var refreshToken = RefreshTokens.Create(user.Id, user.Name, refreshTokenString, now.AddDays(1), now, now);
 
         _refreshTokensRepositoryMock.Setup(x => x.GetByTokenAsync(refreshTokenString))
             .ReturnsAsync(refreshToken);
@@ -232,7 +242,8 @@ public class JWTServiceTest : BaseTest
     {
         // Arrange
         var refreshTokenString = "expired-refresh-token";
-        var expiredRefreshToken = RefreshTokens.Create(1, "Test User", refreshTokenString, DateTime.UtcNow.AddDays(-1), DateTime.UtcNow);
+        var now = _timeProvider.GetUtcNow().UtcDateTime;
+        var expiredRefreshToken = RefreshTokens.Create(1, "Test User", refreshTokenString, now.AddDays(-1), now, now);
 
         _refreshTokensRepositoryMock.Setup(x => x.GetByTokenAsync(refreshTokenString))
             .ReturnsAsync(expiredRefreshToken);
@@ -289,7 +300,8 @@ public class JWTServiceTest : BaseTest
     {
         // Arrange
         var tokenString = "valid-token";
-        var refreshToken = RefreshTokens.Create(1, "Test User", tokenString, DateTime.UtcNow.AddDays(1), DateTime.UtcNow);
+        var now = _timeProvider.GetUtcNow().UtcDateTime;
+        var refreshToken = RefreshTokens.Create(1, "Test User", tokenString, now.AddDays(1), now, now);
 
         _refreshTokensRepositoryMock.Setup(x => x.GetByTokenAsync(tokenString))
             .ReturnsAsync(refreshToken);
@@ -362,7 +374,8 @@ public class JWTServiceTest : BaseTest
     {
         // Arrange
         var refreshTokenString = "valid-refresh-token";
-        var refreshToken = RefreshTokens.Create(999, "Test User", refreshTokenString, DateTime.UtcNow.AddDays(1), DateTime.UtcNow);
+        var now = _timeProvider.GetUtcNow().UtcDateTime;
+        var refreshToken = RefreshTokens.Create(999, "Test User", refreshTokenString, now.AddDays(1), now, now);
 
         _refreshTokensRepositoryMock.Setup(x => x.GetByTokenAsync(refreshTokenString))
             .ReturnsAsync(refreshToken);
