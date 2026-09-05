@@ -88,7 +88,7 @@ jobs:
                       errors.append("Unable to read TRX test results.")
 
               summary.write("\n## Coverage\n\n")
-              coverage_reports = sorted(results.glob("**/coverage.cobertura.xml"))
+              coverage_reports = sorted(results.glob("*/coverage.cobertura.xml"))
               if not coverage_reports:
                   errors.append("No Cobertura coverage results were produced.")
               else:
@@ -122,5 +122,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-results
-          path: TestResults/**/coverage.cobertura.xml
+          path: TestResults/*/coverage.cobertura.xml
           if-no-files-found: error
