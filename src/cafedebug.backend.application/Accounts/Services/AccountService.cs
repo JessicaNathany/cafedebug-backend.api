@@ -18,7 +18,7 @@ public class AccountService(
     IEmailService emailService, 
     IUserRepository userRepository, 
     IPasswordHasher<UserAdmin> passwordHasher,
-    IJWTService jWTService) : IAccountService
+    IJWTService jWtService) : IAccountService
 {
     public async Task<Result> SendEmailForgotPassword(SendEmailRequest sendEmailRequest)
     {
@@ -66,9 +66,7 @@ public class AccountService(
         if (user is null)
             return Result.Failure(UserError.NotFound(request.Email));
 
-        var resetToken = jWTService.GenerateResetToken(user.Id);
-        var urlResetPassword = InsfrastructureConstants.ForgotPasswordUrl;
-        var resetUrl = $"{urlResetPassword}?token={resetToken}";
+        jWtService.GenerateResetToken(user.Id);
 
         var sendEmail = new SendEmailRequest
         {
@@ -84,7 +82,7 @@ public class AccountService(
         return Result.Success();
     }
 
-    public async Task<Result> VerifyEmail(string email)
+    public Task<Result> VerifyEmail(string email)
     {
         throw new NotImplementedException();
     }

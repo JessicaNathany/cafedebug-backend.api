@@ -6,7 +6,7 @@ public static class SerilogConfig
 {
     public static IHostBuilder AddSerilogConfiguration(this IHostBuilder hostBuilder, IConfiguration configuration)
     {
-        hostBuilder.UseSerilog((context, configureLogger) => configureLogger
+        hostBuilder.UseSerilog((_, configureLogger) => configureLogger
             .ReadFrom.Configuration(configuration)
             .Enrich.FromLogContext());  
         return hostBuilder;

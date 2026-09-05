@@ -6,13 +6,11 @@ public static class PagedResultMappingExtensions
 {
     public  static PagedResult<TDest> MapToPagedResult<TSource, TDest>(this IPagedResult<TSource> source, Func<TSource, TDest> map)
     {
-        if(source is null)
-            throw new ArgumentNullException(nameof(source));
+        ArgumentNullException.ThrowIfNull(source);
 
-        if(map is null)
-            throw new ArgumentNullException(nameof(map));
+        ArgumentNullException.ThrowIfNull(map);
 
-        var items = source is null ? [] : source.Select(map).ToList();
+        var items = source.Select(map).ToList();
 
         return PagedResult<TDest>.Create(
             items,

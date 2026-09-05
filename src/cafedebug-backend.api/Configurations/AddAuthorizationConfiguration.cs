@@ -48,7 +48,7 @@ public static partial class AddAuthorizationConfiguration
                 RequireExpirationTime = true,         
                 ValidIssuer = jwtSettings.Issuer,
                 ValidAudience = jwtSettings.Audience,
-                IssuerSigningKey = jwtSettings.SigningCredentials?.Key,
+                IssuerSigningKey = jwtSettings.SigningCredentials.Key,
                 ClockSkew = TimeSpan.Zero             
             };
 
@@ -59,7 +59,7 @@ public static partial class AddAuthorizationConfiguration
                     var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<JwtBearerEvents>>();
                     LogAuthenticationFailed(
                         logger,
-                        context.Exception?.Message ?? "Unknown error",
+                        context.Exception.Message,
                         context.HttpContext.Request.Path.Value ?? string.Empty);
                     return Task.CompletedTask;
                 },

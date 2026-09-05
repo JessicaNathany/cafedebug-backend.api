@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <Folder Include="Email\" />
+    <Folder Include="Translation\Request\" />
   </ItemGroup>
 
 </Project>

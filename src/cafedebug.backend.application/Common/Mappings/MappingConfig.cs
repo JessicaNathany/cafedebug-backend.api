@@ -65,16 +65,19 @@ public static class MappingConfig
     {
         return new UserAdminResponse
         {
-            CreatedDate = (DateTime)user.CreatedAt,
+            CreatedDate = user.CreatedAt,
             Name = user.Name,
             Email = user.Email,
             HashedPassword = user.HashedPassword,
-            LastUpdate = (DateTime)user.UpdatedAt
+            LastUpdate = user.UpdatedAt
         };
     }
 
-    public static JWTTokenResponse ToToken(this JWTToken? token)
+    public static JWTTokenResponse? ToToken(this JWTToken? token)
     {
+        if (token == null)
+            return null;
+
         return new JWTTokenResponse
         {
             AccessToken = token.AccessToken,

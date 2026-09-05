@@ -1,11 +1,11 @@
 ﻿using cafedebug.backend.api.test.Shared;
 using cafedebug.backend.api.test.Shared.Mocks.Banners;
-using cafedebug.backend.api.test.Shared.Setups.Banners;
 using cafedebug.backend.api.test.Shared.Verifications;
 using cafedebug.backend.application.Banners.Services;
 using cafedebug_backend.domain.Banners;
 using cafedebug_backend.domain.Banners.Repositories;
 using cafedebug_backend.domain.Shared.Errors;
+using cafedebug.backend.api.test.Shared.Setups.Banner;
 using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
