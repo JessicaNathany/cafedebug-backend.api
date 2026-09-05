@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
@@ -59,22 +62,43 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Run tests
-        run: dotnet test tests/cafedebug.backend.api.test/cafedebug.backend.api.test.csproj --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverageFormat=cobertura /p:CoverageFilename=coverage.xml
+        run: dotnet test tests/cafedebug.backend.api.test/cafedebug.backend.api.test.csproj --configuration Release --verbosity normal --results-directory TestResults --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverageFormat=cobertura /p:CoverageFilename=coverage.xml
 
-      # - name: Upload test results
-      #   if: always()
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: test-results
-      #     path: '**/test-results.trx'
+      - name: Publish test summary
+        if: ${{ !cancelled() }}
+        run: |
+          python3 <<'PY'
+          import os
+          import xml.etree.ElementTree as ET
+          from collections import Counter
+          from pathlib import Path
 
-      # - name: Publish test report
-      #   if: always()
-      #   uses: dorny/test-reporter@v1
-      #   with:
-      #     name: Test Results
-      #     path: '**/test-results.trx'
-      #     reporter: 'dotnet-trx'
+          reports = sorted(Path("TestResults").glob("**/*.trx"))
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
+              summary.write("## Test Results\n\n")
+              if not reports:
+                  summary.write("No TRX test results were produced. Check the test step logs.\n")
+                  raise SystemExit("No TRX test results found in TestResults.")
+
+              outcomes = Counter(
+                  result.get("outcome", "Unknown")
+                  for report in reports
+                  for result in ET.parse(report).getroot().findall(".//{*}UnitTestResult")
+              )
+              passed = outcomes["Passed"]
+              skipped = outcomes["NotExecuted"]
+              failed = sum(outcomes.values()) - passed - skipped
+              summary.write("| Passed | Failed | Skipped |\n| ---: | ---: | ---: |\n")
+              summary.write(f"| {passed} | {failed} | {skipped} |\n")
+          PY
+
+      - name: Upload test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/**/*.trx
+          if-no-files-found: error
 
   package:
     name: Package (image-build)
