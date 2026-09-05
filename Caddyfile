@@ -1,3 +1,4 @@
+# Legacy EC2/Swarm reference; Railway production setup is documented in DEPLOYMENT.md.
 # Caddy Configuration for CafeDebug API
 # Modern reverse proxy with automatic HTTPS and better Docker Swarm support
 

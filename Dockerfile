@@ -2,6 +2,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
+COPY ["Directory.Packages.props", "global.json", "./"]
+
 # Copy csproj files first for caching
 COPY ["src/cafedebug-backend.api/cafedebug-backend.api.csproj", "src/cafedebug-backend.api/"]
 COPY ["src/cafedebug-backend.domain/cafedebug-backend.domain.csproj", "src/cafedebug-backend.domain/"]

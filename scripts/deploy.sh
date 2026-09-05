@@ -1,4 +1,5 @@
 #!/bin/bash
+# Legacy EC2/Swarm deployment only; production uses Railway (see DEPLOYMENT.md).
 set -euo pipefail
 
 # ============================================

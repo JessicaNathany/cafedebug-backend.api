@@ -1,3 +1,4 @@
+# Legacy EC2/Swarm reference; Railway production setup is documented in DEPLOYMENT.md.
 version: '3.9'
 
 services:

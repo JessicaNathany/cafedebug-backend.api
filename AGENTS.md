@@ -40,7 +40,7 @@
 - `docs/CONTRIBUTING.md`
   - Contributor expectations, feature domains, local environment notes.
 - `DEPLOYMENT.md`
-  - Production deployment reference for AWS EC2, Docker Swarm, Caddy, secrets, and health-check-based rollout behavior.
+  - Production deployment reference for Railway, GitHub CI, required checks, readiness, and rollback. Historical EC2 guidance is in `docs/legacy-ec2-deployment.md`.
 
 ## Build, run, and test commands
 - Restore: `dotnet restore`
