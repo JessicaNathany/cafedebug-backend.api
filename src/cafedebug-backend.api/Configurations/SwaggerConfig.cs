@@ -1,4 +1,4 @@
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 namespace cafedebug_backend.api.Configurations;
 
@@ -32,19 +32,9 @@ public static class SwaggerConfig
                 Type = SecuritySchemeType.ApiKey
             });
 
-            s.AddSecurityRequirement(new OpenApiSecurityRequirement
+            s.AddSecurityRequirement(document => new OpenApiSecurityRequirement
             {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
-                    },
-                    []
-                }
+                [new OpenApiSecuritySchemeReference("Bearer", document)] = []
             });
         });
 
