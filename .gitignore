@@ -48,6 +48,9 @@ appsettings.json
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
 
+# Static Analsys Tool
+qodana.yaml 
+
 # Test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
