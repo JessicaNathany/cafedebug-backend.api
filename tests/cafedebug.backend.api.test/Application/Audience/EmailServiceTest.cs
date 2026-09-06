@@ -4,118 +4,99 @@ using cafedebug_backend.domain.Messages.Email.Request;
 using cafedebug_backend.infrastructure.Constants;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Moq.AutoMock;
 using Xunit;
 
-namespace cafedebug.backend.api.test.Application.Audience
+namespace cafedebug.backend.api.test.Application.Audience;
+public class EmailServiceTest
 {
-    public class EmailServiceTest
+    public EmailServiceTest()
     {
-        private readonly AutoMocker _autoMocker;
-        public EmailServiceTest()
+        Environment.SetEnvironmentVariable("SMTP_FROM_EMAIL", "noreply@example.test");
+        Environment.SetEnvironmentVariable("SMTP_FROM_NAME", "Cafe Debug Tests");
+    }
+
+    [Fact]
+    public async Task SendEmail_ValidRequest_CallsEmailSender()
+    {
+        // Arrange
+        var loggerMock = new Mock<ILogger<cafedebug.backend.application.Audience.Services.EmailService>>();
+        var emailSenderMock = new Mock<IEmailSenderService>();
+        var emailService = new cafedebug.backend.application.Audience.Services.EmailService(loggerMock.Object, emailSenderMock.Object);
+
+        var emailRequest = new SendEmailRequest
         {
-            _autoMocker = new AutoMocker();
-        }
+            EmailTo = "jn.devtemp@gmail.com",
+            Subject = "Café debug unit test",
+            MessageType = "Recovery",
+            EmailCopy = "debugcafe@gmail.com",
+        };
 
-        [Fact]
-        public void CheckEnvironmentVariables()
+        emailSenderMock.Setup(x => x.SendEmail(It.IsAny<MailMessage>())).Verifiable("The email was not sent.");
+
+        // Act
+        await emailService.SendEmail(emailRequest);
+
+        // Assert
+        emailSenderMock.Verify();
+    }
+
+    [Fact]
+    public async Task ConfigureEmailAsync_ValidRequest_ReturnsCorrectMailMessage()
+    {
+        // Arrange
+        var loggerMock = new Mock<ILogger<cafedebug.backend.application.Audience.Services.EmailService>>();
+        var emailSenderMock = new Mock<IEmailSenderService>();
+        var emailService = new cafedebug.backend.application.Audience.Services.EmailService(loggerMock.Object, emailSenderMock.Object);
+
+        var emailRequest = new SendEmailRequest
         {
-            var smtpPassword = Environment.GetEnvironmentVariable("SMTP_PASSWORD");
-            var smtpServer = Environment.GetEnvironmentVariable("SMTP_SERVER");
+            EmailTo = "jn.devtemp@gmail.com",
+            Subject = "Café debug unit test",
+            MessageType = "Recovery",
+            EmailCopy = "debugcafe@gmail.com",
+            Name = "John Doe",
+            MessageBody = "This is a test message.",
+            EmailFrom = "john.doe@example.com"
+        };
 
-            Console.WriteLine($"SMTP Password: {smtpPassword}");
-            Console.WriteLine($"SMTP Server: {smtpServer}");
+        // Act
+        var mailMessage = await emailService.ConfigureEmailAsync(emailRequest);
 
-            if (string.IsNullOrEmpty(smtpPassword) || string.IsNullOrEmpty(smtpServer))
-            {
-                throw new InvalidOperationException("SMTP settings are not configured properly.");
-            }
-        }
+        // Assert
+        Assert.NotNull(mailMessage);
+        Assert.Equal(emailRequest.Subject, mailMessage.Subject);
+        Assert.Equal(emailRequest.EmailTo, mailMessage.To[0].Address);
+        Assert.Equal(emailRequest.EmailCopy, mailMessage.CC[0].Address);
+        Assert.Contains(emailRequest.Name, mailMessage.Body);
+        Assert.Contains(emailRequest.MessageBody, mailMessage.Body);
+        Assert.Contains(emailRequest.EmailFrom, mailMessage.Body);
+    }
 
+    [Fact]
+    public async Task ConfigureEmailRecoveryPasswordAsync_ValidRequest_ReturnsCorrectMailMessage()
+    {
+        // Arrange
+        var loggerMock = new Mock<ILogger<cafedebug.backend.application.Audience.Services.EmailService>>();
+        var emailSenderMock = new Mock<IEmailSenderService>();
+        var emailService = new cafedebug.backend.application.Audience.Services.EmailService(loggerMock.Object, emailSenderMock.Object);
 
-        [Fact]
-        public async Task SendEmail_ValidRequest_CallsEmailSender()
+        var emailRequest = new SendEmailRequest
         {
-            // Arrange
-            var loggerMock = new Mock<ILogger<cafedebug.backend.application.Audience.Services.EmailService>>();
-            var emailSenderMock = new Mock<IEmailSenderService>();
-            var emailService = new cafedebug.backend.application.Audience.Services.EmailService(loggerMock.Object, emailSenderMock.Object);
+            EmailTo = "jn.devtemp@gmail.com",
+            Subject = "Café debug unit test - Password Recovery",
+            MessageType = "Password Recovery",
+            EmailCopy = "debugcafe@gmail.com"
+        };
 
-            var emailRequest = new SendEmailRequest
-            {
-                EmailTo = "jn.devtemp@gmail.com",
-                Subject = "Café debug unit test",
-                MessageType = "Recovery",
-                EmailCopy = "debugcafe@gmail.com",
-            };
+        // Act
+        var mailMessage = await emailService.ConfigureEmailRecoveryPasswordAsync(emailRequest);
 
-            emailSenderMock.Setup(x => x.SendEmail(It.IsAny<MailMessage>())).Verifiable("The email was not sent.");
-
-            // Act
-            await emailService.SendEmail(emailRequest);
-
-            // Assert
-            emailSenderMock.Verify(); 
-        }
-
-        [Fact]
-        public async Task ConfigureEmailAsync_ValidRequest_ReturnsCorrectMailMessage()
-        {
-            // Arrange
-            var loggerMock = new Mock<ILogger<cafedebug.backend.application.Audience.Services.EmailService>>();
-            var emailSenderMock = new Mock<IEmailSenderService>();
-            var emailService = new cafedebug.backend.application.Audience.Services.EmailService(loggerMock.Object, emailSenderMock.Object);
-
-            var emailRequest = new SendEmailRequest
-            {
-                EmailTo = "jn.devtemp@gmail.com",
-                Subject = "Café debug unit test",
-                MessageType = "Recovery",
-                EmailCopy = "debugcafe@gmail.com",
-                Name = "John Doe",
-                MessageBody = "This is a test message.",
-                EmailFrom = "john.doe@example.com"
-            };
-
-            // Act
-            var mailMessage = await emailService.ConfigureEmailAsync(emailRequest);
-
-            // Assert
-            Assert.NotNull(mailMessage);
-            Assert.Equal(emailRequest.Subject, mailMessage.Subject);
-            Assert.Equal(emailRequest.EmailTo, mailMessage.To[0].Address);
-            Assert.Equal(emailRequest.EmailCopy, mailMessage.CC[0].Address);
-            Assert.Contains(emailRequest.Name, mailMessage.Body);
-            Assert.Contains(emailRequest.MessageBody, mailMessage.Body);
-            Assert.Contains(emailRequest.EmailFrom, mailMessage.Body);
-        }
-
-        [Fact]
-        public async Task ConfigureEmailRecoveryPasswordAsync_ValidRequest_ReturnsCorrectMailMessage()
-        {
-            // Arrange
-            var loggerMock = new Mock<ILogger<cafedebug.backend.application.Audience.Services.EmailService>>();
-            var emailSenderMock = new Mock<IEmailSenderService>();
-            var emailService = new cafedebug.backend.application.Audience.Services.EmailService(loggerMock.Object, emailSenderMock.Object);
-
-            var emailRequest = new SendEmailRequest
-            {
-                EmailTo = "jn.devtemp@gmail.com",
-                Subject = "Café debug unit test - Password Recovery",
-                MessageType = "Password Recovery",
-                EmailCopy = "debugcafe@gmail.com"
-            };
-
-            // Act
-            var mailMessage = await emailService.ConfigureEmailRecoveryPasswordAsync(emailRequest);
-
-            // Assert
-            Assert.NotNull(mailMessage);
-            Assert.Equal(emailRequest.Subject, mailMessage.Subject);
-            Assert.Equal(emailRequest.EmailTo, mailMessage.To[0].Address);
-            Assert.Equal(emailRequest.EmailCopy, mailMessage.CC[0].Address);
-            Assert.Contains("recuperação de senha", mailMessage.Body);
-            Assert.Contains(InsfrastructureConstants.ForgotPasswordUrl, mailMessage.Body);
-        }
+        // Assert
+        Assert.NotNull(mailMessage);
+        Assert.Equal(emailRequest.Subject, mailMessage.Subject);
+        Assert.Equal(emailRequest.EmailTo, mailMessage.To[0].Address);
+        Assert.Equal(emailRequest.EmailCopy, mailMessage.CC[0].Address);
+        Assert.Contains("recuperação de senha", mailMessage.Body);
+        Assert.Contains(InsfrastructureConstants.ForgotPasswordUrl, mailMessage.Body);
     }
 }

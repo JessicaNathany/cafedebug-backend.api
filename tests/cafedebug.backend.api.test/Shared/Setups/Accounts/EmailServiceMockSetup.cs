@@ -2,22 +2,20 @@
 using cafedebug_backend.domain.Messages.Email.Request;
 using Moq;
 
-namespace cafedebug.backend.api.test.Shared.Setups.Accounts
+namespace cafedebug.backend.api.test.Shared.Setups.Accounts;
+public class EmailServiceMockSetup(Mock<IEmailService> emailService)
 {
-    public class EmailServiceMockSetup(Mock<IEmailService> emailService)
+    public void SendEmailSuccess()
     {
-        public void SendEmailSuccess()
-        {
-            emailService
-                .Setup(x => x.SendEmail(It.IsAny<SendEmailRequest>()))
-                .Returns(Task.CompletedTask);
-        }
+        emailService
+            .Setup(x => x.SendEmail(It.IsAny<SendEmailRequest>()))
+            .Returns(Task.CompletedTask);
+    }
 
-        public void SendEmailThrows(Exception exception)
-        {
-            emailService
-                .Setup(x => x.SendEmail(It.IsAny<SendEmailRequest>()))
-                .ThrowsAsync(exception);
-        }
+    public void SendEmailThrows(Exception exception)
+    {
+        emailService
+            .Setup(x => x.SendEmail(It.IsAny<SendEmailRequest>()))
+            .ThrowsAsync(exception);
     }
 }

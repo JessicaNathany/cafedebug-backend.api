@@ -1,12 +1,13 @@
 ﻿using cafedebug.backend.api.test.Shared;
 using cafedebug.backend.api.test.Shared.Mocks.Banners;
-using cafedebug.backend.api.test.Shared.Setups.Banners;
 using cafedebug.backend.api.test.Shared.Verifications;
 using cafedebug.backend.application.Banners.Services;
 using cafedebug_backend.domain.Banners;
 using cafedebug_backend.domain.Banners.Repositories;
 using cafedebug_backend.domain.Shared.Errors;
+using cafedebug.backend.api.test.Shared.Setups.Banner;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 using Xunit;
 
@@ -19,17 +20,45 @@ public class BannerServiceTest : BaseTest
     private readonly BannerTestDataMock _bannerTestDataMock;
     private readonly BannerRepositoryMockSetup _bannerRepositoryMockSetup;
     private readonly BannerRepositoryVerification _bannerVerifications;
+    private readonly FakeTimeProvider _timeProvider;
 
     public BannerServiceTest()
     {
         _bannerTestDataMock = new BannerTestDataMock(Fixture);
 
         var bannerRepository = new Mock<IBannerRepository>();
+        _timeProvider = new FakeTimeProvider(new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero));
 
-        _bannerService = new BannerService(bannerRepository.Object);
+        _bannerService = new BannerService(bannerRepository.Object, _timeProvider);
         _bannerRepositoryMockSetup = new BannerRepositoryMockSetup(bannerRepository);
         _bannerVerifications = new BannerRepositoryVerification(bannerRepository);
     }
+
+    [Fact]
+    public void Status_WhenClockAdvances_UsesInjectedTimeProvider()
+    {
+        // Arrange
+        var banner = new Banner(
+            "Banner",
+            "https://example.test/banner.png",
+            "https://example.test",
+            _timeProvider.GetLocalNow().DateTime.AddHours(1),
+            _timeProvider.GetLocalNow().DateTime.AddDays(1),
+            BannerStatus.Published,
+            true,
+            1,
+            _timeProvider);
+
+        // Act
+        var statusBeforeStart = banner.Status;
+        _timeProvider.Advance(TimeSpan.FromHours(2));
+        var statusAfterStart = banner.Status;
+
+        // Assert
+        statusBeforeStart.Should().Be(BannerStatus.Published);
+        statusAfterStart.Should().Be(BannerStatus.Scheduled);
+    }
+
     [Fact]
     public async Task CreateAsync_WithValidRequest_ReturnsSuccessResult()
     {

@@ -1,13 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace cafedebug.backend.application.Accounts.DTOs.Requests;
 
-public class ForgotPasswordRequest
+public sealed record ForgotPasswordRequest
 {
     [Required]
     [RegularExpression(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$", ErrorMessage = "Email invalid")]
-    public string Email { get; set; }
-        
+    public required string Email { get; init; }
+
     [Required]
-    public string Name { get; set; }
+    public required string Name { get; init; }
 }

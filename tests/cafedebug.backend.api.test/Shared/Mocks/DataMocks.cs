@@ -2,45 +2,47 @@
 using cafedebug_backend.domain.Accounts.Tokens;
 using cafedebug.backend.application.Accounts.DTOs.Requests;
 
-namespace cafedebug.backend.api.test.Shared.Mocks
+namespace cafedebug.backend.api.test.Shared.Mocks;
+public static class DataMocks
 {
-    public static class DataMocks
+    public static UserAdmin UserAdminMock()
     {
-        public static UserAdmin UserAdminMock()
+        return new UserAdmin
         {
-            return new UserAdmin
-            {
-                Id = 1,
-                Email = "debugcafe@local.com",
-                Name = "Test User",
-                HashedPassword = "cf8676b53315b632ec681f2065d6e3c993c3ebaeb667338658b40983d7ce663e"
-            };
-        }
+            Id = 1,
+            Email = "debugcafe@local.com",
+            Name = "Test User",
+            HashedPassword = "cf8676b53315b632ec681f2065d6e3c993c3ebaeb667338658b40983d7ce663e"
+        };
+    }
 
-        public static RefreshTokens RefreshTokenMock()
-        {
-            return new RefreshTokens(
-                userId: 1,
-                userName: "debugcafe@local.com", 
-                token: "fake-refresh-token", 
-                expirationDate: DateTime.Now.AddMinutes(15), DateTime.Now);
-        }
+    public static RefreshTokens RefreshTokenMock()
+    {
+        var now = DateTime.UtcNow;
 
-        public static UserCredentialsRequest UserRequest()
-        {
-            return new UserCredentialsRequest
-            {
-                Email = "debugcafe@local.com",
-                Password = "cafedebug123"
-            };
-        }
+        return new RefreshTokens(
+            userId: 1,
+            userName: "debugcafe@local.com",
+            token: "fake-refresh-token",
+            expirationDate: now.AddMinutes(15),
+            updatedAt: now,
+            createdAt: now);
+    }
 
-        public static RefreshTokenRequest RefreshTokenRequest()
+    public static UserCredentialsRequest UserRequest()
+    {
+        return new UserCredentialsRequest
         {
-            return new RefreshTokenRequest
-            {
-               RefreshToken = "fake-refresh",
-            };
-        }
+            Email = "debugcafe@local.com",
+            Password = "cafedebug123"
+        };
+    }
+
+    public static RefreshTokenRequest RefreshTokenRequest()
+    {
+        return new RefreshTokenRequest
+        {
+           RefreshToken = "fake-refresh",
+        };
     }
 }

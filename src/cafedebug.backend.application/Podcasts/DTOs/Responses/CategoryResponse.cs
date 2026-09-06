@@ -1,10 +1,9 @@
-﻿namespace cafedebug.backend.application.Podcasts.DTOs.Responses;
+namespace cafedebug.backend.application.Podcasts.DTOs.Responses;
 
-public class CategoryResponse
+public sealed record CategoryResponse
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-    public DateTime CreatedAt { get; set; }
+    public int Id { get; init; }
+    public string Name { get; init; }
+    public DateTime? UpdatedAt { get; init; }
+    public DateTime CreatedAt { get; init; }
 }
-

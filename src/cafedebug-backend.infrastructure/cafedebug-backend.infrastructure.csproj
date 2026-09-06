@@ -8,18 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.Core" Version="4.0.3.3" />
-    <PackageReference Include="AWSSDK.S3" Version="4.0.10" />
-    <PackageReference Include="FluentValidation" Version="12.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.14.0" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
-    <PackageReference Include="Scrutor" Version="6.1.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
-    <PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.15" />
+    <PackageReference Include="AWSSDK.Core" />
+    <PackageReference Include="AWSSDK.S3" />
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" />
+    <PackageReference Include="Scrutor" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,6 +26,7 @@
 
   <ItemGroup>
     <Folder Include="Email\" />
+    <Folder Include="Translation\Request\" />
   </ItemGroup>
 
 </Project>

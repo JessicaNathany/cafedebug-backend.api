@@ -11,27 +11,40 @@ public class RefreshTokens : Entity
     public string UserName { get; private set; }
     public string Token { get; private set; }
     public DateTime ExpirationDate { get; private set; }
-    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
 
-    public RefreshTokens(int userId, string userName, string token, DateTime expirationDate, DateTime? updatedAt)
+    public RefreshTokens(
+        int userId,
+        string userName,
+        string token,
+        DateTime expirationDate,
+        DateTime? updatedAt,
+        DateTime createdAt)
     {
         UserId = userId;
         UserName = userName;
         Token = token;
         ExpirationDate = expirationDate;
         UpdatedAt = updatedAt;
+        CreatedAt = createdAt;
     }
 
-    public static RefreshTokens Create(int userId, string userName, string token, DateTime expirationDate, DateTime? updatedAt)
+    public static RefreshTokens Create(
+        int userId,
+        string userName,
+        string token,
+        DateTime expirationDate,
+        DateTime? updatedAt,
+        DateTime createdAt)
     {
-        return new RefreshTokens(userId, userName, token, expirationDate, updatedAt);
+        return new RefreshTokens(userId, userName, token, expirationDate, updatedAt, createdAt);
     }
 
-    public void UpdateToken(string token, DateTime expirationDate)
+    public void UpdateToken(string token, DateTime expirationDate, DateTime updatedAt)
     {
         Token = token;
         ExpirationDate = expirationDate;
-        UpdatedAt = DateTime.UtcNow;
+        UpdatedAt = updatedAt;
     }
 }

@@ -63,7 +63,7 @@ public class EmailService : IEmailService
                 BodyEncoding = Encoding.UTF8,
                 IsBodyHtml = true,
                 Priority = MailPriority.High,
-                Body = $"<html><body><h2>{emailRequest.MessageType}</h2><br /></p><p>Mensagem: Você solicitou a recuperação de senha, clique no link {url} para resetar sua senha </p></body></html>",
+                Body = $"<html><body><h2>{emailRequest.MessageType}</h2><br /></p><p>Mensagem: Vocï¿½ solicitou a recuperaï¿½ï¿½o de senha, clique no link {url} para resetar sua senha </p></body></html>",
                 From = new MailAddress(Environment.GetEnvironmentVariable("SMTP_FROM_EMAIL"), Environment.GetEnvironmentVariable("SMTP_FROM_NAME"), Encoding.UTF8)
             };
 
@@ -74,7 +74,7 @@ public class EmailService : IEmailService
         }
         catch (Exception ex)
         {
-            _logger.LogError("Error in SMTP email", ex.Message);
+            _logger.LogError("Error in SMTP email{ExMessage}", ex.Message);
             throw;
         }
     }

@@ -6,7 +6,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Framework-dotnet-blue"/> 
-  <img src="https://img.shields.io/badge/Framework%20version-dotnet%209-blue"/>
+  <img src="https://img.shields.io/badge/Framework%20version-dotnet%2010-blue"/>
   <img src="https://img.shields.io/badge/Language-C%23-blue"/> 
   <img src="https://img.shields.io/badge/Status-development-green"/>
 </p>

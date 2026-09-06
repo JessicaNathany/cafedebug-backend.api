@@ -8,7 +8,7 @@ public static class DatabaseConfig
     public static IServiceCollection AddDatabaseConfiguration(this IServiceCollection services,
         IConfiguration configuration, bool isDevelopment)
     {
-        if (services == null) throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
         
         var connectionString = configuration.GetConnectionString("CafedebugConnectionStringMySQL");
 

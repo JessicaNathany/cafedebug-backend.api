@@ -10,11 +10,8 @@ namespace cafedebug_backend.infrastructure.Data;
 /// <summary>
 /// Represents the application's data context, used for interacting with the database.
 /// </summary>
-public class CafedebugContext : DbContext
+public class CafedebugContext(DbContextOptions<CafedebugContext> options) : DbContext(options)
 {
-    public CafedebugContext(DbContextOptions<CafedebugContext> options) : base(options)
-    { }
-
     public DbSet<Banner> Banners { get; set; }
     public DbSet<Episode> Episodes { get; set; }
     public DbSet<TeamMember> TeamMembers { get; set; }

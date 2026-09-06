@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI
 
 on:
   push:
@@ -6,15 +6,18 @@ on:
   pull_request:
     branches: [ main ]
 
-env:
-  DOTNET_VERSION: '10.0.x'
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  build:
-    name: Build
+  build-test:
+    name: Build & Test
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -22,171 +25,102 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+          global-json-file: global.json
 
       - name: Cache NuGet packages
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/Directory.Packages.props', '**/Directory.Build.props', '**/Directory.Build.targets', '**/packages.lock.json', 'global.json') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
 
-      - name: Restore dependencies
-        run: dotnet restore
+      - name: Restore and audit dependencies
+        run: >-
+          dotnet restore cafedebug-backend.api.sln
+          -p:NuGetAudit=true -p:NuGetAuditMode=all
+          -warnaserror:NU1900,NU1903,NU1904
 
       - name: Build solution
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build cafedebug-backend.api.sln --no-restore --configuration Release
 
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Run tests with coverage
+        run: >-
+          dotnet test tests/cafedebug.backend.api.test/cafedebug.backend.api.test.csproj
+          --no-build --no-restore --configuration Release --verbosity normal
+          --results-directory TestResults
+          --logger "trx;LogFileName=test-results.trx"
+          --collect:"XPlat Code Coverage"
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: Cache NuGet packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-
-      - name: Run tests
-        run: dotnet test tests/cafedebug.backend.api.test/cafedebug.backend.api.test.csproj --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx" /p:CollectCoverage=true /p:CoverageFormat=cobertura /p:CoverageFilename=coverage.xml
-
-      # - name: Upload test results
-      #   if: always()
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: test-results
-      #     path: '**/test-results.trx'
-
-      # - name: Publish test report
-      #   if: always()
-      #   uses: dorny/test-reporter@v1
-      #   with:
-      #     name: Test Results
-      #     path: '**/test-results.trx'
-      #     reporter: 'dotnet-trx'
-
-  package:
-    name: Package (image-build)
-    runs-on: ubuntu-latest
-    needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    outputs:
-      image-tag: ${{ steps.set_tag.outputs.image_tag }}
-      image-ref: ${{ steps.set_tag.outputs.image_ref }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Compute image tag
-        id: set_tag
+      - name: Publish test and coverage summary
+        if: ${{ !cancelled() }}
         run: |
-          TAG="${{ github.sha }}"
-          IMAGE_TAG="${TAG:0:7}"
-          IMAGE_REF="${{ env.REGISTRY }}/${{ github.repository }}:${IMAGE_TAG}"
-          # Convert to lowercase for Docker compatibility
-          IMAGE_REF=$(echo "$IMAGE_REF" | tr '[:upper:]' '[:lower:]')
-          echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
-          echo "image_ref=${IMAGE_REF}" >> $GITHUB_OUTPUT
-          echo "Computed image: ${IMAGE_REF}"
+          python3 <<'PYTHON'
+          import os
+          import xml.etree.ElementTree as ET
+          from collections import Counter
+          from pathlib import Path
 
-      - name: Build image and save to tar
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: false
-          tags: ${{ steps.set_tag.outputs.image_ref }}
-          outputs: type=docker,dest=./image.tar
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+          results = Path("TestResults")
+          errors = []
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
+              summary.write("## Test Results\n\n")
+              reports = sorted(results.glob("**/*.trx"))
+              if not reports:
+                  errors.append("No TRX test results were produced. Check the restore, build, and test logs.")
+              else:
+                  try:
+                      outcomes = Counter(
+                          result.get("outcome", "Unknown")
+                          for report in reports
+                          for result in ET.parse(report).getroot().findall(".//{*}UnitTestResult")
+                      )
+                      passed = outcomes["Passed"]
+                      skipped = outcomes["NotExecuted"]
+                      failed = sum(outcomes.values()) - passed - skipped
+                      summary.write("| Passed | Failed | Skipped |\n| ---: | ---: | ---: |\n")
+                      summary.write(f"| {passed} | {failed} | {skipped} |\n")
+                      if not outcomes:
+                          errors.append("TRX reports contained no test results.")
+                      if failed:
+                          errors.append(f"{failed} test result(s) failed.")
+                  except (ET.ParseError, OSError):
+                      errors.append("Unable to read TRX test results.")
 
-      - name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+              summary.write("\n## Coverage\n\n")
+              coverage_reports = sorted(results.glob("*/coverage.cobertura.xml"))
+              if not coverage_reports:
+                  errors.append("No Cobertura coverage results were produced.")
+              else:
+                  try:
+                      roots = [ET.parse(report).getroot() for report in coverage_reports]
+                      summary.write("| Metric | Covered | Total | Coverage |\n| --- | ---: | ---: | ---: |\n")
+                      for metric in ("lines", "branches"):
+                          covered = sum(int(root.attrib[f"{metric}-covered"]) for root in roots)
+                          total = sum(int(root.attrib[f"{metric}-valid"]) for root in roots)
+                          percentage = f"{covered / total:.2%}" if total else "N/A"
+                          summary.write(f"| {metric.title()} | {covered} | {total} | {percentage} |\n")
+                  except (ET.ParseError, OSError, KeyError, ValueError):
+                      errors.append("Unable to read Cobertura coverage results.")
 
-      - name: Upload built image artifact
+              for error in errors:
+                  summary.write(f"\n**Report error:** {error}\n")
+          if errors:
+              raise SystemExit("; ".join(errors))
+          PYTHON
+
+      - name: Upload test results
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: built-image
-          path: image.tar
+          name: test-results
+          path: TestResults/**/*.trx
+          if-no-files-found: error
 
-  publish:
-    name: Publish (push-image)
-    runs-on: ubuntu-latest
-    needs: package
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Download built image artifact
-        uses: actions/download-artifact@v4
+      - name: Upload coverage results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
         with:
-          name: built-image
-
-      - name: Load image
-        run: |
-          docker load --input image.tar
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Push image
-        run: |
-          IMAGE_REF="${{ needs.package.outputs.image-ref }}"
-          docker push "$IMAGE_REF"
-
-  create-release:
-    name: Release
-    runs-on: ubuntu-latest
-    needs: publish
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Create Release (draft)
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ github.run_number }}
-          release_name: Release v${{ github.run_number }}
-          body: |
-            ## Release Information
-            - **Build Number**: ${{ github.run_number }}
-            - **Commit**: ${{ github.sha }}
-            - **Branch**: main
-            - **Author**: ${{ github.actor }}
-          draft: true
-          prerelease: false
+          name: coverage-results
+          path: TestResults/*/coverage.cobertura.xml
+          if-no-files-found: error

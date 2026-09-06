@@ -11,7 +11,7 @@ namespace cafedebug.backend.application.Accounts.Services;
 /// <summary>
 /// Service responsible for authentication operations including token generation and refresh
 /// </summary>
-public class AuthService(IUserService userService, IJWTService jwtService) : IAuthService
+public class AuthService(IUserService userService, IJWTService jwtService, TimeProvider timeProvider) : IAuthService
 {
     public async Task<Result<JWTTokenResponse>> GenerateTokenAsync(string email, string password)
     {
@@ -59,7 +59,7 @@ public class AuthService(IUserService userService, IJWTService jwtService) : IAu
 
         var storedRefreshToken = refreshTokenResult.Value;
 
-        if (storedRefreshToken.ExpirationDate <= DateTime.UtcNow)
+        if (storedRefreshToken.ExpirationDate <= timeProvider.GetUtcNow().UtcDateTime)
             return Result.Failure<JWTTokenResponse>(AuthError.RefreshTokenExpired());
 
         var userResult = await userService.GetByIdAsync(storedRefreshToken.UserId);

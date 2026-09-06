@@ -2,20 +2,18 @@
 using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Shared;
 
-namespace cafedebug.backend.application.Accounts.Interfaces
+namespace cafedebug.backend.application.Accounts.Interfaces;
+public interface IUserService
 {
-    public interface IUserService
-    {
-        Task<Result<UserAdminResponse>> GetByLoginAndPasswordAsync(string email, string password);
+    Task<Result<UserAdminResponse>> GetByLoginAndPasswordAsync(string email, string password);
 
-        Task<Result<UserAdminResponse>> CreateAsync(string email, string password);
+    Task<Result<UserAdminResponse>> CreateAsync(string email, string password);
 
-        Task<Result<UserAdminResponse>> UpdateAsync(UserAdmin userAdmin);
+    Task<Result<UserAdminResponse>> UpdateAsync(UserAdmin userAdmin);
 
-        Task<Result<UserAdminResponse>> GetByIdAsync(int id);
+    Task<Result<UserAdminResponse>> GetByIdAsync(int id);
 
-        Task<Result> DeleteAsync(int id);
+    Task<Result> DeleteAsync(int id);
 
-        Task<Result<UserAdminResponse>> GetUserAdminByEmail(string email);
-    }
+    Task<Result<UserAdminResponse>> GetUserAdminByEmail(string email);
 }

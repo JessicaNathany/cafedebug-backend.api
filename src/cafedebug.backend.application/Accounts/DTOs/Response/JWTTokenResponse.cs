@@ -2,14 +2,14 @@
 
 public sealed record JWTTokenResponse
 {
-    public string AccessToken { get; set; }
-    public RefreshTokenResponse RefreshToken { get; set; }
-    public string TokenType { get; set; }
-    public long ExpiresIn { get; set; }
+    public string AccessToken { get; init; }
+    public RefreshTokenResponse RefreshToken { get; init; }
+    public string TokenType { get; init; }
+    public long ExpiresIn { get; init; }
 }
 
 public sealed record RefreshTokenResponse
 {
-    public string Token { get; set; }
-    public DateTime ExpirationDate { get; set; }
+    public string Token { get; init; }
+    public DateTime ExpirationDate { get; init; }
 }

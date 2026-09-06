@@ -1,4 +1,4 @@
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 namespace cafedebug_backend.api.Configurations;
 
@@ -6,7 +6,7 @@ public static class SwaggerConfig
 {
     public static IServiceCollection AddSwaggerConfiguration(this IServiceCollection services)
     {
-        if (services == null) throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(s =>
@@ -32,19 +32,9 @@ public static class SwaggerConfig
                 Type = SecuritySchemeType.ApiKey
             });
 
-            s.AddSecurityRequirement(new OpenApiSecurityRequirement
+            s.AddSecurityRequirement(document => new OpenApiSecurityRequirement
             {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
-                    },
-                    []
-                }
+                [new OpenApiSecuritySchemeReference("Bearer", document)] = []
             });
         });
 
@@ -53,7 +43,7 @@ public static class SwaggerConfig
 
     public static void UseSwaggerSetup(this IApplicationBuilder app)
     {
-        if (app == null) throw new ArgumentNullException(nameof(app));
+        ArgumentNullException.ThrowIfNull(app);
 
         app.UseSwagger();
         app.UseSwaggerUI(c =>

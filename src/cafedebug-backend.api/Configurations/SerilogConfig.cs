@@ -6,7 +6,7 @@ public static class SerilogConfig
 {
     public static IHostBuilder AddSerilogConfiguration(this IHostBuilder hostBuilder, IConfiguration configuration)
     {
-        hostBuilder.UseSerilog((context, configureLogger) => configureLogger
+        hostBuilder.UseSerilog((_, configureLogger) => configureLogger
             .ReadFrom.Configuration(configuration)
             .Enrich.FromLogContext());  
         return hostBuilder;
@@ -14,7 +14,7 @@ public static class SerilogConfig
     
     public static void UseSerilog(this IApplicationBuilder app)
     {
-        if (app == null) throw new ArgumentNullException(nameof(app));
+        ArgumentNullException.ThrowIfNull(app);
 
         app.UseSerilogRequestLogging(options =>
         {

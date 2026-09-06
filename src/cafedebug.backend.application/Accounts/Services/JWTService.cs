@@ -23,7 +23,8 @@ namespace cafedebug.backend.application.Accounts.Services;
 public class JWTService(
     JwtSettings jwtSettings,
     IRefreshTokensRepository refreshTokensRepository,
-    IUserRepository userRepository) : IJWTService
+    IUserRepository userRepository,
+    TimeProvider timeProvider) : IJWTService
 {
     public async Task<Result<JWTTokenResponse>> GenerateToken(string email, string password)
     {
@@ -65,7 +66,8 @@ public class JWTService(
     {
         var refreshTokenResult = await GetByTokenAsync(refreshToken);
 
-        if (!refreshTokenResult.IsSuccess || refreshTokenResult.Value == null || refreshTokenResult.Value.ExpirationDate <= DateTime.UtcNow)
+        var now = timeProvider.GetUtcNow().UtcDateTime;
+        if (!refreshTokenResult.IsSuccess || refreshTokenResult.Value == null || refreshTokenResult.Value.ExpirationDate <= now)
             return Result.Failure<JWTTokenResponse>(AuthError.RefreshTokenInvalid());
 
         var refreshTokenEntity = refreshTokenResult.Value;
@@ -80,9 +82,9 @@ public class JWTService(
         }
 
         var token = generatedToken.Replace("+", string.Empty).Replace("=", string.Empty).Replace("/", string.Empty);
-        var expirationDate = DateTime.UtcNow.AddMinutes(jwtSettings.RefreshTokenValidForMinutes);
+        var expirationDate = now.AddMinutes(jwtSettings.RefreshTokenValidForMinutes);
 
-        refreshTokenEntity.UpdateToken(token, expirationDate);
+        refreshTokenEntity.UpdateToken(token, expirationDate, now);
         await refreshTokensRepository.UpdateAsync(refreshTokenEntity);
 
         // get user by token user id
@@ -92,17 +94,7 @@ public class JWTService(
 
         var identity = GetClaimsIdentity(user);
         var jsonSecurityHandler = new JwtSecurityTokenHandler();
-        var securityToken = jsonSecurityHandler.CreateToken(new SecurityTokenDescriptor
-        {
-            Subject = identity,
-            Issuer = jwtSettings.Issuer,
-            Audience = jwtSettings.Audience,
-            IssuedAt = jwtSettings.IssuedAt,
-            NotBefore = jwtSettings.NotBefore,
-            Expires = jwtSettings.AccessTokenExpiration,
-            SigningCredentials = jwtSettings.SigningCredentials
-        });
-        var accessToken = jsonSecurityHandler.WriteToken(securityToken);
+        var accessToken = CreateAccessToken(jsonSecurityHandler, identity, now);
 
         var response = MappingConfig.ToToken(JWTToken.Create(
             accessToken, refreshTokenEntity,
@@ -116,6 +108,7 @@ public class JWTService(
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = jwtSettings.SigningCredentials.Key as SymmetricSecurityKey;
+        var now = timeProvider.GetUtcNow().UtcDateTime;
 
         if (key is null)
             throw new InvalidOperationException("Signing key is not a symmetric key.");
@@ -123,7 +116,9 @@ public class JWTService(
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(new[] { new Claim("userId", userId.ToString()) }),
-            Expires = DateTime.UtcNow.AddMinutes(15),
+            IssuedAt = now,
+            NotBefore = now,
+            Expires = now.AddMinutes(15),
             SigningCredentials = jwtSettings.SigningCredentials
         };
 
@@ -137,19 +132,9 @@ public class JWTService(
 
         var jsonSecurityHandler = new JwtSecurityTokenHandler();
 
-        var securityToken = jsonSecurityHandler.CreateToken(new SecurityTokenDescriptor
-        {
-            Subject = identity,
-            Issuer = jwtSettings.Issuer,
-            Audience = jwtSettings.Audience,
-            IssuedAt = jwtSettings.IssuedAt,
-            NotBefore = jwtSettings.NotBefore,
-            Expires = jwtSettings.AccessTokenExpiration,
-            SigningCredentials = jwtSettings.SigningCredentials
-        });
-
-        var accessToken = jsonSecurityHandler.WriteToken(securityToken);
-        var createRefreshToken = await CreateRefreshToken(userAdmin.Id, userAdmin.Name);
+        var now = timeProvider.GetUtcNow().UtcDateTime;
+        var accessToken = CreateAccessToken(jsonSecurityHandler, identity, now);
+        var createRefreshToken = await CreateRefreshToken(userAdmin.Id, userAdmin.Name, now);
 
         return new JWTTokenResponse
         {
@@ -189,7 +174,23 @@ public class JWTService(
         return Result.Success(getToken);
     }
 
-    private async Task<RefreshTokens> CreateRefreshToken(int userId, string userName)
+    private string CreateAccessToken(JwtSecurityTokenHandler tokenHandler, ClaimsIdentity identity, DateTime now)
+    {
+        var securityToken = tokenHandler.CreateToken(new SecurityTokenDescriptor
+        {
+            Subject = identity,
+            Issuer = jwtSettings.Issuer,
+            Audience = jwtSettings.Audience,
+            IssuedAt = now,
+            NotBefore = now,
+            Expires = now.AddMinutes(jwtSettings.ValidForMinutes),
+            SigningCredentials = jwtSettings.SigningCredentials
+        });
+
+        return tokenHandler.WriteToken(securityToken);
+    }
+
+    private async Task<RefreshTokens> CreateRefreshToken(int userId, string userName, DateTime now)
     {
         string generatedToken;
         var randomNumber = new byte[32];
@@ -201,19 +202,18 @@ public class JWTService(
         }
 
         var token = generatedToken.Replace("+", string.Empty).Replace("=", string.Empty).Replace("/", string.Empty);
-        var expirationDate = DateTime.UtcNow.AddMinutes(jwtSettings.RefreshTokenValidForMinutes);
-        var now = DateTime.UtcNow;
+        var expirationDate = now.AddMinutes(jwtSettings.RefreshTokenValidForMinutes);
 
         var refreshTokenByUser = await refreshTokensRepository.GetByTokenByUserIdAsync(userId);
 
         if (refreshTokenByUser is null)
         {
-            var refreshToken = RefreshTokens.Create(userId, userName, token, expirationDate, now);
+            var refreshToken = RefreshTokens.Create(userId, userName, token, expirationDate, now, now);
             await refreshTokensRepository.SaveAsync(refreshToken);
             return refreshToken;
         }
 
-        refreshTokenByUser.UpdateToken(token, expirationDate);
+        refreshTokenByUser.UpdateToken(token, expirationDate, now);
         await refreshTokensRepository.UpdateAsync(refreshTokenByUser);
         return refreshTokenByUser;
     }

@@ -13,12 +13,15 @@ namespace cafedebug.backend.application.Podcasts.Services;
 /// <summary>
 /// Service responsible for managing episodes, including creation, updating, deletion, and retrieval operations.
 /// </summary>
-public class EpisodeService(IEpisodeRepository episodeRepository, ICategoryRepository categoryRepository)
+public class EpisodeService(
+    IEpisodeRepository episodeRepository,
+    ICategoryRepository categoryRepository,
+    TimeProvider timeProvider)
     : IEpisodeService
 {
     public async Task<Result<EpisodeResponse>> CreateAsync(EpisodeRequest request)
     {
-        var episode = request.ToEpisode();
+        var episode = request.ToEpisode(timeProvider);
 
         var exists = await episodeRepository.AnyAsync(e => e.Title == episode.Title);
 
@@ -57,7 +60,8 @@ public class EpisodeService(IEpisodeRepository episodeRepository, ICategoryRepos
             request.PublishedAt,
             request.Status,
             request.Number,
-            request.CategoryId);
+            request.CategoryId,
+            timeProvider);
 
         episode.SetCategory(category);
         

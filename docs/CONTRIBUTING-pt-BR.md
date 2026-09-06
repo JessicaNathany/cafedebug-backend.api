@@ -86,8 +86,8 @@ chmod +x cafedebug-setup.sh
 
 
 
-4. O projeto está na versão .NET 9. Para rodar no Visual Studio (Windows), basta executar normalmente. Para Linux/Mac:
-   1. Instale o .NET SDK 9
+4. O projeto está na versão .NET 10. Para rodar no Visual Studio (Windows), basta executar normalmente. Para Linux/Mac:
+   1. Instale o .NET SDK 10
    2. Clone o backend-api:
       ```bash
       git clone https://github.com/JessicaNathany/cafedebug-backend.api.git

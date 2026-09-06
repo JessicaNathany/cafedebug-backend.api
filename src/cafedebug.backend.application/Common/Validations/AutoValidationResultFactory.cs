@@ -1,6 +1,7 @@
 using cafedebug_backend.domain.Errors;
 using cafedebug_backend.domain.Shared.Errors;
 using cafedebug.backend.application.Common.DTOs.Response;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
@@ -17,11 +18,12 @@ public class AutoValidationResultFactory : IFluentValidationAutoValidationResult
         this.logger = logger;
     }
 
-    public IActionResult CreateActionResult(
-        ActionExecutingContext context, 
-        ValidationProblemDetails? validationProblemDetails)
+    public Task<IActionResult?> CreateActionResult(
+        ActionExecutingContext context,
+        ValidationProblemDetails validationProblemDetails,
+        IDictionary<IValidationContext, FluentValidation.Results.ValidationResult> validationResults)
     {
-        if (validationProblemDetails?.Errors == null || !validationProblemDetails.Errors.Any())
+        if (validationProblemDetails.Errors == null || !validationProblemDetails.Errors.Any())
         {
             logger.LogWarning(
                 "Validation failed with no detailed errors. Method: {HttpMethod}, Path: {RequestPath}, TraceId: {TraceId}",
@@ -29,14 +31,14 @@ public class AutoValidationResultFactory : IFluentValidationAutoValidationResult
                 context.HttpContext.Request.Path.Value,
                 context.HttpContext.TraceIdentifier);
 
-            return new BadRequestObjectResult(new ValidationErrorResponse
+            return Task.FromResult<IActionResult?>(new BadRequestObjectResult(new ValidationErrorResponse
             {
                 Code = nameof(ErrorType.ValidationError),
                 Message = "Validation failed",
                 Errors = new Dictionary<string, string[]>()
-            });
+            }));
         }
-        
+
         var errors = validationProblemDetails.Errors
             .ToDictionary(
                 kvp => kvp.Key,
@@ -58,6 +60,6 @@ public class AutoValidationResultFactory : IFluentValidationAutoValidationResult
             Errors = errors
         };
 
-        return new BadRequestObjectResult(response);
+        return Task.FromResult<IActionResult?>(new BadRequestObjectResult(response));
     }
 }

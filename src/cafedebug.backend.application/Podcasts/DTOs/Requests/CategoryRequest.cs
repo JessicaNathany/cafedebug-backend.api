@@ -1,7 +1,8 @@
-﻿using cafedebug_backend.domain.Podcasts;
+using cafedebug_backend.domain.Podcasts;
+
 namespace cafedebug.backend.application.Podcasts.DTOs.Requests;
 
-public class CategoryRequest
+public sealed record CategoryRequest
 {
     public string Name { get; init; }
 
@@ -10,4 +11,3 @@ public class CategoryRequest
         return new Category(Name);
     }
 }
-

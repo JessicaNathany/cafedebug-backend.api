@@ -16,7 +16,7 @@ public sealed record BannerRequest
     public bool Active { get; init; }
     public int Order { get; init; }
 
-    public Banner ToBanner()
+    public Banner ToBanner(TimeProvider timeProvider)
     {
         return new Banner(
             Name,
@@ -26,6 +26,7 @@ public sealed record BannerRequest
             EndDate,
             Status,
             Active,
-            Order);        
+            Order,
+            timeProvider);
     }
 }

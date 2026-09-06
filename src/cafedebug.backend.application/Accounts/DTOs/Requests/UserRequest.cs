@@ -1,11 +1,10 @@
-﻿namespace cafedebug.backend.application.Accounts.DTOs.Requests
+namespace cafedebug.backend.application.Accounts.DTOs.Requests;
+
+public sealed record UserRequest
 {
-    public class UserRequest
-    {
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string HashedPassword { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public DateTime LastUpdate { get; set; }
-    }
+    public string Name { get; init; }
+    public string Email { get; init; }
+    public string HashedPassword { get; init; }
+    public DateTime CreatedDate { get; init; }
+    public DateTime LastUpdate { get; init; }
 }

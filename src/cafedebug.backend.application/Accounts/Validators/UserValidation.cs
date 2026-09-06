@@ -2,36 +2,34 @@
 using FluentValidation;
 using System.Text.RegularExpressions;
 
-namespace cafedebug.backend.application.Accounts.Validators
+namespace cafedebug.backend.application.Accounts.Validators;
+public class UserValidation : AbstractValidator<UserCredentialsRequest>
 {
-    public class UserValidation : AbstractValidator<UserCredentialsRequest>
+    public UserValidation()
     {
-        public UserValidation()
-        {
-            RuleFor(x => x.Email)
-                .NotNull()
-                .WithMessage("Email cannot be null.")
-                .NotEmpty()
-                .WithMessage("Email cannot be empty.")
-                .Must(ValidateEmailFormat)
-                .WithMessage("Email is not in a correct format.");
+        RuleFor(x => x.Email)
+            .NotNull()
+            .WithMessage("Email cannot be null.")
+            .NotEmpty()
+            .WithMessage("Email cannot be empty.")
+            .Must(ValidateEmailFormat)
+            .WithMessage("Email is not in a correct format.");
 
-            RuleFor(x => x.Password)
-                .NotNull()
-                .WithMessage("Password cannot be null.")
-                .NotEmpty()
-                .WithMessage("Password cannot be empty.")
-                .MinimumLength(6)
-                .WithMessage("Password must be at least 6 characters long.");
-        }
+        RuleFor(x => x.Password)
+            .NotNull()
+            .WithMessage("Password cannot be null.")
+            .NotEmpty()
+            .WithMessage("Password cannot be empty.")
+            .MinimumLength(6)
+            .WithMessage("Password must be at least 6 characters long.");
+    }
 
-        private bool ValidateEmailFormat(string email)
-        {
-            if (string.IsNullOrEmpty(email))
-                return false;
+    private bool ValidateEmailFormat(string email)
+    {
+        if (string.IsNullOrEmpty(email))
+            return false;
 
-            var emailRegex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
-            return emailRegex.IsMatch(email);
-        }
+        var emailRegex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+        return emailRegex.IsMatch(email);
     }
 }
