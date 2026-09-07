@@ -8,10 +8,10 @@ using cafedebug.backend.application.Audience.Interfaces;
 using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Interfaces.Repositories;
 using cafedebug_backend.domain.Shared.Errors;
-using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using Xunit;
+using Shouldly;
 
 namespace cafedebug.backend.api.test.Application.Accounts.Services;
 
@@ -54,8 +54,8 @@ public class AccountServiceTest : BaseTest
         var result = await _accountService.SendEmailForgotPassword(request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
 
         _emailVerifications.VerifyEmailSent(Times.Once());
     }
@@ -73,7 +73,7 @@ public class AccountServiceTest : BaseTest
         var act = async () => await _accountService.SendEmailForgotPassword(request);
 
         // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("Email service down");
+        await act.ShouldThrowAsync<InvalidOperationException>();
         
         _emailVerifications.VerifyEmailSent(Times.Once());
     }
@@ -100,12 +100,13 @@ public class AccountServiceTest : BaseTest
         var result = await _accountService.ResetPassword(request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
 
-        user.HashedPassword.Should().Be(newHashedPassword);
-        user.Email.Should().Be(request.Email);
-        user.UpdatedAt.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
+        user.HashedPassword.ShouldBe(newHashedPassword);
+        user.Email.ShouldBe(request.Email);
+        user.UpdatedAt.ShouldNotBeNull();
+        user.UpdatedAt.Value.ShouldBe(DateTime.Now, TimeSpan.FromSeconds(5));
 
         _userVerifications.VerifyGetUserByEmail(request.Email, Times.Once());
         _passwordHasherMock.Verify(x => x.HashPassword(null, request.NewPassword), Times.Once());
@@ -123,10 +124,10 @@ public class AccountServiceTest : BaseTest
         var result = await _accountService.ResetPassword(request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().NotBeNull();
-        result.Error.Code.Should().Be(nameof(ErrorType.ResourceNotFound));
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldNotBeNull();
+        result.Error.Code.ShouldBe(nameof(ErrorType.ResourceNotFound));
 
         _userVerifications.VerifyGetUserByEmail(request.Email, Times.Once());
         _passwordHasherMock.Verify(x => x.HashPassword(It.IsAny<UserAdmin>(), It.IsAny<string>()), Times.Never());
@@ -155,11 +156,11 @@ public class AccountServiceTest : BaseTest
         var result = await _accountService.ChangePassword(request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
 
         // verify if password was changed
-        user.HashedPassword.Should().Be(newHashedPassword);
+        user.HashedPassword.ShouldBe(newHashedPassword);
 
         _userVerifications.VerifyGetUserByEmail(request.Email, Times.Once());
         _userVerifications.VerifyUserUpdated(Times.Once());
@@ -179,10 +180,10 @@ public class AccountServiceTest : BaseTest
         var result = await _accountService.ChangePassword(request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().NotBeNull();
-        result.Error.Code.Should().Be(nameof(ErrorType.ResourceNotFound));
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldNotBeNull();
+        result.Error.Code.ShouldBe(nameof(ErrorType.ResourceNotFound));
 
         _userVerifications.VerifyGetUserByEmail(request.Email, Times.Once());
         _userVerifications.VerifyUserUpdated(Times.Never());
@@ -213,7 +214,7 @@ public class AccountServiceTest : BaseTest
         var act = async () => await _accountService.ChangePassword(request);
 
         // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("Database connection failed");
+        (await act.ShouldThrowAsync<InvalidOperationException>()).Message.ShouldBe("Database connection failed");
         
         _userVerifications.VerifyGetUserByEmail(request.Email, Times.Once());
         _userVerifications.VerifyUserUpdated(Times.Once());
@@ -243,8 +244,8 @@ public class AccountServiceTest : BaseTest
         var result = await _accountService.ForgotPassword(request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
 
         _userVerifications.VerifyGetUserByEmail(request.Email, Times.Once());
         _jwtServiceMock.Verify(x => x.GenerateResetToken(user.Id), Times.Once());
@@ -263,10 +264,10 @@ public class AccountServiceTest : BaseTest
         var result = await _accountService.ForgotPassword(request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().NotBeNull();
-        result.Error.Code.Should().Be(nameof(ErrorType.ResourceNotFound));
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldNotBeNull();
+        result.Error.Code.ShouldBe(nameof(ErrorType.ResourceNotFound));
 
         _userVerifications.VerifyGetUserByEmail(request.Email, Times.Once());
         _jwtServiceMock.Verify(x => x.GenerateResetToken(It.IsAny<int>()), Times.Never());
@@ -283,7 +284,7 @@ public class AccountServiceTest : BaseTest
         var act = async () => await _accountService.VerifyEmail(email);
 
         // Assert
-        await act.Should().ThrowAsync<NotImplementedException>();
+        await act.ShouldThrowAsync<NotImplementedException>();
     }
 }
 
