@@ -6,9 +6,9 @@ using cafedebug.backend.application.Podcasts.Services;
 using cafedebug_backend.domain.Podcasts;
 using cafedebug_backend.domain.Podcasts.Repositories;
 using cafedebug_backend.domain.Shared.Errors;
-using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
+using Shouldly;
 using Xunit;
 
 namespace cafedebug.backend.api.test.Application.Podcasts.Services;
@@ -65,8 +65,8 @@ public class EpisodeServiceTest : BaseTest
         var statusAfterPublication = episode.Status;
 
         // Assert
-        statusBeforePublication.Should().Be(EpisodeStatus.Scheduled);
-        statusAfterPublication.Should().Be(EpisodeStatus.Published);
+        statusBeforePublication.ShouldBe(EpisodeStatus.Scheduled);
+        statusAfterPublication.ShouldBe(EpisodeStatus.Published);
     }
 
     [Fact]
@@ -86,14 +86,14 @@ public class EpisodeServiceTest : BaseTest
         var result = await _episodeService.CreateAsync(request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
 
         var response = result.Value;
-        response.Title.Should().Be(request.Title);
-        response.Category.Id.Should().Be(category.Id);
+        response.Title.ShouldBe(request.Title);
+        response.Category.Id.ShouldBe(category.Id);
 
-        savedEpisode.Should().NotBeNull();
+        savedEpisode.ShouldNotBeNull();
 
         _categoryRepositoryVerifications.VerifyCategoryRetrieved(category.Id, Times.Once());
         _episodeRepositoryVerifications.VerifyEpisodeSaved(Times.Once());
@@ -112,8 +112,8 @@ public class EpisodeServiceTest : BaseTest
         var result = await _episodeService.CreateAsync(request);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(nameof(ErrorType.ResourceNotFound));
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.Code.ShouldBe(nameof(ErrorType.ResourceNotFound));
 
         _categoryRepositoryVerifications.VerifyCategoryRetrieved(request.CategoryId, Times.Once());
         _episodeRepositoryVerifications.VerifyEpisodeSaved(Times.Never());
@@ -135,8 +135,7 @@ public class EpisodeServiceTest : BaseTest
         var act = async () => await _episodeService.CreateAsync(request);
 
         // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("DB down");
+        (await act.ShouldThrowAsync<InvalidOperationException>()).Message.ShouldBe("DB down");
 
         _categoryRepositoryVerifications.VerifyCategoryRetrieved(category.Id, Times.Once());
         _episodeRepositoryVerifications.VerifyEpisodeSaved(Times.Once());
@@ -153,8 +152,8 @@ public class EpisodeServiceTest : BaseTest
         var result = await _episodeService.CreateAsync(request);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(nameof(ErrorType.ExistingRegister));
+        result.IsFailure.ShouldBeTrue();
+        result.Error.Code.ShouldBe(nameof(ErrorType.ExistingRegister));
 
         _episodeRepositoryVerifications.VerifyEpisodeExistenceChecked(Times.Once());
         _categoryRepositoryVerifications.VerifyCategoryRetrieved(It.IsAny<int>(), Times.Never());
@@ -179,12 +178,12 @@ public class EpisodeServiceTest : BaseTest
         var result = await _episodeService.UpdateAsync(episodeId, request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
 
         var response = result.Value;
-        response.Title.Should().Be(request.Title);
-        response.Category.Id.Should().Be(category.Id);
+        response.Title.ShouldBe(request.Title);
+        response.Category.Id.ShouldBe(category.Id);
 
         _episodeRepositoryVerifications.VerifyEpisodeRetrieved(episodeId, Times.Once());
         _categoryRepositoryVerifications.VerifyCategoryRetrieved(category.Id, Times.Once());
@@ -204,8 +203,8 @@ public class EpisodeServiceTest : BaseTest
         var result = await _episodeService.UpdateAsync(episodeId, request);
         
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(nameof(ErrorType.ResourceNotFound));
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.Code.ShouldBe(nameof(ErrorType.ResourceNotFound));
     }
 
     [Fact]
@@ -224,8 +223,8 @@ public class EpisodeServiceTest : BaseTest
         var result = await _episodeService.UpdateAsync(episodeId, request);
         
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(nameof(ErrorType.ResourceNotFound));
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.Code.ShouldBe(nameof(ErrorType.ResourceNotFound));
         
         _episodeRepositoryVerifications.VerifyEpisodeRetrieved(episodeId, Times.Once());
         _categoryRepositoryVerifications.VerifyCategoryRetrieved(categoryId, Times.Once());
@@ -245,8 +244,8 @@ public class EpisodeServiceTest : BaseTest
         var result = await _episodeService.DeleteAsync(episodeId);
         
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
         
         _episodeRepositoryVerifications.VerifyEpisodeRetrieved(episodeId, Times.Once());
         _episodeRepositoryVerifications.VerifyEpisodeDeleted(episode, Times.Once());
@@ -264,8 +263,8 @@ public class EpisodeServiceTest : BaseTest
         var result = await _episodeService.DeleteAsync(episodeId);
         
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(nameof(ErrorType.ResourceNotFound));
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.Code.ShouldBe(nameof(ErrorType.ResourceNotFound));
     }
 
     [Fact]
@@ -281,15 +280,15 @@ public class EpisodeServiceTest : BaseTest
         var result = await _episodeService.GetAllAsync(request);
         
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Items.Should().NotBeNullOrEmpty();
-        result.Value.Items.Should().HaveCount(pagedResult.TotalCount);
-        result.Value.Page.Should().Be(request.Page);
-        result.Value.PageSize.Should().Be(request.PageSize);
-        result.Value.SortBy.Should().Be(request.SortBy);
-        result.Value.Descending.Should().Be(request.Descending);
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldNotBeNull();
+        result.Value.Items.ShouldNotBeNull();
+        result.Value.Items.Count.ShouldBe(pagedResult.TotalCount);
+        result.Value.Page.ShouldBe(request.Page);
+        result.Value.PageSize.ShouldBe(request.PageSize);
+        result.Value.SortBy.ShouldBe(request.SortBy);
+        result.Value.Descending.ShouldBe(request.Descending);
         
         _episodeRepositoryVerifications.VerifyEpisodePageListRetrieved(request.Search, request.Page, request.PageSize, request.SortBy, request.Descending, Times.Once());
     }
@@ -307,14 +306,14 @@ public class EpisodeServiceTest : BaseTest
         var result = await _episodeService.GetAllAsync(request);
         
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.Page.Should().Be(request.Page);
-        result.Value.PageSize.Should().Be(request.PageSize);
-        result.Value.SortBy.Should().Be(request.SortBy);
-        result.Value.Descending.Should().Be(request.Descending);
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldNotBeNull();
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.Page.ShouldBe(request.Page);
+        result.Value.PageSize.ShouldBe(request.PageSize);
+        result.Value.SortBy.ShouldBe(request.SortBy);
+        result.Value.Descending.ShouldBe(request.Descending);
         
         _episodeRepositoryVerifications.VerifyEpisodePageListRetrieved(request.Search, request.Page, request.PageSize, request.SortBy, request.Descending, Times.Once());
     }
@@ -332,9 +331,9 @@ public class EpisodeServiceTest : BaseTest
         var result = await _episodeService.GetByIdAsync(episodeId);
         
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldNotBeNull();
         
         _episodeRepositoryVerifications.VerifyEpisodeRetrieved(episodeId, Times.Once());
     }
@@ -366,8 +365,8 @@ public class EpisodeServiceTest : BaseTest
         var result = await _episodeService.GetByIdAsync(episodeId);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(EpisodeStatus.Scheduled.Value);
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Status.ShouldBe(EpisodeStatus.Scheduled.Value);
 
         _episodeRepositoryVerifications.VerifyEpisodeRetrieved(episodeId, Times.Once());
     }
@@ -399,8 +398,8 @@ public class EpisodeServiceTest : BaseTest
         var result = await _episodeService.GetByIdAsync(episodeId);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Status.Should().Be(EpisodeStatus.Draft.Value);
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Status.ShouldBe(EpisodeStatus.Draft.Value);
 
         _episodeRepositoryVerifications.VerifyEpisodeRetrieved(episodeId, Times.Once());
     }
@@ -417,8 +416,8 @@ public class EpisodeServiceTest : BaseTest
         var result = await _episodeService.GetByIdAsync(episodeId);
         
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(nameof(ErrorType.ResourceNotFound));
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.Code.ShouldBe(nameof(ErrorType.ResourceNotFound));
         
         _episodeRepositoryVerifications.VerifyEpisodeRetrieved(episodeId, Times.Once());
     }

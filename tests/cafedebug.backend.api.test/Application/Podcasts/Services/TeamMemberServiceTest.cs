@@ -5,8 +5,8 @@ using cafedebug.backend.api.test.Shared;
 using cafedebug.backend.api.test.Shared.Mocks.Podcasts;
 using cafedebug.backend.api.test.Shared.Setups.Podcasts;
 using cafedebug.backend.application.Podcasts.Services;
-using FluentAssertions;
 using Moq;
+using Shouldly;
 using Xunit;
 
 namespace cafedebug.backend.api.test.Application.Podcasts.Services;
@@ -43,14 +43,15 @@ public class TeamMemberServiceTest : BaseTest
         var result = await _teamMemberService.CreateAsync(request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
 
         var response = result.Value;
-        response.Name.Should().Be(request.Name);
-        response.Email.Should().Be(request.Email);
-        response.Bio.Should().Be(request.Bio);
-        response.Id.Should().Be(savedTeamMember?.Id);
+        response.Name.ShouldBe(request.Name);
+        response.Email.ShouldBe(request.Email);
+        response.Bio.ShouldBe(request.Bio);
+        savedTeamMember.ShouldNotBeNull();
+        response.Id.ShouldBe(savedTeamMember.Id);
 
         _teamMemberRepositoryMock.Verify(x => x.SaveAsync(It.IsAny<TeamMember>()), Times.Once());
     }
@@ -68,7 +69,7 @@ public class TeamMemberServiceTest : BaseTest
         var act = async () => await _teamMemberService.CreateAsync(request);
 
         // Assert
-        await act.Should().ThrowAsync<Exception>().WithMessage("DB down");
+        (await act.ShouldThrowAsync<Exception>()).Message.ShouldBe("DB down");
 
         _teamMemberRepositoryMock.Verify(x => x.SaveAsync(It.IsAny<TeamMember>()), Times.Once());
     }
@@ -88,8 +89,8 @@ public class TeamMemberServiceTest : BaseTest
         var result = await _teamMemberService.UpdateAsync(teamMemberId, request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
 
         _teamMemberRepositoryMock.Verify(x => x.GetByIdAsync(teamMemberId), Times.Once());
         _teamMemberRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<TeamMember>()), Times.Once());
@@ -108,9 +109,9 @@ public class TeamMemberServiceTest : BaseTest
         var result = await _teamMemberService.UpdateAsync(teamMemberId, request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(nameof(ErrorType.ResourceNotFound));
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.Code.ShouldBe(nameof(ErrorType.ResourceNotFound));
 
         _teamMemberRepositoryMock.Verify(x => x.GetByIdAsync(teamMemberId), Times.Once());
         _teamMemberRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<TeamMember>()), Times.Never());
@@ -130,8 +131,8 @@ public class TeamMemberServiceTest : BaseTest
         var result = await _teamMemberService.DeleteAsync(teamMemberId);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
 
         _teamMemberRepositoryMock.Verify(x => x.GetByIdAsync(teamMemberId), Times.Once());
         _teamMemberRepositoryMock.Verify(x => x.DeleteAsync(It.IsAny<TeamMember>()), Times.Once());
@@ -149,9 +150,9 @@ public class TeamMemberServiceTest : BaseTest
         var result = await _teamMemberService.DeleteAsync(teamMemberId);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(nameof(ErrorType.ResourceNotFound));
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.Code.ShouldBe(nameof(ErrorType.ResourceNotFound));
 
         _teamMemberRepositoryMock.Verify(x => x.GetByIdAsync(teamMemberId), Times.Once());
         _teamMemberRepositoryMock.Verify(x => x.DeleteAsync(It.IsAny<TeamMember>()), Times.Never());
@@ -172,14 +173,14 @@ public class TeamMemberServiceTest : BaseTest
         var result = await _teamMemberService.GetAllAsync(request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Items.Should().NotBeNullOrEmpty();
-        result.Value.Page.Should().Be(request.Page);
-        result.Value.PageSize.Should().Be(request.PageSize);
-        result.Value.SortBy.Should().Be(request.SortBy);
-        result.Value.Descending.Should().Be(request.Descending);
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldNotBeNull();
+        result.Value.Items.ShouldNotBeNull();
+        result.Value.Page.ShouldBe(request.Page);
+        result.Value.PageSize.ShouldBe(request.PageSize);
+        result.Value.SortBy.ShouldBe(request.SortBy);
+        result.Value.Descending.ShouldBe(request.Descending);
 
         _teamMemberRepositoryMock.Verify(
             x => x.GetPageList(request.Page, request.PageSize, request.SortBy, request.Descending,
@@ -201,10 +202,10 @@ public class TeamMemberServiceTest : BaseTest
         var result = await _teamMemberService.GetAllAsync(request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Items.Should().BeEmpty();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldNotBeNull();
+        result.Value.Items.ShouldBeEmpty();
     }
 
     [Fact]
@@ -220,10 +221,10 @@ public class TeamMemberServiceTest : BaseTest
         var result = await _teamMemberService.GetByIdAsync(teamMemberId);
         
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Id.Should().Be(teamMemberId);
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldNotBeNull();
+        result.Value.Id.ShouldBe(teamMemberId);
         
         _teamMemberRepositoryMock.Verify(x => x.GetByIdAsync(teamMemberId), Times.Once());
     }
@@ -239,8 +240,8 @@ public class TeamMemberServiceTest : BaseTest
         var result = await _teamMemberService.GetByIdAsync(teamMemberId);
         
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(nameof(ErrorType.ResourceNotFound));
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.Code.ShouldBe(nameof(ErrorType.ResourceNotFound));
     }
 }
