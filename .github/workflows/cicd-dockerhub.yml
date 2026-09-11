@@ -1,4 +1,4 @@
-name: Publish Local Image to Docker Hub
+name: Local-devstack [Docker Hub]
 
 on:
   push:
