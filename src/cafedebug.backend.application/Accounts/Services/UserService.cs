@@ -3,6 +3,7 @@ using cafedebug.backend.application.Accounts.DTOs.Response;
 using cafedebug.backend.application.Accounts.Interfaces;
 using cafedebug.backend.application.Accounts.Validators;
 using cafedebug.backend.application.Common.Mappings;
+using cafedebug.backend.application.Common.Pagination;
 using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Accounts.Errors;
 using cafedebug_backend.domain.Interfaces.Repositories;
@@ -32,19 +33,31 @@ public class UserService(IUserRepository userRepository, IPasswordHasher<UserAdm
         return Result.Success(response);
     }
 
-    public async Task<Result<UserAdminResponse>> CreateAsync(string email, string password)
+    public async Task<Result<UserAdminResponse>> CreateAsync(UserAdminRequest request)
     {
-        if (String.IsNullOrEmpty(email))
+        if (string.IsNullOrWhiteSpace(request.Name))
+            return Result.Failure<UserAdminResponse>(UserError.NameCannotBeNull());
+
+        if (string.IsNullOrWhiteSpace(request.Email))
             return Result.Failure<UserAdminResponse>(UserError.EmailCannotBeNull());
 
-        var emailValidator = new EmailValidation();
-        var emailValidationResult = emailValidator.Validate(email);
+        if (string.IsNullOrWhiteSpace(request.Password))
+            return Result.Failure<UserAdminResponse>(UserError.PasswordCannotBeNull());
 
-        var hashedPassword = passwordHasher.HashPassword(null, password);
+        var emailValidationResult = new EmailValidation().Validate(request.Email);
+        if (!emailValidationResult.IsValid)
+            return Result.Failure<UserAdminResponse>(UserError.InvalidEmailFormat());
+
+        var userAlreadyExists = await userRepository.AnyAsync(x => x.Email == request.Email);
+        if (userAlreadyExists)
+            return Result.Failure<UserAdminResponse>(UserError.UserAlreadyExists(request.Email));
+
+        var hashedPassword = passwordHasher.HashPassword(null, request.Password);
 
         var user = new UserAdmin
         {
-            Email = email,
+            Name = request.Name,
+            Email = request.Email,
             HashedPassword = hashedPassword,
             CreatedAt = DateTime.Now
         };
@@ -56,18 +69,47 @@ public class UserService(IUserRepository userRepository, IPasswordHasher<UserAdm
         return Result.Success(response);
     }
 
-    public async Task<Result<UserAdminResponse>> UpdateAsync(UserRequest userRequest)
+    public async Task<Result<UserAdminResponse>> UpdateAsync(UserAdminRequest request, int id)
     {
-        var user = await userRepository.GetByEmailAsync(userRequest.Email);
+        var user = await userRepository.GetByIdAsync(id);
 
         if (user is null)
             return Result.Failure<UserAdminResponse>(UserError.NotFound());
+
+        if (string.IsNullOrWhiteSpace(request.Name))
+            return Result.Failure<UserAdminResponse>(UserError.NameCannotBeNull());
+
+        if (string.IsNullOrWhiteSpace(request.Email))
+            return Result.Failure<UserAdminResponse>(UserError.EmailCannotBeNull());
+
+        if (string.IsNullOrWhiteSpace(request.Password))
+            return Result.Failure<UserAdminResponse>(UserError.PasswordCannotBeNull());
+
+        var emailValidationResult = new EmailValidation().Validate(request.Email);
+        if (!emailValidationResult.IsValid)
+            return Result.Failure<UserAdminResponse>(UserError.InvalidEmailFormat());
+
+        var emailInUse = await userRepository.AnyAsync(x => x.Email == request.Email && x.Id != id);
+        if (emailInUse)
+            return Result.Failure<UserAdminResponse>(UserError.UserAlreadyExists(request.Email));
+
+        user.Name = request.Name;
+        user.Email = request.Email;
+        user.HashedPassword = passwordHasher.HashPassword(user, request.Password);
+        user.UpdatedAt = DateTime.Now;
 
         await userRepository.UpdateAsync(user);
 
         var response = MappingConfig.ToUserAdmin(user);
 
         return Result.Success(response);
+    }
+
+    public async Task<Result<PagedResult<UserAdminResponse>>> GetAllAsync(PageRequest request)
+    {
+        var users = await userRepository.GetPageList(request.Page, request.PageSize, request.SortBy, request.Descending);
+
+        return users.MapToPagedResult(user => user.ToUserAdmin());
     }
 
     public async Task<Result<UserAdminResponse>> GetByIdAsync(int id)
@@ -87,7 +129,7 @@ public class UserService(IUserRepository userRepository, IPasswordHasher<UserAdm
         var user = await userRepository.GetByIdAsync(id);
 
         if (user is null)
-            return Result.Failure<UserAdminResponse>(UserError.NotFound());
+            return Result.Failure(UserError.NotFound());
 
         await userRepository.DeleteAsync(user.Id);
         return Result.Success();
@@ -101,16 +143,6 @@ public class UserService(IUserRepository userRepository, IPasswordHasher<UserAdm
             return Result.Failure<UserAdminResponse>(UserError.NotFound(email));
 
         var response = MappingConfig.ToUserAdmin(user);
-
-        return Result.Success(response);
-    }
-
-    public async Task<Result<UserAdminResponse>> UpdateAsync(UserAdmin userAdmin)
-    {
-        await userRepository.UpdateAsync(userAdmin);
-        await userRepository.SaveChangesAsync();
-
-        var response = MappingConfig.ToUserAdmin(userAdmin);
         return Result.Success(response);
     }
 }

@@ -1,204 +1,167 @@
-﻿using cafedebug_backend.domain.Accounts;
-using cafedebug_backend.domain.Accounts.Errors;
-using cafedebug_backend.domain.Interfaces.Repositories;
+﻿using System.Linq.Expressions;
+using System.Text.Json;
+using AutoFixture;
+using cafedebug.backend.api.test.Shared;
+using cafedebug.backend.application.Accounts.DTOs.Requests;
 using cafedebug.backend.application.Accounts.Services;
+using cafedebug.backend.application.Common.Pagination;
+using cafedebug_backend.domain.Accounts;
+using cafedebug_backend.domain.Interfaces.Repositories;
+using cafedebug_backend.domain.Shared.Errors;
+using cafedebug_backend.infrastructure.Data.Pagination;
+using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
+using MockQueryable;
 using Moq;
-using Moq.AutoMock;
 using Xunit;
 
 namespace cafedebug.backend.api.test.Application.Accounts.Services;
 
-public class UserServiceTest
+[Collection("PodcastTests")]
+public class UserServiceTest : BaseTest
 {
-    // to need refactor
+    private readonly UserService _userService;
+    private readonly Mock<IUserRepository> _userRepositoryMock;
+    private readonly Mock<IPasswordHasher<UserAdmin>> _passwordHasherMock;
 
-    //private readonly AutoMocker _autoMocker;
-    //private readonly Mock<IUserRepository> _userRepositoryMock;
-    //private readonly Mock<IStringLocalizer> _localizerMock;
-    //private readonly Mock<IPasswordHasher<UserAdmin>> _passwordHasherMock;
-    //private readonly Mock<ILogger<UserService>> _loggerMock;
+    public UserServiceTest()
+    {
+        _userRepositoryMock = new Mock<IUserRepository>();
+        _passwordHasherMock = new Mock<IPasswordHasher<UserAdmin>>();
+        _userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object);
+    }
 
-    //public UserServiceTest()
-    //{
-    //    _autoMocker = new AutoMocker();
+    [Fact]
+    public async Task CreateAsync_WithValidRequest_ReturnsCreatedUserAndHidesPasswordFromJson()
+    {
+        // Arrange
+        var request = new UserAdminRequest
+        {
+            Name = "Cafe Debug",
+            Email = "admin@cafedebug.com",
+            Password = "123456"
+        };
 
-    //    _userRepositoryMock = new Mock<IUserRepository>();
-    //    _localizerMock = new Mock<IStringLocalizer>();
-    //    _passwordHasherMock = new Mock<IPasswordHasher<UserAdmin>>();
-    //}
+        _userRepositoryMock
+            .Setup(x => x.AnyAsync(It.IsAny<Expression<Func<UserAdmin, bool>>>()))
+            .ReturnsAsync(false);
 
-    //[Fact]
-    //public async Task GetByLoginAndPassword_ShouldBe_UserNotFound()
-    //{
-    //    string email = "cafe.teste@gmail.com";
-    //    string password = "123456";
+        _passwordHasherMock
+            .Setup(x => x.HashPassword(null, request.Password))
+            .Returns("hashed-password");
 
-    //    var service = _autoMocker.CreateInstance<UserService>();
-    //    await service.GetByLoginAndPasswordAsync(email, password);
+        _userRepositoryMock
+            .Setup(x => x.SaveAsync(It.IsAny<UserAdmin>()))
+            .Callback<UserAdmin>(user => user.Id = 10)
+            .Returns(Task.CompletedTask);
 
-    //    _autoMocker.GetMock<IUserRepository>()
-    //        .Setup(x => x.GetByEmailAsync(email))
-    //        .Returns(Task.FromResult<UserAdmin>(null));
+        // Act
+        var result = await _userService.CreateAsync(request);
 
-    //    var result = await service.GetByLoginAndPasswordAsync(email, password);
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Id.Should().Be(10);
+        result.Value.Name.Should().Be(request.Name);
+        result.Value.Email.Should().Be(request.Email);
 
-    //    // Assert
-    //    Assert.False(result.IsSuccess);
-    //    Assert.NotNull(result.Error);
-    //    Assert.Equal(UserError.NotFound, result.Error);
-    //}
+        var responseJson = JsonSerializer.Serialize(result.Value);
+        responseJson.Should().NotContain("hashedPassword");
+    }
 
-    //[Fact]
-    //public async Task GetByLoginAndPassword_VerifyHashedPassword_ShouldBe_Success()
-    //{
-    //    var email = "cafedev@gmail.com";
-    //    var password = "123456";
+    [Fact]
+    public async Task CreateAsync_WhenEmailAlreadyExists_ReturnsExistingRegisterError()
+    {
+        // Arrange
+        var request = new UserAdminRequest
+        {
+            Name = "Cafe Debug",
+            Email = "admin@cafedebug.com",
+            Password = "123456"
+        };
 
-    //    var userAdmin = new UserAdmin
-    //    {
-    //        Code = Guid.NewGuid(),
-    //        Name = "café debug",
-    //        Email = email,
-    //        HashedPassword = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"
-    //    };
+        _userRepositoryMock
+            .Setup(x => x.AnyAsync(It.IsAny<Expression<Func<UserAdmin, bool>>>()))
+            .ReturnsAsync(true);
 
-    //    _userRepositoryMock.Setup(x => x.GetByEmailAsync(email)).ReturnsAsync(userAdmin);
+        // Act
+        var result = await _userService.CreateAsync(request);
 
-    //    _passwordHasherMock.Setup(x => x.VerifyHashedPassword(It.IsAny<UserAdmin>(), It.IsAny<string>(), password))
-    //        .Returns(PasswordVerificationResult.Success);
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Code.Should().Be(nameof(ErrorType.ExistingRegister));
+        _userRepositoryMock.Verify(x => x.SaveAsync(It.IsAny<UserAdmin>()), Times.Never);
+    }
 
-    //    var looggerMock = Mock.Of<ILogger<UserService>>();
+    [Fact]
+    public async Task CreateAsync_WhenEmailIsInvalid_ReturnsBadRequest()
+    {
+        // Arrange
+        var request = new UserAdminRequest
+        {
+            Name = "Cafe Debug",
+            Email = "admin-cafedebug.com",
+            Password = "123456"
+        };
 
-    //    var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
+        // Act
+        var result = await _userService.CreateAsync(request);
 
-    //    // Act
-    //    var result = await userService.GetByLoginAndPasswordAsync(email, password);
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Code.Should().Be(nameof(ErrorType.BadRequest));
+    }
 
-    //    // Assert
-    //    Assert.True(result.IsSuccess);
-    //}
+    [Fact]
+    public async Task UpdateAsync_WhenUserNotFound_ReturnsResourceNotFound()
+    {
+        // Arrange
+        const int id = 99;
+        var request = new UserAdminRequest
+        {
+            Name = "Cafe Debug",
+            Email = "admin@cafedebug.com",
+            Password = "123456"
+        };
 
-    //[Fact]
-    //public async Task GetByLoginAndPassword_VerifyHashedPassword_ShouldBe_Fail()
-    //{
-    //    var email = "cafedev@teste.com";
-    //    var password = "123456";
+        _userRepositoryMock
+            .Setup(x => x.GetByIdAsync(id))
+            .ReturnsAsync((UserAdmin?)null);
 
-    //    var userAdmin = new UserAdmin
-    //    {
-    //        Code = Guid.NewGuid(),
-    //        Name = "café debug",
-    //        Email = email,
-    //        HashedPassword = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"
-    //    };
+        // Act
+        var result = await _userService.UpdateAsync(request, id);
 
-    //    _userRepositoryMock.Setup(x => x.GetByEmailAsync(email)).ReturnsAsync(userAdmin);
+        // Assert
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Code.Should().Be(nameof(ErrorType.ResourceNotFound));
+    }
 
-    //    _passwordHasherMock.Setup(x => x.VerifyHashedPassword(It.IsAny<UserAdmin>(), It.IsAny<string>(), password))
-    //        .Returns(PasswordVerificationResult.Failed);
+    [Fact]
+    public async Task GetAllAsync_WithValidPageRequest_ReturnsPagedUsers()
+    {
+        // Arrange
+        var request = new PageRequest
+        {
+            Page = 1,
+            PageSize = 10,
+            SortBy = "name",
+            Descending = false
+        };
 
-    //    var looggerMock = Mock.Of<ILogger<UserService>>();
+        var users = Fixture.CreateMany<UserAdmin>(3).ToList();
+        var usersQuery = users.BuildMock();
+        var pagedUsers = new PagedList<UserAdmin>(usersQuery, request.Page, request.PageSize, request.SortBy, request.Descending);
 
-    //    var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
+        _userRepositoryMock
+            .Setup(x => x.GetPageList(request.Page, request.PageSize, request.SortBy, request.Descending, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(pagedUsers);
 
-    //    // Act
-    //    var result = await userService.GetByLoginAndPasswordAsync(email, password);
+        // Act
+        var result = await _userService.GetAllAsync(request);
 
-    //    // Assert
-    //    Assert.False(result.IsSuccess);
-    //    Assert.Equal(UserError.InvalidPassword, result.Error);
-    //}
-
-    //[Fact]
-    //public async Task Update_UpdateAsync_ShouldBe_Success()
-    //{
-    //    var userAdmin = new UserAdmin
-    //    {
-    //        Code = Guid.NewGuid(),
-    //        Name = "café debug",
-    //        Email = "cafede@teste.com",
-    //        HashedPassword = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"
-    //    };
-
-    //    var looggerMock = Mock.Of<ILogger<UserService>>();
-    //    _userRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<int>())).Returns(Task.FromResult(userAdmin));
-
-    //    var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
-
-    //    // Act
-    //    var result = await userService.UpdateAsync(userAdmin);
-
-    //    // Assert
-    //    Assert.True(result.IsSuccess);
-    //    Assert.NotNull(result.Value);
-    //}
-
-    //[Fact]
-    //public async Task Update_UpdateAsync_ShouldBe_Error_UserNotFound()
-    //{
-    //    var userAdmin = new UserAdmin
-    //    {
-    //        Code = Guid.NewGuid(),
-    //        Name = "café debug",
-    //        Email = "cafede@teste.com",
-    //        HashedPassword = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"
-    //    };
-
-    //    var looggerMock = Mock.Of<ILogger<UserService>>();
-    //    var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
-
-    //    var userMock = new Mock<IUserRepository>();
-    //    userMock.Setup(x => x.GetByEmailAsync(It.IsAny<string>())).Returns(Task.FromResult<UserAdmin>(null));
-
-    //    // Act
-    //    var result = await userService.UpdateAsync(userAdmin);
-
-    //    // Assert
-    //    Assert.False(result.IsSuccess);
-    //    Assert.Equal(UserError.NotFound, result.Error);
-    //}
-
-    //[Fact]
-    //public async Task Update_GetByIUdAsync_ShouldBe_Error_UserNotFound()
-    //{
-    //    var looggerMock = Mock.Of<ILogger<UserService>>();
-    //    var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
-
-    //    // Act
-    //    var result = await userService.GetByIdAsync(1);
-
-    //    // Assert
-    //    Assert.False(result.IsSuccess);
-    //    Assert.Equal(UserError.NotFound, result.Error);
-    //}
-
-    //[Fact]
-    //public async Task GetByLoginAndPassword_CreateUserAsync_ShouldBe_Success()
-    //{
-    //    var email = "cafede@teste.com";
-    //    var password = "123456";
-
-    //    var userAdmin = new UserAdmin
-    //    {
-    //        Code = Guid.NewGuid(),
-    //        Name = "café debug",
-    //        Email = email,
-    //        HashedPassword = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"
-    //    };
-
-    //    _passwordHasherMock.Setup(x => x.HashPassword(It.IsAny<UserAdmin>(), password))
-    //        .Returns(userAdmin.HashedPassword);
-
-    //    var looggerMock = Mock.Of<ILogger<UserService>>();
-    //    var userService = new UserService(_userRepositoryMock.Object, _passwordHasherMock.Object, looggerMock);
-
-    //    // Act
-    //    var result = await userService.CreateAsync(email, password);
-
-    //    // Assert
-    //    Assert.True(result.IsSuccess);
-    //}
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Items.Should().HaveCount(3);
+        result.Value.Page.Should().Be(request.Page);
+        result.Value.PageSize.Should().Be(request.PageSize);
+    }
 }

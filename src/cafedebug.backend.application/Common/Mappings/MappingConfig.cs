@@ -65,6 +65,7 @@ public static class MappingConfig
     {
         return new UserAdminResponse
         {
+            Id = user.Id,
             CreatedDate = user.CreatedAt,
             Name = user.Name,
             Email = user.Email,
@@ -91,4 +92,3 @@ public static class MappingConfig
         };
     }
 }
-
