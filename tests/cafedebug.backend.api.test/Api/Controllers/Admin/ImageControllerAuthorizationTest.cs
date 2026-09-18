@@ -1,9 +1,9 @@
 using System.Reflection;
 using System.Security.Claims;
 using cafedebug_backend.api.Controllers.Admin;
-using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
 using Xunit;
 
 namespace cafedebug.backend.api.test.Api.Controllers.Admin;
@@ -17,8 +17,8 @@ public class ImageControllerAuthorizationTest
     {
         var action = typeof(ImageController).GetMethod(actionName, BindingFlags.Instance | BindingFlags.Public);
 
-        action.Should().NotBeNull();
-        action!.GetCustomAttributes<AuthorizeAttribute>().Should().ContainSingle();
+        action.ShouldNotBeNull();
+        action.GetCustomAttributes<AuthorizeAttribute>().ShouldHaveSingleItem();
     }
 
     [Fact]
@@ -36,7 +36,7 @@ public class ImageControllerAuthorizationTest
         var anonymousResult = await authorizationService.AuthorizeAsync(anonymousUser, null, policy);
         var authenticatedResult = await authorizationService.AuthorizeAsync(authenticatedUser, null, policy);
 
-        anonymousResult.Succeeded.Should().BeFalse();
-        authenticatedResult.Succeeded.Should().BeTrue();
+        anonymousResult.Succeeded.ShouldBeFalse();
+        authenticatedResult.Succeeded.ShouldBeTrue();
     }
 }
