@@ -1,21 +1,26 @@
-name: Local-devstack [Docker Hub]
+name: Publish Docker Image
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dockerhub-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   publish:
+    name: Build & Push Docker Image
     runs-on: ubuntu-latest
     environment: production
-    permissions:
-      contents: read
+    timeout-minutes: 15
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
@@ -27,19 +32,21 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Define image tags
-        id: vars
-        run: |
-          IMAGE_REPO="${{ secrets.DOCKERHUB_USERNAME }}/cafedebug-backend-api"
-          SHA_TAG="$(echo "${GITHUB_SHA}" | cut -c1-7)"
-          echo "image_repo=${IMAGE_REPO}" >> "$GITHUB_OUTPUT"
-          echo "sha_tag=${SHA_TAG}" >> "$GITHUB_OUTPUT"
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/cafedebug-backend-api
+          tags: |
+            type=raw,value=latest
+            type=sha,format=short,prefix=
 
-      - name: Build and push (latest + sha)
+      - name: Build and push image
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: |
-            ${{ steps.vars.outputs.image_repo }}:latest
-            ${{ steps.vars.outputs.image_repo }}:${{ steps.vars.outputs.sha_tag }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

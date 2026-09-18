@@ -1,7 +1,6 @@
 using System.Text.RegularExpressions;
 using Amazon.S3;
 using Amazon.S3.Model;
-using Amazon.S3.Transfer;
 using cafedebug_backend.domain.Media;
 using cafedebug_backend.domain.Media.Services;
 using Microsoft.Extensions.Logging;
@@ -11,8 +10,16 @@ namespace cafedebug_backend.infrastructure.Storage;
 /// <summary>
 /// Service responsible for managing file uploads to AWS S3.
 /// </summary>
-public partial class AwsS3Service(IAmazonS3 awsClient,  StorageSettings settings, ILogger<AwsS3Service> logger) : IFileService
+public partial class AwsS3Service(IAmazonS3 awsClient, StorageSettings settings, ILogger<AwsS3Service> logger) : IFileService
 {
+    private static readonly string[] ImagePrefixes = [
+        "images/",
+        "episodes/",
+        "banners/",
+        "team-members/",
+        "contributors/"
+    ];
+
     [GeneratedRegex(@"^data:image\/[a-z]+;base64,", RegexOptions.Compiled)]
     private static partial Regex Base64ImagePattern();
 
@@ -108,18 +115,15 @@ public partial class AwsS3Service(IAmazonS3 awsClient,  StorageSettings settings
     private async Task UploadToS3Async(byte[] imageBytes, string key)
     {
         using var imageStream = new MemoryStream(imageBytes);
-        
-        var transferUtility = new TransferUtility(awsClient);
 
-        var request = new TransferUtilityUploadRequest
+        var request = new PutObjectRequest
         {
             InputStream = imageStream,
             BucketName = settings.Bucket,
-            Key = key,
-            CannedACL = S3CannedACL.PublicRead // Make images publicly accessible
+            Key = key
         };
 
-        await transferUtility.UploadAsync(request);
+        await awsClient.PutObjectAsync(request);
     }
     
     private async Task<bool> DeleteFromS3Async(string key)
@@ -135,32 +139,83 @@ public partial class AwsS3Service(IAmazonS3 awsClient,  StorageSettings settings
         return response.HttpStatusCode == System.Net.HttpStatusCode.NoContent;
     }
 
-    /// <summary>
-    /// Removes the base URL from the provided image URL to get the key.
-    /// </summary>
-    /// <remarks>
-    /// Example: https://cafedebug-uploads.s3.amazonaws.com/episodes/20250115/image.jpg
-    /// Result: episodes/20250115/image.jpg
-    /// </remarks>
-    /// <param name="imageUrl">The image URL to extract the key from.</param>
-    /// <returns>The extracted key from the image URL.</returns>
     private string ExtractKeyFromUrl(string imageUrl)
     {
-        var baseUrl = settings.BaseUrl.TrimEnd('/');
-        
-        if (!imageUrl.StartsWith(baseUrl, StringComparison.OrdinalIgnoreCase))
+        if (!Uri.TryCreate(imageUrl, UriKind.Absolute, out var imageUri))
         {
-            logger.LogWarning("Image URL does not match configured base URL. URL: {ImageUrl}, BaseUrl: {BaseUrl}", imageUrl, baseUrl);
             return string.Empty;
         }
 
-        var key = imageUrl[baseUrl.Length..].TrimStart('/');
-        return key;
+        foreach (var baseUri in GetSupportedBaseUris())
+        {
+            if (TryExtractObjectKey(imageUri, baseUri, out var key))
+                return key;
+        }
+
+        logger.LogWarning("Image URL does not match the configured S3 bucket. URL: {ImageUrl}", imageUrl);
+        return string.Empty;
     }
 
     private string BuildImageUrl(string key)
     {
         var baseUrl = settings.BaseUrl.TrimEnd('/');
-        return $"{baseUrl}/{settings.Bucket}/{key}";
+        return $"{baseUrl}/{key}";
+    }
+
+    private IEnumerable<Uri> GetSupportedBaseUris()
+    {
+        var configuredBaseUrl = settings.BaseUrl.TrimEnd('/');
+
+        if (Uri.TryCreate(configuredBaseUrl, UriKind.Absolute, out var configuredBaseUri))
+        {
+            yield return configuredBaseUri;
+
+            if (Uri.TryCreate($"{configuredBaseUrl}/{settings.Bucket}", UriKind.Absolute, out var legacyConfiguredBaseUri))
+                yield return legacyConfiguredBaseUri;
+        }
+
+        if (!string.IsNullOrWhiteSpace(settings.ServiceUrl) || string.IsNullOrWhiteSpace(settings.Region))
+            yield break;
+
+        var bucket = settings.Bucket;
+        var region = settings.Region;
+        var legacyBaseUrls = new[]
+        {
+            $"https://{bucket}.s3.{region}.amazonaws.com",
+            $"https://s3.{region}.amazonaws.com/{bucket}",
+            $"https://{bucket}.s3.amazonaws.com",
+            $"https://s3.amazonaws.com/{bucket}"
+        };
+
+        foreach (var legacyBaseUrl in legacyBaseUrls)
+        {
+            if (Uri.TryCreate(legacyBaseUrl, UriKind.Absolute, out var legacyBaseUri))
+                yield return legacyBaseUri;
+
+            if (Uri.TryCreate($"{legacyBaseUrl}/{bucket}", UriKind.Absolute, out var duplicatedBucketLegacyBaseUri))
+                yield return duplicatedBucketLegacyBaseUri;
+        }
+    }
+
+    private static bool TryExtractObjectKey(Uri imageUri, Uri baseUri, out string key)
+    {
+        key = string.Empty;
+
+        if (!Uri.Compare(imageUri, baseUri, UriComponents.SchemeAndServer, UriFormat.Unescaped, StringComparison.OrdinalIgnoreCase).Equals(0))
+            return false;
+
+        var basePath = baseUri.AbsolutePath.TrimEnd('/');
+        var objectPath = imageUri.AbsolutePath;
+        var pathPrefix = string.IsNullOrEmpty(basePath) ? "/" : $"{basePath}/";
+
+        if (!objectPath.StartsWith(pathPrefix, StringComparison.Ordinal))
+            return false;
+
+        var extractedKey = Uri.UnescapeDataString(objectPath[pathPrefix.Length..]);
+        if (string.IsNullOrWhiteSpace(extractedKey) || !ImagePrefixes.Any(prefix => extractedKey.StartsWith(prefix, StringComparison.Ordinal)))
+            return false;
+
+        key = extractedKey;
+        return true;
     }
 }
