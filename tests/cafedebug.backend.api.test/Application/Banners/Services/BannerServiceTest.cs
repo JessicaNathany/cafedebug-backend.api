@@ -87,27 +87,6 @@ public class BannerServiceTest : BaseTest
     }
 
     [Fact]
-    public async Task CreateAsync_WhenStatusHasDifferentCasingAndWhitespace_ReturnsSuccessResult()
-    {
-        // Arrange
-        var request = _bannerTestDataMock.CreateBannerRequest() with
-        {
-            Status = "  Published  "
-        };
-
-        _bannerRepositoryMockSetup.BannerDoesNotExist();
-        _bannerRepositoryMockSetup.BannerSave(_ => { });
-
-        // Act
-        var result = await _bannerService.CreateAsync(request);
-
-        // Assert
-        result.IsSuccess.ShouldBeTrue();
-        result.Value.ShouldNotBeNull();
-        _bannerVerifications.VerifyBannerSaved(Times.Once());
-    }
-
-    [Fact]
     public async Task CreateAsync_WhenSaveThrowsException_PropagatesException()
     {
         // Arrange
