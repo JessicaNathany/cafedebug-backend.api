@@ -37,4 +37,13 @@ public class BannersController(IBannerService bannerService) : ControllerBase
     {
         return await bannerService.GetByNameAsync(bannerName);
     }
+
+    [HttpGet("latest")]
+    [ProducesResponseType(typeof(PagedResult<BannerResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<Result>> GetTheLatestBannersAsync()
+    {
+        return await bannerService.GetTheLatestBannersAsync();
+    }
 }

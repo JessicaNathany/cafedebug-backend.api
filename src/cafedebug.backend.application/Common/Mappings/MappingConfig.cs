@@ -1,4 +1,4 @@
-﻿using cafedebug.backend.application.Accounts.DTOs.Response;
+using cafedebug.backend.application.Accounts.DTOs.Response;
 using cafedebug.backend.application.Banners.DTOs.Responses;
 using cafedebug.backend.application.Podcasts.DTOs.Responses;
 using cafedebug_backend.domain.Accounts;
@@ -24,7 +24,7 @@ public static class MappingConfig
             Order = banner.Order
         };
     }
-
+    
     public static EpisodeResponse ToEpisode(this Episode episode)
     {
         return new EpisodeResponse

@@ -87,6 +87,27 @@ public class BannerServiceTest : BaseTest
     }
 
     [Fact]
+    public async Task CreateAsync_WhenStatusHasDifferentCasingAndWhitespace_ReturnsSuccessResult()
+    {
+        // Arrange
+        var request = _bannerTestDataMock.CreateBannerRequest() with
+        {
+            Status = "  Published  "
+        };
+
+        _bannerRepositoryMockSetup.BannerDoesNotExist();
+        _bannerRepositoryMockSetup.BannerSave(_ => { });
+
+        // Act
+        var result = await _bannerService.CreateAsync(request);
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().NotBeNull();
+        _bannerVerifications.VerifyBannerSaved(Times.Once());
+    }
+
+    [Fact]
     public async Task CreateAsync_WhenSaveThrowsException_PropagatesException()
     {
         // Arrange
@@ -274,6 +295,68 @@ public class BannerServiceTest : BaseTest
         result.Value.Should().NotBeNull();
 
         _bannerVerifications.VerifyBannerRetrieved(bannerId, Times.Once());
+    }
+
+    [Fact]
+    public async Task GetTheLatestBannersAsync_WhenBannersExist_ReturnsFirstFourOrderedByOrder()
+    {
+        // Arrange
+        var now = _timeProvider.GetLocalNow().DateTime;
+        var banners = new List<Banner>
+        {
+            new("Banner 4", "https://example.test/4.png", "https://example.test/4", now.AddDays(-1), now.AddDays(3), BannerStatus.Published, true, 4, _timeProvider),
+            new("Banner 2", "https://example.test/2.png", "https://example.test/2", now.AddDays(-1), now.AddDays(3), BannerStatus.Published, true, 2, _timeProvider),
+            new("Banner 1", "https://example.test/1.png", "https://example.test/1", now.AddDays(-1), now.AddDays(3), BannerStatus.Published, true, 1, _timeProvider),
+            new("Banner 3", "https://example.test/3.png", "https://example.test/3", now.AddDays(-1), now.AddDays(3), BannerStatus.Published, true, 3, _timeProvider),
+            new("Banner 0 Inactive", "https://example.test/0.png", "https://example.test/0", now.AddDays(-1), now.AddDays(3), BannerStatus.Published, false, 0, _timeProvider),
+            new("Banner Yesterday Expired", "https://example.test/6.png", "https://example.test/6", now.AddDays(-5), now.AddDays(-1), BannerStatus.Published, true, 0, _timeProvider),
+            new("Banner 5 Expired", "https://example.test/5.png", "https://example.test/5", now.AddDays(-10), now.AddDays(-2), BannerStatus.Published, true, 5, _timeProvider)
+        };
+
+        _bannerRepositoryMockSetup.BannerGetAll(banners);
+
+        // Act
+        var result = await _bannerService.GetTheLatestBannersAsync();
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Items.Should().HaveCount(4);
+        result.Value.Items.Select(item => item.Order).Should().Equal(1, 2, 3, 4);
+        result.Value.Page.Should().Be(1);
+        result.Value.PageSize.Should().Be(4);
+        result.Value.TotalCount.Should().Be(4);
+
+        _bannerVerifications.VerifyBannerAllRetrieved(true, Times.Once());
+    }
+
+    [Fact]
+    public async Task GetTheLatestBannersAsync_WhenNoEligibleBannersExist_ReturnsEmptyResult()
+    {
+        // Arrange
+        var now = _timeProvider.GetLocalNow().DateTime;
+        var banners = new List<Banner>
+        {
+            new("Inactive Banner", "https://example.test/1.png", "https://example.test/1", now.AddDays(-1), now.AddDays(3), BannerStatus.Published, false, 1, _timeProvider),
+            new("Future Banner", "https://example.test/2.png", "https://example.test/2", now.AddDays(2), now.AddDays(4), BannerStatus.Published, true, 2, _timeProvider),
+            new("Expired Banner", "https://example.test/3.png", "https://example.test/3", now.AddDays(-10), now.AddDays(-2), BannerStatus.Published, true, 3, _timeProvider)
+        };
+
+        _bannerRepositoryMockSetup.BannerGetAll(banners);
+
+        // Act
+        var result = await _bannerService.GetTheLatestBannersAsync();
+
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Items.Should().BeEmpty();
+        result.Value.Page.Should().Be(1);
+        result.Value.PageSize.Should().Be(4);
+        result.Value.PageCount.Should().Be(0);
+        result.Value.TotalCount.Should().Be(0);
+        result.Value.SortBy.Should().Be(nameof(Banner.Order));
+        result.Value.Descending.Should().BeFalse();
+
+        _bannerVerifications.VerifyBannerAllRetrieved(true, Times.Once());
     }
 
 }
