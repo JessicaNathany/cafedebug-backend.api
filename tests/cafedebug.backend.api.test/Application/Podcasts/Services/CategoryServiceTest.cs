@@ -6,8 +6,8 @@ using cafedebug.backend.application.Podcasts.Services;
 using cafedebug_backend.domain.Podcasts;
 using cafedebug_backend.domain.Podcasts.Repositories;
 using cafedebug_backend.domain.Shared.Errors;
-using FluentAssertions;
 using Moq;
+using Shouldly;
 using Xunit;
 
 namespace cafedebug.backend.api.test.Application.Podcasts.Services;
@@ -47,13 +47,13 @@ public class CategoryServiceTest : BaseTest
         var result = await _categoryService.CreateAsync(request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
 
         var response = result.Value;
-        response.Name.Should().Be(request.Name);
+        response.Name.ShouldBe(request.Name);
 
-        savedCategory.Should().NotBeNull();
+        savedCategory.ShouldNotBeNull();
 
         _categoryVerifications.VerifyCategorySaved(Times.Once());
     }
@@ -72,7 +72,7 @@ public class CategoryServiceTest : BaseTest
         var act = async () => await _categoryService.CreateAsync(request);
 
         // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("DB down");
+        (await act.ShouldThrowAsync<InvalidOperationException>()).Message.ShouldBe("DB down");
 
         _categoryVerifications.VerifyCategorySaved(Times.Once());
     }
@@ -88,8 +88,8 @@ public class CategoryServiceTest : BaseTest
         var result = await _categoryService.CreateAsync(request);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(nameof(ErrorType.ExistingRegister));
+        result.IsFailure.ShouldBeTrue();
+        result.Error.Code.ShouldBe(nameof(ErrorType.ExistingRegister));
 
         _categoryVerifications.VerifyCategoryExistenceChecked(Times.Once());
         _categoryVerifications.VerifyCategoryRetrieved(It.IsAny<int>(), Times.Never());
@@ -113,11 +113,11 @@ public class CategoryServiceTest : BaseTest
         var result = await _categoryService.UpdateAsync(request, categoryId);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
 
         var response = result.Value;
-        response.Name.Should().Be(request.Name);
+        response.Name.ShouldBe(request.Name);
 
 
         _categoryVerifications.VerifyCategoryRetrieved(categoryId, Times.Once());
@@ -137,8 +137,8 @@ public class CategoryServiceTest : BaseTest
         var result = await _categoryService.UpdateAsync(request, categoryId);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(nameof(ErrorType.ResourceNotFound));
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.Code.ShouldBe(nameof(ErrorType.ResourceNotFound));
     }
 
     [Fact]
@@ -154,8 +154,8 @@ public class CategoryServiceTest : BaseTest
         var result = await _categoryService.DeleteAsync(categoryId);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
 
         _categoryVerifications.VerifyCategoryRetrieved(categoryId, Times.Once());
         _categoryVerifications.VerifyCategoryDeleted(category, Times.Once());
@@ -173,8 +173,8 @@ public class CategoryServiceTest : BaseTest
         var result = await _categoryService.DeleteAsync(categoryId);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(nameof(ErrorType.ResourceNotFound));
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.Code.ShouldBe(nameof(ErrorType.ResourceNotFound));
     }
 
     [Fact]
@@ -190,15 +190,15 @@ public class CategoryServiceTest : BaseTest
         var result = await _categoryService.GetAllAsync(request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Items.Should().NotBeNullOrEmpty();
-        result.Value.Items.Should().HaveCount(pagedResult.TotalCount);
-        result.Value.Page.Should().Be(request.Page);
-        result.Value.PageSize.Should().Be(request.PageSize);
-        result.Value.SortBy.Should().Be(request.SortBy);
-        result.Value.Descending.Should().Be(request.Descending);
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldNotBeNull();
+        result.Value.Items.ShouldNotBeNull();
+        result.Value.Items.Count.ShouldBe(pagedResult.TotalCount);
+        result.Value.Page.ShouldBe(request.Page);
+        result.Value.PageSize.ShouldBe(request.PageSize);
+        result.Value.SortBy.ShouldBe(request.SortBy);
+        result.Value.Descending.ShouldBe(request.Descending);
 
         _categoryVerifications.VerifyCategoryPageListRetrieved(request.Page, request.PageSize, request.SortBy, request.Descending, Times.Once());
     }
@@ -216,14 +216,14 @@ public class CategoryServiceTest : BaseTest
         var result = await _categoryService.GetAllAsync(request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.Page.Should().Be(request.Page);
-        result.Value.PageSize.Should().Be(request.PageSize);
-        result.Value.SortBy.Should().Be(request.SortBy);
-        result.Value.Descending.Should().Be(request.Descending);
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldNotBeNull();
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.Page.ShouldBe(request.Page);
+        result.Value.PageSize.ShouldBe(request.PageSize);
+        result.Value.SortBy.ShouldBe(request.SortBy);
+        result.Value.Descending.ShouldBe(request.Descending);
 
         _categoryVerifications.VerifyCategoryPageListRetrieved(request.Page, request.PageSize, request.SortBy, request.Descending, Times.Once());
     }
@@ -241,9 +241,9 @@ public class CategoryServiceTest : BaseTest
         var result = await _categoryService.GetByIdAsync(categoryId);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldNotBeNull();
 
         _categoryVerifications.VerifyCategoryRetrieved(categoryId, Times.Once());
     }

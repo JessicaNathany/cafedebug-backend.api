@@ -1,6 +1,5 @@
 using cafedebug.backend.application.Common.DTOs.Response;
 using cafedebug.backend.application.Common.Validations;
-using FluentAssertions;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Shouldly;
 using Xunit;
 
 namespace cafedebug.backend.api.test.Application.Common.Validations;
@@ -34,13 +34,13 @@ public class AutoValidationResultFactoryTest
             new Dictionary<IValidationContext, FluentValidation.Results.ValidationResult>());
 
         // Assert
-        var result = actionResult.Should().BeOfType<BadRequestObjectResult>().Subject;
-        result.StatusCode.Should().Be(400);
-        var body = result.Value.Should().BeOfType<ValidationErrorResponse>().Subject;
-        body.Code.Should().Be("ValidationError");
-        body.Message.Should().Be("Validation failed");
-        body.Errors.Should().ContainKey("Email");
-        body.Errors["Email"].Should().Equal("Email is required");
+        var result = actionResult.ShouldBeOfType<BadRequestObjectResult>();
+        result.StatusCode.ShouldBe(400);
+        var body = result.Value.ShouldBeOfType<ValidationErrorResponse>();
+        body.Code.ShouldBe("ValidationError");
+        body.Message.ShouldBe("Validation failed");
+        body.Errors.ShouldContainKey("Email");
+        body.Errors["Email"].ShouldBe(["Email is required"]);
     }
 
     [Fact]
@@ -57,12 +57,12 @@ public class AutoValidationResultFactoryTest
             new Dictionary<IValidationContext, FluentValidation.Results.ValidationResult>());
 
         // Assert
-        var result = actionResult.Should().BeOfType<BadRequestObjectResult>().Subject;
-        result.StatusCode.Should().Be(400);
-        var body = result.Value.Should().BeOfType<ValidationErrorResponse>().Subject;
-        body.Code.Should().Be("ValidationError");
-        body.Message.Should().Be("Validation failed");
-        body.Errors.Should().BeEmpty();
+        var result = actionResult.ShouldBeOfType<BadRequestObjectResult>();
+        result.StatusCode.ShouldBe(400);
+        var body = result.Value.ShouldBeOfType<ValidationErrorResponse>();
+        body.Code.ShouldBe("ValidationError");
+        body.Message.ShouldBe("Validation failed");
+        body.Errors.ShouldBeEmpty();
     }
 
     private static ActionExecutingContext CreateActionExecutingContext()

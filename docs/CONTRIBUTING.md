@@ -123,9 +123,13 @@ Add to your `Properties/launchSettings.json`:
         "SMTP_PORT": "587",
         "SMTP_PASSWORD": "123465",
         "SMTP_FROM": "faleconosco.cafedebug@gmail.com",
-        "AWSS3_BUCKETNAME": "cafedebug-uploads",
-        "AWS_ACCESS_KEY_ID": "123465abc",
-        "AWS_SECRET_KEY": "123abc",
+        "Storage__AWS__S3__Bucket": "cafedebug-images",
+        "Storage__AWS__S3__ServiceUrl": "http://localhost:9000",
+        "Storage__AWS__S3__BaseUrl": "http://localhost:9000/cafedebug-images",
+        "Storage__AWS__S3__ForcePathStyle": "true",
+        "Storage__AWS__S3__UseHttp": "true",
+        "AWS_ACCESS_KEY_ID": "your-local-s3-access-key",
+        "AWS_SECRET_ACCESS_KEY": "your-local-s3-secret-key",
         "FORGOT_PASSWORD_URL": "http://www.cafedebug.com.br/forgot-password"
       },
       "applicationUrl": "http://localhost:46370"
@@ -145,9 +149,13 @@ export SMTP_NAME="Café Debug - Fale conosco"
 export SMTP_PORT="587"
 export SMTP_PASSWORD="123465"
 export SMTP_FROM="faleconosco.cafedebug@gmail.com"
-export AWSS3_BUCKETNAME="cafedebug-uploads"
-export AWS_ACCESS_KEY_ID="123465abc"
-export AWS_SECRET_KEY="123abc"
+export Storage__AWS__S3__Bucket="cafedebug-images"
+export Storage__AWS__S3__ServiceUrl="http://localhost:9000"
+export Storage__AWS__S3__BaseUrl="http://localhost:9000/cafedebug-images"
+export Storage__AWS__S3__ForcePathStyle="true"
+export Storage__AWS__S3__UseHttp="true"
+export AWS_ACCESS_KEY_ID="your-local-s3-access-key"
+export AWS_SECRET_ACCESS_KEY="your-local-s3-secret-key"
 export FORGOT_PASSWORD_URL="http://www.cafedebug.com.br/forgot-password"
 ```
 

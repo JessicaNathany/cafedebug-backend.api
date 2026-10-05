@@ -26,6 +26,8 @@ public static class ServiceCollectionExtensions
             .WithScopedLifetime());
         
         #region AWS S3 Configuration
+        services.AddSingleton<IValidateOptions<StorageSettings>, StorageSettingsValidator>();
+
         services.AddOptions<StorageSettings>()
             .BindConfiguration("Storage:AWS:S3") 
             .ValidateOnStart();

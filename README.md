@@ -103,7 +103,7 @@ Edite o arquivo `appsettings.Development.json` e substitua os placeholders:
       "S3": {
         "Bucket": "cafedebug-images",
         "ServiceUrl": "http://localhost:9000",
-        "BaseUrl": "http://localhost:9000/cafedebug-uploads",
+        "BaseUrl": "http://localhost:9000/cafedebug-images",
         "Region": null,
         "ForcePathStyle": true,
         "UseHttp": true
@@ -127,7 +127,7 @@ Edite o arquivo `appsettings.Development.json` e substitua os placeholders:
 | `{refresh-token-valid-for-minutes}` | Tempo de validade do refresh token em minutos                                            | `10080` (7 dias)                                                          |
 | `{health-check-uri}`                | URI do health check                                                                      | `http://localhost:5000/health`                                            |
 | `{bucket}`                          | Nome do bucket do S3                                                                     | `cafedebug-images`                                                        |
-| `{s3-url}`                          | Url da AWS S3 ou do MinIO                                                                | `http://localhost:9000/cafedebug-uploads`                                 |
+| `{s3-url}`                          | URL pública base. Em AWS, inclua o bucket; em MinIO, use o endpoint e o bucket           | `https://{bucket}.s3.{region}.amazonaws.com` ou `http://localhost:9000/{bucket}` |
 | `{region}`                          | Região do serviço AWS (se aplicável). MinIO usar sempre `null`                           | `us-east-1` ou `null`                                                     |
 | `{force-path-style}`                | Se `true`, acessa o bucket como caminho da URL (`host/bucket`). MinIO usar sempre `true` | `true` ou `false`                                                         |
 | `{use-http}`                        | Se `true`, usa HTTP ao invés de HTTPS. MinIO usar sempre `true`                          | `true` ou `false`                                                         |

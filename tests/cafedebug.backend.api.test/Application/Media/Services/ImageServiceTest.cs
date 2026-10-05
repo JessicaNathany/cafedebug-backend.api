@@ -4,8 +4,8 @@ using cafedebug.backend.api.test.Shared.Mocks.Media;
 using cafedebug.backend.api.test.Shared.Setups.Media;
 using cafedebug.backend.api.test.Shared.Verifications.Media;
 using cafedebug.backend.application.Media.Services;
-using FluentAssertions;
 using Moq;
+using Shouldly;
 using Xunit;
 
 namespace cafedebug.backend.api.test.Application.Media.Services;
@@ -42,9 +42,9 @@ public class ImageServiceTest : BaseTest
         var result = await _imageService.UploadAsync(request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.ImageUrl.Should().NotBeNullOrWhiteSpace();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ImageUrl.ShouldNotBeNullOrWhiteSpace();
 
         _fileServiceVerifications.VerifyImageUpload(Times.Once());
     }
@@ -54,15 +54,15 @@ public class ImageServiceTest : BaseTest
     {
         // Arrange
         var request = _imageTestDataMock.CreateUploadImageRequest();
-
+        
         _awsS3ServiceMockSetup.UploadImageFailed();
 
         // Act
         var result = await _imageService.UploadAsync(request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeFalse();
 
         _fileServiceVerifications.VerifyImageUpload(Times.Once());
     }
@@ -79,8 +79,8 @@ public class ImageServiceTest : BaseTest
         var result = await _imageService.DeleteAsync(request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
 
         _fileServiceVerifications.VerifyImageDelete(Times.Once());
     }
@@ -97,7 +97,7 @@ public class ImageServiceTest : BaseTest
         var result = await _imageService.DeleteAsync(request);
         
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeFalse();
     }
 }

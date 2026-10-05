@@ -9,10 +9,10 @@ using cafedebug_backend.domain.Accounts;
 using cafedebug_backend.domain.Interfaces.Repositories;
 using cafedebug_backend.domain.Shared.Errors;
 using cafedebug_backend.infrastructure.Data.Pagination;
-using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using MockQueryable;
 using Moq;
+using Shouldly;
 using Xunit;
 
 namespace cafedebug.backend.api.test.Application.Accounts.Services;
@@ -59,13 +59,13 @@ public class UserServiceTest : BaseTest
         var result = await _userService.CreateAsync(request);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Id.Should().Be(10);
-        result.Value.Name.Should().Be(request.Name);
-        result.Value.Email.Should().Be(request.Email);
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Id.ShouldBe(10);
+        result.Value.Name.ShouldBe(request.Name);
+        result.Value.Email.ShouldBe(request.Email);
 
         var responseJson = JsonSerializer.Serialize(result.Value);
-        responseJson.Should().NotContain("hashedPassword");
+        responseJson.ShouldNotContain("hashedPassword");
     }
 
     [Fact]
@@ -87,8 +87,8 @@ public class UserServiceTest : BaseTest
         var result = await _userService.CreateAsync(request);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(nameof(ErrorType.ExistingRegister));
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.Code.ShouldBe(nameof(ErrorType.ExistingRegister));
         _userRepositoryMock.Verify(x => x.SaveAsync(It.IsAny<UserAdmin>()), Times.Never);
     }
 
@@ -107,8 +107,8 @@ public class UserServiceTest : BaseTest
         var result = await _userService.CreateAsync(request);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(nameof(ErrorType.BadRequest));
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.Code.ShouldBe(nameof(ErrorType.BadRequest));
     }
 
     [Fact]
@@ -131,8 +131,8 @@ public class UserServiceTest : BaseTest
         var result = await _userService.UpdateAsync(request, id);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(nameof(ErrorType.ResourceNotFound));
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.Code.ShouldBe(nameof(ErrorType.ResourceNotFound));
     }
 
     [Fact]
@@ -159,9 +159,9 @@ public class UserServiceTest : BaseTest
         var result = await _userService.GetAllAsync(request);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(3);
-        result.Value.Page.Should().Be(request.Page);
-        result.Value.PageSize.Should().Be(request.PageSize);
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Items.Count.ShouldBe(3);
+        result.Value.Page.ShouldBe(request.Page);
+        result.Value.PageSize.ShouldBe(request.PageSize);
     }
 }

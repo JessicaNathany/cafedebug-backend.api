@@ -32,9 +32,9 @@
 - `src/cafedebug-backend.api/Controllers/Admin/EpisodesController.cs`
   - Good example of the intended controller style: attribute-routed controller, thin actions, `IEpisodeService` delegation, `Authorize` on protected writes.
 - `tests/cafedebug.backend.api.test/Application/Media/Services/ImageServiceTest.cs`
-  - Representative AAA-style test file using xUnit, Moq, FluentAssertions, and helper classes.
+  - Representative AAA-style test file using xUnit, Moq, Shouldly, and helper classes.
 - `tests/cafedebug.backend.api.test/cafedebug.backend.api.test.csproj`
-  - Confirms active test stack: xUnit, Moq, AutoFixture, FluentAssertions, `coverlet.collector`.
+  - Confirms active test stack: xUnit, Moq, AutoFixture, Shouldly, `coverlet.collector`.
 - `README.md`
   - Canonical human-facing overview, local setup, feature overview, and endpoint summary.
 - `docs/CONTRIBUTING.md`

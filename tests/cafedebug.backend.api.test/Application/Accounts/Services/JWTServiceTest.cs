@@ -8,10 +8,10 @@ using cafedebug_backend.domain.Accounts.Tokens;
 using cafedebug_backend.domain.Interfaces.Repositories;
 using cafedebug_backend.domain.Shared.Errors;
 using cafedebug_backend.infrastructure.Security;
-using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
+using Shouldly;
 using System.Text;
 using Xunit;
 
@@ -82,14 +82,14 @@ public class JWTServiceTest : BaseTest
         var result = await _jwtService.GenerateToken(email, password);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.AccessToken.Should().NotBeNullOrEmpty();
-        result.Value.RefreshToken.Should().NotBeNull();
-        result.Value.TokenType.Should().Be("Bearer");
-        result.Value.ExpiresIn.Should().BeGreaterThan(0);
-        result.Value.RefreshToken.ExpirationDate.Should().Be(
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldNotBeNull();
+        result.Value.AccessToken.ShouldNotBeNullOrEmpty();
+        result.Value.RefreshToken.ShouldNotBeNull();
+        result.Value.TokenType.ShouldBe("Bearer");
+        result.Value.ExpiresIn.ShouldBeGreaterThan(0);
+        result.Value.RefreshToken.ExpirationDate.ShouldBe(
             _timeProvider.GetUtcNow().UtcDateTime.AddMinutes(_jwtSettings.RefreshTokenValidForMinutes));
 
         _userVerifications.VerifyGetUserByEmail(email, Times.Once());
@@ -106,9 +106,9 @@ public class JWTServiceTest : BaseTest
         var result = await _jwtService.GenerateToken(email, password);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldNotBeNull();
 
         _userVerifications.VerifyGetUserByEmail(Times.Never());
     }
@@ -124,9 +124,9 @@ public class JWTServiceTest : BaseTest
         var result = await _jwtService.GenerateToken(email, password);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldNotBeNull();
 
         _userVerifications.VerifyGetUserByEmail(Times.Never());
     }
@@ -144,10 +144,10 @@ public class JWTServiceTest : BaseTest
         var result = await _jwtService.GenerateToken(email, password);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().NotBeNull();
-        result.Error.Code.Should().Be(nameof(ErrorType.ResourceNotFound));
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldNotBeNull();
+        result.Error.Code.ShouldBe(nameof(ErrorType.ResourceNotFound));
 
         _userVerifications.VerifyGetUserByEmail(email, Times.Once());
     }
@@ -175,9 +175,9 @@ public class JWTServiceTest : BaseTest
         var result = await _jwtService.GenerateToken(email, wrongPassword);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldNotBeNull();
 
         _userVerifications.VerifyGetUserByEmail(email, Times.Once());
         
@@ -224,13 +224,13 @@ public class JWTServiceTest : BaseTest
         var result = await _jwtService.RefreshTokenAsync(refreshTokenString);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.AccessToken.Should().NotBeNullOrEmpty();
-        result.Value.RefreshToken.Should().NotBeNull();
-        result.Value.TokenType.Should().Be("Bearer");
-        result.Value.ExpiresIn.Should().BeGreaterThan(0);
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldNotBeNull();
+        result.Value.AccessToken.ShouldNotBeNullOrEmpty();
+        result.Value.RefreshToken.ShouldNotBeNull();
+        result.Value.TokenType.ShouldBe("Bearer");
+        result.Value.ExpiresIn.ShouldBeGreaterThan(0);
 
         _refreshTokensRepositoryMock.Verify(x => x.GetByTokenAsync(refreshTokenString), Times.Once());
         _refreshTokensRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<RefreshTokens>()), Times.Once());
@@ -252,9 +252,9 @@ public class JWTServiceTest : BaseTest
         var result = await _jwtService.RefreshTokenAsync(refreshTokenString);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldNotBeNull();
 
         _refreshTokensRepositoryMock.Verify(x => x.GetByTokenAsync(refreshTokenString), Times.Once());
         _refreshTokensRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<RefreshTokens>()), Times.Never());
@@ -273,9 +273,9 @@ public class JWTServiceTest : BaseTest
         var result = await _jwtService.RefreshTokenAsync(refreshTokenString);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldNotBeNull();
 
         _refreshTokensRepositoryMock.Verify(x => x.GetByTokenAsync(refreshTokenString), Times.Once());
         _refreshTokensRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<RefreshTokens>()), Times.Never());
@@ -291,8 +291,8 @@ public class JWTServiceTest : BaseTest
         var result = _jwtService.GenerateResetToken(userId);
 
         // Assert
-        result.Should().NotBeNullOrEmpty();
-        result.Should().Contain(".");
+        result.ShouldNotBeNullOrEmpty();
+        result.ShouldContain(".");
     }
 
     [Fact]
@@ -310,10 +310,10 @@ public class JWTServiceTest : BaseTest
         var result = await _jwtService.GetByTokenAsync(tokenString);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Token.Should().Be(tokenString);
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldNotBeNull();
+        result.Value.Token.ShouldBe(tokenString);
 
         _refreshTokensRepositoryMock.Verify(x => x.GetByTokenAsync(tokenString), Times.Once());
     }
@@ -331,9 +331,9 @@ public class JWTServiceTest : BaseTest
         var result = await _jwtService.GetByTokenAsync(tokenString);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldNotBeNull();
 
         _refreshTokensRepositoryMock.Verify(x => x.GetByTokenAsync(tokenString), Times.Once());
     }
@@ -359,12 +359,12 @@ public class JWTServiceTest : BaseTest
         var result = await _jwtService.GenerateAccesTokenAndRefreshtoken(user);
 
         // Assert
-        result.Should().NotBeNull();
-        result.AccessToken.Should().NotBeNullOrEmpty();
-        result.RefreshToken.Should().NotBeNull();
-        result.RefreshToken.Token.Should().NotBeNullOrEmpty();
-        result.TokenType.Should().Be("Bearer");
-        result.ExpiresIn.Should().BeGreaterThan(0);
+        result.ShouldNotBeNull();
+        result.AccessToken.ShouldNotBeNullOrEmpty();
+        result.RefreshToken.ShouldNotBeNull();
+        result.RefreshToken.Token.ShouldNotBeNullOrEmpty();
+        result.TokenType.ShouldBe("Bearer");
+        result.ExpiresIn.ShouldBeGreaterThan(0);
 
         _refreshTokensRepositoryMock.Verify(x => x.GetByTokenByUserIdAsync(user.Id), Times.Once());
     }
@@ -388,10 +388,10 @@ public class JWTServiceTest : BaseTest
         var result = await _jwtService.RefreshTokenAsync(refreshTokenString);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().NotBeNull();
-        result.Error.Code.Should().Be(nameof(ErrorType.ResourceNotFound));
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.ShouldNotBeNull();
+        result.Error.Code.ShouldBe(nameof(ErrorType.ResourceNotFound));
 
         _refreshTokensRepositoryMock.Verify(x => x.GetByTokenAsync(refreshTokenString), Times.Once());
         _refreshTokensRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<RefreshTokens>()), Times.Once());

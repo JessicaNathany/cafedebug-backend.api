@@ -22,6 +22,76 @@ These are the required settings; verify them in Railway when configuring or audi
 
 Keep existing database, storage, SMTP, JWT variables, domain, region, and replica configuration. Never copy secret values into this document or CI logs. The root container listens on port 8080 and runs as a non-root user. Its restore layer includes central package versions and the SDK configuration.
 
+## AWS S3 image storage
+
+The API uploads only administrative images. It uses the AWS SDK default credential chain, so Railway must supply standard AWS credentials and must never receive them through `appsettings.json`, source code, CI logs, or screenshots.
+
+### AWS owner setup
+
+1. Confirm that the existing bucket uses **Bucket owner enforced** object ownership. Keep ACLs disabled; the API does not send a public object ACL.
+2. Create a dedicated IAM user for Railway, such as `cafedebug-api-railway-s3`, and attach an identity policy containing only `s3:PutObject` and `s3:DeleteObject` for the image prefixes. Replace `{bucket}` before applying it:
+
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Effect": "Allow",
+         "Action": ["s3:PutObject", "s3:DeleteObject"],
+         "Resource": [
+           "arn:aws:s3:::{bucket}/images/*",
+           "arn:aws:s3:::{bucket}/episodes/*",
+           "arn:aws:s3:::{bucket}/banners/*",
+           "arn:aws:s3:::{bucket}/team-members/*",
+           "arn:aws:s3:::{bucket}/contributors/*"
+         ]
+       }
+     ]
+   }
+   ```
+
+3. Add this bucket policy after replacing `{bucket}`. It grants anonymous `s3:GetObject` only for the image prefixes; it does not grant public listing, writing, deletion, or access to other prefixes.
+
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Sid": "PublicReadCafeDebugImages",
+         "Effect": "Allow",
+         "Principal": "*",
+         "Action": "s3:GetObject",
+         "Resource": [
+           "arn:aws:s3:::{bucket}/images/*",
+           "arn:aws:s3:::{bucket}/episodes/*",
+           "arn:aws:s3:::{bucket}/banners/*",
+           "arn:aws:s3:::{bucket}/team-members/*",
+           "arn:aws:s3:::{bucket}/contributors/*"
+         ]
+       }
+     ]
+   }
+   ```
+
+4. Public reads through a bucket policy require the effective account and bucket Block Public Access settings to permit that policy. Keep `BlockPublicAcls` and `IgnorePublicAcls` enabled because ACLs are not used. If organization-level controls prevent the narrow public-read policy, stop and obtain an AWS-owner decision; do not relax account-wide controls.
+5. Do not add S3 CORS: browsers display returned image URLs, but upload and delete requests continue to go through the authenticated API.
+
+### Railway variables and credential rotation
+
+Set the following variables in the Railway production service. `ServiceUrl` must be absent in production.
+
+| Variable | Value |
+| --- | --- |
+| `AWS_ACCESS_KEY_ID` | Access key for the dedicated IAM user |
+| `AWS_SECRET_ACCESS_KEY` | Corresponding secret access key |
+| `Storage__AWS__S3__Bucket` | Existing bucket name |
+| `Storage__AWS__S3__Region` | Existing bucket region |
+| `Storage__AWS__S3__BaseUrl` | `https://{bucket}.s3.{region}.amazonaws.com` |
+| `Storage__AWS__S3__ForcePathStyle` | `false` |
+| `Storage__AWS__S3__UseHttp` | `false` |
+
+Rotate credentials by creating a second access key for the dedicated identity, updating both Railway secret variables, and validating an authenticated upload/delete after the deployment. Only then disable and delete the old key. Never echo a value while configuring or validating it.
+
 ## CI and pull requests
 
 `CI` runs on PRs targeting `main` and on pushes to `main`. Its single `Build & Test` job:
@@ -76,7 +146,9 @@ Inspect existing rulesets first and update an equivalent rule instead of creatin
      https://cafedebug-backendapi-production.up.railway.app/health/ready
    ```
 
-Record the PR check/run URL, main CI URL, commit SHA, Railway deployment ID/status, and readiness HTTP result. A green PR alone is not evidence that the production rollout completed.
+8. With an administrator token, upload a disposable image through the API, open only its returned public URL, delete it through the API, and confirm that it is no longer publicly available. Do not record the token, access-key values, or image request body in the rollout evidence.
+
+Record the PR check/run URL, main CI URL, commit SHA, Railway deployment ID/status, readiness HTTP result, and pass/fail result of the authenticated S3 smoke test. A green PR alone is not evidence that the production rollout completed.
 
 `/health/ready` checks database connectivity and an episode query. `/health/live` checks process liveness only. Railway health checks gate activation; they are not continuous uptime monitoring. Do not change the gate to liveness to hide a readiness failure. Inspect logs, configuration, and database availability instead.
 
@@ -84,7 +156,7 @@ Record the PR check/run URL, main CI URL, commit SHA, Railway deployment ID/stat
 
 Use the Railway service deployment history to roll back to a previously successful deployment. Record its commit SHA and deployment ID, verify readiness, and confirm the public endpoint. If the previous deployment is outside Railway's rollback retention, revert the faulty commit through a reviewed PR and let CI and autodeploy run normally.
 
-Application rollback does not roll back database data or schema. The repository currently defines no EF migration implementation or startup migration execution. Do not add a `dotnet ef database update` pre-deploy command: the runtime image does not include an EF migration toolchain. Schema changes need a separately reviewed migration plan.
+Application rollback does not roll back database data, schema, or objects uploaded to S3. Delete any disposable smoke-test object before recording the rollout as complete. The repository currently defines no EF migration implementation or startup migration execution. Do not add a `dotnet ef database update` pre-deploy command: the runtime image does not include an EF migration toolchain. Schema changes need a separately reviewed migration plan.
 
 ## Legacy infrastructure
 

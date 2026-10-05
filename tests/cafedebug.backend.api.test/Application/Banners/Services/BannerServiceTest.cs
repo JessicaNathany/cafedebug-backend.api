@@ -6,9 +6,9 @@ using cafedebug_backend.domain.Banners;
 using cafedebug_backend.domain.Banners.Repositories;
 using cafedebug_backend.domain.Shared.Errors;
 using cafedebug.backend.api.test.Shared.Setups.Banner;
-using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
+using Shouldly;
 using Xunit;
 
 namespace cafedebug.backend.api.test.Application.Banners.Services;
@@ -55,8 +55,8 @@ public class BannerServiceTest : BaseTest
         var statusAfterStart = banner.Status;
 
         // Assert
-        statusBeforeStart.Should().Be(BannerStatus.Published);
-        statusAfterStart.Should().Be(BannerStatus.Scheduled);
+        statusBeforeStart.ShouldBe(BannerStatus.Published);
+        statusAfterStart.ShouldBe(BannerStatus.Scheduled);
     }
 
     [Fact]
@@ -75,13 +75,13 @@ public class BannerServiceTest : BaseTest
         var result = await _bannerService.CreateAsync(request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
 
         var response = result.Value;
-        response.Name.Should().Be(request.Name);
+        response.Name.ShouldBe(request.Name);
 
-        savedBanner.Should().NotBeNull();
+        savedBanner.ShouldNotBeNull();
 
         _bannerVerifications.VerifyBannerSaved(Times.Once());
     }
@@ -102,8 +102,8 @@ public class BannerServiceTest : BaseTest
         var result = await _bannerService.CreateAsync(request);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldNotBeNull();
         _bannerVerifications.VerifyBannerSaved(Times.Once());
     }
 
@@ -121,7 +121,7 @@ public class BannerServiceTest : BaseTest
         var act = async () => await _bannerService.CreateAsync(request);
 
         // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("DB down");
+        (await act.ShouldThrowAsync<InvalidOperationException>()).Message.ShouldBe("DB down");
         
         _bannerVerifications.VerifyBannerSaved(Times.Once());
     }
@@ -137,8 +137,8 @@ public class BannerServiceTest : BaseTest
         var result = await _bannerService.CreateAsync(request);
 
         // Assert
-        result.IsFailure.Should().BeTrue();
-        result.Error.Code.Should().Be(nameof(ErrorType.ExistingRegister));
+        result.IsFailure.ShouldBeTrue();
+        result.Error.Code.ShouldBe(nameof(ErrorType.ExistingRegister));
 
         _bannerVerifications.VerifyBannerExistenceChecked(Times.Once());
         _bannerVerifications.VerifyBannerRetrieved(It.IsAny<int>(), Times.Never());
@@ -162,11 +162,11 @@ public class BannerServiceTest : BaseTest
         var result = await _bannerService.UpdateAsync(request, bannerId);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
 
         var response = result.Value;
-        response.Name.Should().Be(request.Name);
+        response.Name.ShouldBe(request.Name);
 
 
         _bannerVerifications.VerifyBannerRetrieved(bannerId, Times.Once());
@@ -186,8 +186,8 @@ public class BannerServiceTest : BaseTest
         var result = await _bannerService.UpdateAsync(request, bannerId);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(nameof(ErrorType.ResourceNotFound));
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.Code.ShouldBe(nameof(ErrorType.ResourceNotFound));
     }
 
     [Fact]
@@ -203,8 +203,8 @@ public class BannerServiceTest : BaseTest
         var result = await _bannerService.DeleteAsync(bannerId);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
 
         _bannerVerifications.VerifyBannerRetrieved(bannerId, Times.Once());
         _bannerVerifications.VerifyBannerDeleted(banner, Times.Once());
@@ -222,8 +222,8 @@ public class BannerServiceTest : BaseTest
         var result = await _bannerService.DeleteAsync(bannerId);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Code.Should().Be(nameof(ErrorType.ResourceNotFound));
+        result.IsSuccess.ShouldBeFalse();
+        result.Error.Code.ShouldBe(nameof(ErrorType.ResourceNotFound));
     }
 
     [Fact]
@@ -239,15 +239,15 @@ public class BannerServiceTest : BaseTest
         var result = await _bannerService.GetAllAsync(request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Items.Should().NotBeNullOrEmpty();
-        result.Value.Items.Should().HaveCount(pagedResult.TotalCount);
-        result.Value.Page.Should().Be(request.Page);
-        result.Value.PageSize.Should().Be(request.PageSize);
-        result.Value.SortBy.Should().Be(request.SortBy);
-        result.Value.Descending.Should().Be(request.Descending);
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldNotBeNull();
+        result.Value.Items.ShouldNotBeNull();
+        result.Value.Items.Count.ShouldBe(pagedResult.TotalCount);
+        result.Value.Page.ShouldBe(request.Page);
+        result.Value.PageSize.ShouldBe(request.PageSize);
+        result.Value.SortBy.ShouldBe(request.SortBy);
+        result.Value.Descending.ShouldBe(request.Descending);
 
         _bannerVerifications.VerifyBannerPageListRetrieved(request.Page, request.PageSize, request.SortBy, request.Descending, Times.Once());
     }
@@ -265,14 +265,14 @@ public class BannerServiceTest : BaseTest
         var result = await _bannerService.GetAllAsync(request);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.Page.Should().Be(request.Page);
-        result.Value.PageSize.Should().Be(request.PageSize);
-        result.Value.SortBy.Should().Be(request.SortBy);
-        result.Value.Descending.Should().Be(request.Descending);
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldNotBeNull();
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.Page.ShouldBe(request.Page);
+        result.Value.PageSize.ShouldBe(request.PageSize);
+        result.Value.SortBy.ShouldBe(request.SortBy);
+        result.Value.Descending.ShouldBe(request.Descending);
 
         _bannerVerifications.VerifyBannerPageListRetrieved(request.Page, request.PageSize, request.SortBy, request.Descending, Times.Once());
     }
@@ -290,9 +290,9 @@ public class BannerServiceTest : BaseTest
         var result = await _bannerService.GetByIdAsync(bannerId);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
+        result.ShouldNotBeNull();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldNotBeNull();
 
         _bannerVerifications.VerifyBannerRetrieved(bannerId, Times.Once());
     }
@@ -319,12 +319,12 @@ public class BannerServiceTest : BaseTest
         var result = await _bannerService.GetTheLatestBannersAsync();
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(4);
-        result.Value.Items.Select(item => item.Order).Should().Equal(1, 2, 3, 4);
-        result.Value.Page.Should().Be(1);
-        result.Value.PageSize.Should().Be(4);
-        result.Value.TotalCount.Should().Be(4);
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Items.Count.ShouldBe(4);
+        result.Value.Items.Select(item => item.Order).ShouldBe([1, 2, 3, 4]);
+        result.Value.Page.ShouldBe(1);
+        result.Value.PageSize.ShouldBe(4);
+        result.Value.TotalCount.ShouldBe(4);
 
         _bannerVerifications.VerifyBannerAllRetrieved(true, Times.Once());
     }
@@ -347,14 +347,14 @@ public class BannerServiceTest : BaseTest
         var result = await _bannerService.GetTheLatestBannersAsync();
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
-        result.Value.Page.Should().Be(1);
-        result.Value.PageSize.Should().Be(4);
-        result.Value.PageCount.Should().Be(0);
-        result.Value.TotalCount.Should().Be(0);
-        result.Value.SortBy.Should().Be(nameof(Banner.Order));
-        result.Value.Descending.Should().BeFalse();
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Items.ShouldBeEmpty();
+        result.Value.Page.ShouldBe(1);
+        result.Value.PageSize.ShouldBe(4);
+        result.Value.PageCount.ShouldBe(0);
+        result.Value.TotalCount.ShouldBe(0);
+        result.Value.SortBy.ShouldBe(nameof(Banner.Order));
+        result.Value.Descending.ShouldBeFalse();
 
         _bannerVerifications.VerifyBannerAllRetrieved(true, Times.Once());
     }
