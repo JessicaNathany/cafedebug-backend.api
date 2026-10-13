@@ -13,5 +13,5 @@ public interface IBannerService
     Task<Result<BannerResponse>> UpdateAsync(BannerRequest banner, int id);
     Task<Result> DeleteAsync(int id);
     Task<Result<BannerResponse>> GetByNameAsync(string name);
-    Task<Result<PagedResult<BannerResponse>>> GetTheLatestBannersAsync();
+    Task<Result<List<BannerResponse>>> GetTheLatestBannersAsync();
 }

@@ -299,11 +299,8 @@ public class BannerServiceTest : BaseTest
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
-        result.Value.Items.Count.ShouldBe(4);
-        result.Value.Items.Select(item => item.Order).ShouldBe([1, 2, 3, 4]);
-        result.Value.Page.ShouldBe(1);
-        result.Value.PageSize.ShouldBe(4);
-        result.Value.TotalCount.ShouldBe(4);
+        result.Value.Count.ShouldBe(4);
+        result.Value.Select(item => item.Order).ShouldBe([1, 2, 3, 4]);
 
         _bannerVerifications.VerifyBannerAllRetrieved(true, Times.Once());
     }
@@ -327,13 +324,7 @@ public class BannerServiceTest : BaseTest
 
         // Assert
         result.IsSuccess.ShouldBeTrue();
-        result.Value.Items.ShouldBeEmpty();
-        result.Value.Page.ShouldBe(1);
-        result.Value.PageSize.ShouldBe(4);
-        result.Value.PageCount.ShouldBe(0);
-        result.Value.TotalCount.ShouldBe(0);
-        result.Value.SortBy.ShouldBe(nameof(Banner.Order));
-        result.Value.Descending.ShouldBeFalse();
+        result.Value.ShouldBeEmpty();
 
         _bannerVerifications.VerifyBannerAllRetrieved(true, Times.Once());
     }

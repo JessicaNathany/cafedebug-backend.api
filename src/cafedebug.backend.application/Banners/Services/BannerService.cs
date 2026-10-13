@@ -95,7 +95,7 @@ public class BannerService(IBannerRepository bannerRepository, TimeProvider time
         return Result.Success(response);
     }
 
-    public async Task<Result<PagedResult<BannerResponse>>> GetTheLatestBannersAsync()
+    public async Task<Result<List<BannerResponse>>> GetTheLatestBannersAsync()
     {
         var today = timeProvider.GetLocalNow().Date;
         var expiredCutoff = today.AddDays(-1);
@@ -111,17 +111,6 @@ public class BannerService(IBannerRepository bannerRepository, TimeProvider time
             .Select(banner => banner.ToBanner())
             .ToList();
 
-        var pageCount = latestBanners.Count == 0 ? 0 : 1;
-
-        var result = PagedResult<BannerResponse>.Create(
-            latestBanners,
-            page: 1,
-            pageSize: 4,
-            pageCount: pageCount,
-            totalCount: latestBanners.Count,
-            sortBy: nameof(Banner.Order),
-            descending: false);
-
-        return Result.Success(result);
+        return Result.Success(latestBanners);
     }
 }
