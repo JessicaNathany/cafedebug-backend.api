@@ -36,4 +36,9 @@ public class BannerRepositoryVerification(Mock<IBannerRepository> bannerReposito
     {
         bannerRepository.Verify(x => x.GetPageList(page, pageSize, sortBy, descending, CancellationToken.None), times);
     }
+
+    public void VerifyBannerAllRetrieved(bool asNoTracking, Times times)
+    {
+        bannerRepository.Verify(x => x.GetAllAsync(asNoTracking), times);
+    }
 }

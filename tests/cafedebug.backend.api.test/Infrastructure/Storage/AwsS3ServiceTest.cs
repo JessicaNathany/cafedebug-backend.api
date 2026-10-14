@@ -3,9 +3,9 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using cafedebug_backend.domain.Media;
 using cafedebug_backend.infrastructure.Storage;
-using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using Shouldly;
 using Xunit;
 
 namespace cafedebug.backend.api.test.Infrastructure.Storage;
@@ -34,11 +34,11 @@ public class AwsS3ServiceTest
 
         var result = await service.UploadImageAsync("data:image/png;base64,aGVsbG8=", "cover.png", ImageFolder.Episodes);
 
-        result.Should().Be("https://cafedebug-images.s3.sa-east-1.amazonaws.com/episodes/cover.png");
-        uploadedRequest.Should().NotBeNull();
-        uploadedRequest!.BucketName.Should().Be("cafedebug-images");
-        uploadedRequest.Key.Should().Be("episodes/cover.png");
-        uploadedRequest.CannedACL.Should().BeNull();
+        result.ShouldBe("https://cafedebug-images.s3.sa-east-1.amazonaws.com/episodes/cover.png");
+        uploadedRequest.ShouldNotBeNull();
+        uploadedRequest!.BucketName.ShouldBe("cafedebug-images");
+        uploadedRequest.Key.ShouldBe("episodes/cover.png");
+        uploadedRequest.CannedACL.ShouldBeNull();
     }
 
     [Theory]
@@ -59,10 +59,10 @@ public class AwsS3ServiceTest
 
         var result = await service.DeleteImageAsync(imageUrl);
 
-        result.Should().BeTrue();
-        deleteRequest.Should().NotBeNull();
-        deleteRequest!.BucketName.Should().Be("cafedebug-images");
-        deleteRequest.Key.Should().Be(expectedKey);
+        result.ShouldBeTrue();
+        deleteRequest.ShouldNotBeNull();
+        deleteRequest!.BucketName.ShouldBe("cafedebug-images");
+        deleteRequest.Key.ShouldBe(expectedKey);
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public class AwsS3ServiceTest
 
         var result = await service.DeleteImageAsync("https://example.com/episodes/cover.png");
 
-        result.Should().BeFalse();
+        result.ShouldBeFalse();
         s3Client.Verify(client => client.DeleteObjectAsync(It.IsAny<DeleteObjectRequest>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -96,7 +96,7 @@ public class AwsS3ServiceTest
 
         var result = await service.UploadImageAsync("aGVsbG8=", "cover.png", ImageFolder.Banners);
 
-        result.Should().Be("http://localhost:9000/cafedebug-images/banners/cover.png");
+        result.ShouldBe("http://localhost:9000/cafedebug-images/banners/cover.png");
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public class AwsS3ServiceTest
             BaseUrl = "https://cafedebug-images.s3.sa-east-1.amazonaws.com"
         });
 
-        result.Failed.Should().BeTrue();
+        result.Failed.ShouldBeTrue();
     }
 
     [Theory]
@@ -123,7 +123,7 @@ public class AwsS3ServiceTest
             Region = region
         });
 
-        result.Failed.Should().BeTrue();
+        result.Failed.ShouldBeTrue();
     }
 
     [Fact]
@@ -138,7 +138,7 @@ public class AwsS3ServiceTest
             UseHttp = true
         });
 
-        result.Succeeded.Should().BeTrue();
+        result.Succeeded.ShouldBeTrue();
     }
 
     private static AwsS3Service CreateService(IAmazonS3 s3Client)

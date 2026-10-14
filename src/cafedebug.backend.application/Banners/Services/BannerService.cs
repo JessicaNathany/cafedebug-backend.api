@@ -94,4 +94,23 @@ public class BannerService(IBannerRepository bannerRepository, TimeProvider time
         var response = MappingConfig.ToBanner(banner);
         return Result.Success(response);
     }
+
+    public async Task<Result<List<BannerResponse>>> GetTheLatestBannersAsync()
+    {
+        var today = timeProvider.GetLocalNow().Date;
+        var expiredCutoff = today.AddDays(-1);
+        var banners = await bannerRepository.GetAllAsync(asNoTracking: true);
+
+        var latestBanners = banners
+            .Where(banner =>
+                banner.Active &&
+                banner.StartDate.Date <= today &&
+                banner.EndDate.Date > expiredCutoff)
+            .OrderBy(banner => banner.Order)
+            .Take(4)
+            .Select(banner => banner.ToBanner())
+            .ToList();
+
+        return Result.Success(latestBanners);
+    }
 }

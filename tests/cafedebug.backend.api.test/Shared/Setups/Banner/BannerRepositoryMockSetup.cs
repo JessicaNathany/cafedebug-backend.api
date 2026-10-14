@@ -63,5 +63,11 @@ public class BannerRepositoryMockSetup(Mock<IBannerRepository> bannerRepository)
             .Setup(x => x.GetPageList(pageRequest.Page, pageRequest.PageSize, pageRequest.SortBy, pageRequest.Descending, CancellationToken.None))
             .ReturnsAsync(pagedResult);
     }
-}
 
+    public void BannerGetAll(IEnumerable<cafedebug_backend.domain.Banners.Banner> banners)
+    {
+        bannerRepository
+            .Setup(x => x.GetAllAsync(true))
+            .ReturnsAsync(banners);
+    }
+}

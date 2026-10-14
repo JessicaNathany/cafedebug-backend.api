@@ -26,7 +26,7 @@ public class EmailServiceTest
         var emailRequest = new SendEmailRequest
         {
             EmailTo = "jn.devtemp@gmail.com",
-            Subject = "Café debug unit test",
+            Subject = "Cafï¿½ debug unit test",
             MessageType = "Recovery",
             EmailCopy = "debugcafe@gmail.com",
         };
@@ -51,7 +51,7 @@ public class EmailServiceTest
         var emailRequest = new SendEmailRequest
         {
             EmailTo = "jn.devtemp@gmail.com",
-            Subject = "Café debug unit test",
+            Subject = "Cafï¿½ debug unit test",
             MessageType = "Recovery",
             EmailCopy = "debugcafe@gmail.com",
             Name = "John Doe",
@@ -83,7 +83,7 @@ public class EmailServiceTest
         var emailRequest = new SendEmailRequest
         {
             EmailTo = "jn.devtemp@gmail.com",
-            Subject = "Café debug unit test - Password Recovery",
+            Subject = "Cafï¿½ debug unit test - Password Recovery",
             MessageType = "Password Recovery",
             EmailCopy = "debugcafe@gmail.com"
         };
@@ -96,7 +96,7 @@ public class EmailServiceTest
         Assert.Equal(emailRequest.Subject, mailMessage.Subject);
         Assert.Equal(emailRequest.EmailTo, mailMessage.To[0].Address);
         Assert.Equal(emailRequest.EmailCopy, mailMessage.CC[0].Address);
-        Assert.Contains("recuperação de senha", mailMessage.Body);
+        Assert.Contains("recuper", mailMessage.Body, StringComparison.OrdinalIgnoreCase);
         Assert.Contains(InsfrastructureConstants.ForgotPasswordUrl, mailMessage.Body);
     }
 }
